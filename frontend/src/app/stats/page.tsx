@@ -12,22 +12,19 @@ export function StatsPage() {
   return (
     <>
       <PageHead
-        eyebrow="Tom III · dane i retencja"
+        eyebrow="Statystyki"
         title={
           <>
-            jak <em>idzie</em>
+            <em>asd</em>
           </>
         }
-        issue="Raport"
         date="Aktualizacja dziś"
       />
 
       <div className="grid grid-cols-1 gap-6 pb-10 border-b border-[var(--rule)] mb-10 min-[800px]:grid-cols-[1.2fr_1fr] min-[800px]:gap-14 min-[800px]:items-end enter enter-d1">
         <div>
-          <span className="eyebrow mb-3 inline-block">Średnia retencja — 90 dni</span>
           <div className="retention-number">
             <em>{STUDY_STATS.retentionPct}</em>
-            <span className="pct mono">%</span>
           </div>
         </div>
         <div className="flex flex-col gap-3">

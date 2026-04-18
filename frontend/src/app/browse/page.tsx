@@ -46,11 +46,9 @@ export function BrowsePage() {
       <PageHead
         title={
           <>
-            wszystkie <em>karty</em>
+            <h1>Cos</h1>
           </>
         }
-        issue={`${CARDS.length} szt.`}
-        date="Sortuj wg terminu"
       />
 
       <div className="flex items-center gap-3 px-4 py-3 border border-[var(--rule)] rounded-sm mb-5 bg-[var(--paper-2)]">

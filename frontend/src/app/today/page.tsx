@@ -1,6 +1,6 @@
 import { ArrowRightIcon, FlameIcon, ClockCounterClockwiseIcon } from "@phosphor-icons/react";
 import { Button } from "@cloudflare/kumo";
-import { CARDS, EXAMS, SESSIONS, STUDY_STATS, TODAY } from "../../data/mock";
+import { EXAMS, SESSIONS, STUDY_STATS, TODAY } from "../../data/mock";
 import { SUBJECTS, subjectName } from "../../utils/subjects";
 import { dayLong, daysBetween, longDate } from "../../utils/date";
 import { PageHead } from "../../components/PageHead";
@@ -11,10 +11,7 @@ type Props = {
 };
 
 export function TodayPage({ onStart, onOpenSession }: Props) {
-  const dueToday = CARDS.filter((c) => c.dueISO === TODAY);
   const todaySessions = SESSIONS.filter((s) => s.dateISO === TODAY);
-  const remainingSessions = todaySessions.filter((s) => !s.done);
-  const totalMinutes = remainingSessions.reduce((acc, s) => acc + s.estimateMinutes, 0);
   const nextExam = [...EXAMS]
     .filter((e) => e.dateISO >= TODAY)
     .sort((a, b) => a.dateISO.localeCompare(b.dateISO))[0];
@@ -25,22 +22,19 @@ export function TodayPage({ onStart, onOpenSession }: Props) {
     <>
       <PageHead
         eyebrow={`${dayLong(TODAY)} · ${longDate(TODAY)}`}
-        title={<>dziś, <em>spokojnie</em></>}
-        issue="Wydanie dzienne"
-        date="Tom I"
+        title={
+          <>
+            <h1 className="text-[var(--amber)]">Hello</h1>
+          </>
+        }
       />
 
       <div className="grid grid-cols-1 gap-8 min-[900px]:grid-cols-[1.3fr_1fr] min-[900px]:gap-14">
         <div className="flex flex-col gap-[18px] relative enter enter-d1">
-          <span className="eyebrow">Do powtórki na dziś</span>
-          <div className="hero-number">
-            <em>{dueToday.length}</em>
-            <span className="sub-unit">kart<br />≈ {totalMinutes} min</span>
-          </div>
           <p className="text-base text-[var(--ink-muted)] max-w-[38ch] leading-[1.5]">
-            Masz <strong className="text-[var(--ink)] font-medium">{remainingSessions.length} sesji</strong> do końca dnia.
-            Najdłuższa — {remainingSessions[0]?.topic ?? "—"}.
-            Plan jest deterministyczny: liczba kart dzielona przez pozostałe dni do sprawdzianu.
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Est, aliquam! Doloremque
+            ducimus corporis nulla impedit facilis illum veniam? Alias at repellat accusantium quas.
+            Culpa ducimus fugiat ea, atque iusto cum?
           </p>
           <div className="flex items-center gap-4 mt-3 flex-wrap">
             <Button
@@ -65,15 +59,14 @@ export function TodayPage({ onStart, onOpenSession }: Props) {
         <aside className="flex flex-col gap-7 enter enter-d2">
           {nextExam && (
             <div className="exam-card">
-              <div className="exam-eyebrow">
-                Najbliższy sprawdzian
-              </div>
+              <div className="exam-eyebrow">Najbliższy sprawdzian</div>
               <div className="exam-title">{nextExam.name}</div>
               <div className="flex items-baseline gap-2.5">
                 <span className="days mono">{examDays}</span>
                 <span className="days-label">
                   {examDays === 1 ? "dzień" : "dni"}
-                  <br />do terminu
+                  <br />
+                  do terminu
                 </span>
               </div>
               <div className="mono text-xs text-[var(--ink-muted)] mt-1.5 flex justify-between pt-3 border-t border-dashed border-[var(--rule-strong)]">
@@ -95,7 +88,9 @@ export function TodayPage({ onStart, onOpenSession }: Props) {
             </div>
             <div className="p-[18px] flex flex-col gap-1 border-l border-[var(--rule)]">
               <div className="streak-num mono">{STUDY_STATS.weekMinutes}</div>
-              <div className="mono text-[10px] tracking-[0.16em] uppercase text-[var(--ink-faint)]">min w tym tygodniu</div>
+              <div className="mono text-[10px] tracking-[0.16em] uppercase text-[var(--ink-faint)]">
+                min w tym tygodniu
+              </div>
             </div>
           </div>
         </aside>
@@ -122,15 +117,22 @@ export function TodayPage({ onStart, onOpenSession }: Props) {
               data-done={s.done}
               onClick={() => !s.done && onOpenSession(s.id)}
             >
-              <span className={`mono text-[13px] tracking-[0.04em] ${s.done ? "text-[var(--ink-faint)]" : "text-[var(--ink-muted)]"}`}>
+              <span
+                className={`mono text-[13px] tracking-[0.04em] ${s.done ? "text-[var(--ink-faint)]" : "text-[var(--ink-muted)]"}`}
+              >
                 {s.timeOfDay}
               </span>
               <span className="flex flex-col gap-1 min-w-0">
                 <span className="flex items-center gap-2 mono text-[10px] tracking-[0.2em] uppercase text-[var(--ink-muted)]">
-                  <span className="w-2 h-2 rounded-full shrink-0" style={{ background: subj.color }} />
+                  <span
+                    className="w-2 h-2 rounded-full shrink-0"
+                    style={{ background: subj.color }}
+                  />
                   {subj.name}
                 </span>
-                <span className={`display font-normal text-[18px] text-[var(--ink)] leading-[1.2] tracking-[-0.005em] ${s.done ? "line-through decoration-[var(--rule-strong)] decoration-[1px] !text-[var(--ink-faint)]" : ""}`}>
+                <span
+                  className={`display font-normal text-[18px] text-[var(--ink)] leading-[1.2] tracking-[-0.005em] ${s.done ? "line-through decoration-[var(--rule-strong)] decoration-[1px] !text-[var(--ink-faint)]" : ""}`}
+                >
                   {s.topic}
                 </span>
               </span>

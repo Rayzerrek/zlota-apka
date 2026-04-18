@@ -35,9 +35,8 @@ export function CalendarPage() {
   return (
     <>
       <PageHead
-        eyebrow="Tom II · plan tygodniowy"
-        title={<>siedem <em>dni</em></>}
-        issue={monthYear(weekAnchor)}
+        eyebrow="plan tygodniowy"
+        title={<em>Tydzien</em>}
         date={`Tydzień z ${longDate(days[0])}`}
       />
 
@@ -82,11 +81,17 @@ export function CalendarPage() {
               data-selected={iso === selected}
               onClick={() => setSelected(iso)}
             >
-              <span className="mono text-[10px] tracking-[0.14em] text-[var(--ink-faint)] uppercase">{dayShort(iso)}</span>
+              <span className="mono text-[10px] tracking-[0.14em] text-[var(--ink-faint)] uppercase">
+                {dayShort(iso)}
+              </span>
               <span className="cal-day-num">{dayNum(iso)}</span>
               <span className="flex gap-[3px] min-h-[6px]">
                 {uniqSubjects.slice(0, 5).map((s) => (
-                  <span key={s} className="w-[6px] h-[6px] rounded-full opacity-85" style={{ background: SUBJECTS[s].color }} />
+                  <span
+                    key={s}
+                    className="w-[6px] h-[6px] rounded-full opacity-85"
+                    style={{ background: SUBJECTS[s].color }}
+                  />
                 ))}
                 {examOnDay && (
                   <span
@@ -126,15 +131,22 @@ export function CalendarPage() {
                 style={{ animationDelay: `${0.1 + idx * 0.04}s` }}
                 data-done={s.done}
               >
-                <span className={`mono text-[13px] tracking-[0.04em] ${s.done ? "text-[var(--ink-faint)]" : "text-[var(--ink-muted)]"}`}>
+                <span
+                  className={`mono text-[13px] tracking-[0.04em] ${s.done ? "text-[var(--ink-faint)]" : "text-[var(--ink-muted)]"}`}
+                >
                   {s.timeOfDay}
                 </span>
                 <span className="flex flex-col gap-1 min-w-0">
                   <span className="flex items-center gap-2 mono text-[10px] tracking-[0.2em] uppercase text-[var(--ink-muted)]">
-                    <span className="w-2 h-2 rounded-full shrink-0" style={{ background: subj.color }} />
+                    <span
+                      className="w-2 h-2 rounded-full shrink-0"
+                      style={{ background: subj.color }}
+                    />
                     {subj.name}
                   </span>
-                  <span className={`display font-normal text-[18px] leading-[1.2] tracking-[-0.005em] ${s.done ? "line-through decoration-[var(--rule-strong)] decoration-[1px] text-[var(--ink-faint)]" : "text-[var(--ink)]"}`}>
+                  <span
+                    className={`display font-normal text-[18px] leading-[1.2] tracking-[-0.005em] ${s.done ? "line-through decoration-[var(--rule-strong)] decoration-[1px] text-[var(--ink-faint)]" : "text-[var(--ink)]"}`}
+                  >
                     {s.topic}
                   </span>
                 </span>
@@ -152,7 +164,9 @@ export function CalendarPage() {
           <h2 className="section-title">
             <span className="num mono">03 —</span> Sprawdziany na horyzoncie
           </h2>
-          <span className="mono text-[11px] tracking-[0.14em] uppercase text-[var(--ink-faint)]">{upcomingExams.length} terminów</span>
+          <span className="mono text-[11px] tracking-[0.14em] uppercase text-[var(--ink-faint)]">
+            {upcomingExams.length} terminów
+          </span>
         </div>
         <div className="flex flex-col">
           {upcomingExams.map((e, idx) => {
@@ -165,11 +179,15 @@ export function CalendarPage() {
                 style={{ animationDelay: `${0.2 + idx * 0.05}s` }}
                 data-near={near}
               >
-                <div className={`display italic font-normal text-[44px] leading-none tracking-[-0.02em] text-right ${near === "far" ? "!not-italic text-[var(--ink-muted)]" : "text-[var(--amber)]"}`}>
+                <div
+                  className={`display italic font-normal text-[44px] leading-none tracking-[-0.02em] text-right ${near === "far" ? "!not-italic text-[var(--ink-muted)]" : "text-[var(--amber)]"}`}
+                >
                   {days}
                 </div>
                 <div>
-                  <div className="display text-[18px] leading-[1.2] text-[var(--ink)]">{e.name}</div>
+                  <div className="display text-[18px] leading-[1.2] text-[var(--ink)]">
+                    {e.name}
+                  </div>
                   <div className="mono text-[11px] text-[var(--ink-faint)] tracking-[0.12em] uppercase mt-1">
                     {subjectName(e.subject)} · {longDate(e.dateISO)}
                   </div>

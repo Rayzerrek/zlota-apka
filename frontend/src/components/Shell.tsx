@@ -11,14 +11,13 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarMenuBadge,
   Link,
 } from "@cloudflare/kumo";
 import type { PagePath } from "../app/router";
-import { CARDS, SESSIONS, STUDENT_CLASS, STUDENT_INITIAL, STUDENT_NAME, TODAY } from "../data/mock";
+import { STUDENT_CLASS, STUDENT_INITIAL, STUDENT_NAME } from "../data/mock";
 
 const NAV: { path: PagePath; label: string; icon: typeof SunIcon }[] = [
-  { path: "/today", label: "Dziś", icon: SunIcon },
+  { path: "/today", label: "asd", icon: SunIcon },
   { path: "/calendar", label: "Kalendarz", icon: CalendarBlankIcon },
   { path: "/browse", label: "Nauka", icon: CardsIcon },
   { path: "/stats", label: "Postęp", icon: ChartBarIcon },
@@ -30,17 +29,13 @@ type Props = {
 };
 
 export function Shell({ path, children }: Props) {
-  const todayCount = CARDS.filter((c) => c.dueISO === TODAY).length;
-  const calCount = SESSIONS.filter((s) => s.dateISO >= TODAY && !s.done).length;
-
   return (
     <SidebarProvider collapsible="none" style={{ display: "contents" }}>
       <div className="shell">
         <Sidebar className="sidebar">
           <SidebarHeader className="px-1 pb-0">
             <div className="flex items-baseline gap-2.5 mb-10 pl-1">
-              <span className="brand-mark">Powtórki</span>
-              <span className="brand-sub">№ 04</span>
+              <span className="brand-mark">Nazwa</span>
             </div>
           </SidebarHeader>
 
@@ -49,12 +44,6 @@ export function Shell({ path, children }: Props) {
               <SidebarGroupContent>
                 <SidebarMenu>
                   {NAV.map((item) => {
-                    const count =
-                      item.path === "/today"
-                        ? todayCount
-                        : item.path === "/calendar"
-                          ? calCount
-                          : 0;
                     return (
                       <SidebarMenuItem key={item.path}>
                         <SidebarMenuButton
@@ -67,9 +56,6 @@ export function Shell({ path, children }: Props) {
                         >
                           {item.label}
                         </SidebarMenuButton>
-                        {count > 0 && (
-                          <SidebarMenuBadge className="counter">{count}</SidebarMenuBadge>
-                        )}
                       </SidebarMenuItem>
                     );
                   })}
@@ -79,7 +65,7 @@ export function Shell({ path, children }: Props) {
           </SidebarContent>
 
           <SidebarFooter className="px-1">
-            <div className="mt-auto pt-5 border-t border-[var(--rule)] flex items-center gap-2.5">
+            <div className="mt-auto pt-5 flex items-center gap-2.5">
               <div className="w-[34px] h-[34px] rounded-sm bg-[var(--amber)] text-[var(--paper)] grid place-items-center display italic font-bold text-base shrink-0">
                 {STUDENT_INITIAL}
               </div>
