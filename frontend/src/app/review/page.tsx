@@ -1,6 +1,6 @@
 import { Button } from "@cloudflare/kumo";
 import { ArrowRightIcon, XIcon } from "@phosphor-icons/react";
-import { useEffect, useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 
 import { SUBJECTS } from "../../utils/subjects";
 
@@ -42,22 +42,6 @@ export function ReviewPage({ cards, onExit }: Props) {
 		[idx, cards.length, ratings],
 	);
 
-	useEffect(() => {
-		const handler = (e: KeyboardEvent) => {
-			if (done) return;
-			if (e.key === " " || e.key === "Enter") {
-				e.preventDefault();
-				setFlipped((f) => !f);
-			}
-			if (["1", "2", "3", "4", "5"].includes(e.key) && flipped) {
-				handleRate(Number(e.key) as Rating);
-			}
-			if (e.key === "Escape") onExit();
-		};
-		window.addEventListener("keydown", handler);
-		return () => window.removeEventListener("keydown", handler);
-	}, [flipped, done, handleRate, onExit]);
-
 	if (!current) return null;
 
 	if (done) {
@@ -85,7 +69,7 @@ export function ReviewPage({ cards, onExit }: Props) {
 						<div className="display italic text-[120px] text-[var(--amber)] leading-[0.9] font-light">
 							✓
 						</div>
-						<div className="review-done-title">
+						<div className="display font-normal text-[36px] tracking-[-0.02em] [&_em]:italic [&_em]:text-[var(--amber)]">
 							<em>Koniec</em> sesji.
 						</div>
 						<p className="text-[var(--ink-muted)] max-w-[40ch]">
@@ -93,17 +77,23 @@ export function ReviewPage({ cards, onExit }: Props) {
 							dłużej, trudne wrócą jutro.
 						</p>
 						<div className="flex gap-9 mt-4 py-5 border-t border-[var(--rule)] border-b">
-							<div className="review-done-stat" data-tone="good">
-								<div className="n">{correct}</div>
-								<div className="l">Poprawnych</div>
+							<div className="flex flex-col gap-1">
+								<div className="display text-[34px] leading-none text-[var(--rating-4)]">{correct}</div>
+								<div className="mono text-[10px] tracking-[0.16em] uppercase text-[var(--ink-faint)]">
+									Poprawnych
+								</div>
 							</div>
-							<div className="review-done-stat" data-tone="bad">
-								<div className="n">{wrong}</div>
-								<div className="l">Do poprawy</div>
+							<div className="flex flex-col gap-1">
+								<div className="display text-[34px] leading-none text-[var(--rating-1)]">{wrong}</div>
+								<div className="mono text-[10px] tracking-[0.16em] uppercase text-[var(--ink-faint)]">
+									Do poprawy
+								</div>
 							</div>
-							<div className="review-done-stat">
-								<div className="n">{cards.length}</div>
-								<div className="l">Razem</div>
+							<div className="flex flex-col gap-1">
+								<div className="display text-[34px] leading-none text-[var(--ink)]">{cards.length}</div>
+								<div className="mono text-[10px] tracking-[0.16em] uppercase text-[var(--ink-faint)]">
+									Razem
+								</div>
 							</div>
 						</div>
 						<Button
@@ -158,7 +148,9 @@ export function ReviewPage({ cards, onExit }: Props) {
 							</span>
 						</div>
 						<div className="flex-1 flex items-center justify-center text-center p-5">
-							<div className="review-question">{current.question}</div>
+							<div className="display font-light text-[clamp(28px,4.5vw,44px)] leading-[1.2] tracking-[-0.02em] text-[var(--ink)] max-w-[28ch]">
+								{current.question}
+							</div>
 						</div>
 						<div className="mono text-[11px] tracking-[0.16em] uppercase text-[var(--ink-faint)] text-center">
 							Kliknij lub spacja, żeby odwrócić
@@ -174,7 +166,9 @@ export function ReviewPage({ cards, onExit }: Props) {
 							</span>
 						</div>
 						<div className="flex-1 flex items-center justify-center text-center p-5">
-							<div className="review-answer">{current.answer}</div>
+							<div className="display italic font-medium text-[clamp(32px,5vw,52px)] leading-[1.15] tracking-[-0.02em] text-[var(--amber)] max-w-[28ch]">
+								{current.answer}
+							</div>
 						</div>
 						<div className="mono text-[11px] tracking-[0.16em] uppercase text-[var(--ink-faint)] text-center">
 							Oceń, jak dobrze znałeś odpowiedź

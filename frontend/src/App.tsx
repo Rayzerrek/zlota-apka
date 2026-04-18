@@ -1,17 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
+import { Navigate, Route, Routes } from "react-router";
 
 import "./App.css";
 import { BrowsePage } from "./app/browse/page";
 import { CalendarPage } from "./app/calendar/page";
 import { ReviewPage } from "./app/review/page";
-import { useRouter } from "./app/router";
 import { StatsPage } from "./app/stats/page";
 import { TodayPage } from "./app/today/page";
 import { Shell } from "./components/Shell";
 import { CARDS, SESSIONS, TODAY } from "./data/mock";
 
 function App() {
-	const { path } = useRouter();
 	const [reviewSessionId, setReviewSessionId] = useState<string | null>(null);
 	const [theme, setTheme] = useState<"dark" | "light">(
 		() => (localStorage.getItem("theme") as "dark" | "light") ?? "dark",
@@ -38,16 +37,22 @@ function App() {
 
 	return (
 		<>
-			<Shell path={path} theme={theme} onToggleTheme={toggleTheme}>
-				{path === "/today" && (
-					<TodayPage
-						onStart={() => setReviewSessionId("__all_today__")}
-						onOpenSession={(id) => setReviewSessionId(id)}
+			<Shell theme={theme} onToggleTheme={toggleTheme}>
+				<Routes>
+					<Route
+						path="/today"
+						element={
+							<TodayPage
+								onStart={() => setReviewSessionId("__all_today__")}
+								onOpenSession={(id) => setReviewSessionId(id)}
+							/>
+						}
 					/>
-				)}
-				{path === "/calendar" && <CalendarPage />}
-				{path === "/browse" && <BrowsePage />}
-				{path === "/stats" && <StatsPage />}
+					<Route path="/calendar" element={<CalendarPage />} />
+					<Route path="/browse" element={<BrowsePage />} />
+					<Route path="/stats" element={<StatsPage />} />
+					<Route path="*" element={<Navigate to="/today" replace />} />
+				</Routes>
 			</Shell>
 
 			{reviewSessionId && reviewCards.length > 0 && (

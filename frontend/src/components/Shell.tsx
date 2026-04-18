@@ -10,7 +10,6 @@ import {
 	SidebarMenu,
 	SidebarMenuItem,
 	SidebarMenuButton,
-	Link,
 } from "@cloudflare/kumo";
 import {
 	CalendarBlankIcon,
@@ -19,11 +18,13 @@ import {
 	MoonIcon,
 	SunIcon,
 } from "@phosphor-icons/react";
+import { NavLink, useNavigate } from "react-router";
 
 import { STUDENT_CLASS, STUDENT_INITIAL, STUDENT_NAME } from "../data/mock";
 
-import type { PagePath } from "../app/router";
 import type { ReactNode } from "react";
+
+type PagePath = "/today" | "/calendar" | "/browse" | "/stats";
 
 const NAV: { path: PagePath; label: string; icon: typeof SunIcon }[] = [
 	{ path: "/today", label: "asd", icon: SunIcon },
@@ -33,20 +34,23 @@ const NAV: { path: PagePath; label: string; icon: typeof SunIcon }[] = [
 ];
 
 type Props = {
-	path: PagePath;
 	children: ReactNode;
 	theme: "dark" | "light";
 	onToggleTheme: () => void;
 };
 
-export function Shell({ path, children, theme, onToggleTheme }: Props) {
+export function Shell({ children, theme, onToggleTheme }: Props) {
+	const navigate = useNavigate();
+
 	return (
 		<SidebarProvider collapsible="none" style={{ display: "contents" }}>
-			<div className="shell">
+			<div className="grid grid-cols-1 h-dvh w-screen overflow-hidden lg:grid-cols-[240px_1fr]">
 				<Sidebar className="sidebar">
 					<SidebarHeader className="px-1 pb-0">
 						<div className="flex items-baseline gap-2.5 mb-10 pl-1">
-							<span className="brand-mark">Nazwa</span>
+							<span className="display italic font-semibold text-[28px] text-[var(--amber)] leading-none tracking-[-0.02em]">
+								Nazwa
+							</span>
 						</div>
 					</SidebarHeader>
 
@@ -54,20 +58,22 @@ export function Shell({ path, children, theme, onToggleTheme }: Props) {
 						<SidebarGroup>
 							<SidebarGroupContent>
 								<SidebarMenu>
-									{NAV.map((item) => {
-										return (
-											<SidebarMenuItem key={item.path}>
-												<SidebarMenuButton
-													href={`#${item.path}`}
-													active={path === item.path}
-													icon={<item.icon size={18} weight={path === item.path ? "fill" : "regular"} />}
-													className="nav-item"
-												>
-													{item.label}
-												</SidebarMenuButton>
-											</SidebarMenuItem>
-										);
-									})}
+									{NAV.map((item) => (
+										<NavLink key={item.path} to={item.path}>
+											{({ isActive }) => (
+												<SidebarMenuItem>
+													<SidebarMenuButton
+														onClick={() => navigate(item.path)}
+														active={isActive}
+														icon={<item.icon size={18} weight={isActive ? "fill" : "regular"} />}
+														className="nav-item"
+													>
+														{item.label}
+													</SidebarMenuButton>
+												</SidebarMenuItem>
+											)}
+										</NavLink>
+									))}
 								</SidebarMenu>
 							</SidebarGroupContent>
 						</SidebarGroup>
@@ -102,16 +108,14 @@ export function Shell({ path, children, theme, onToggleTheme }: Props) {
 
 				<nav className="dock" aria-label="Nawigacja">
 					{NAV.map((item) => (
-						<Link
-							key={item.path}
-							href={`#${item.path}`}
-							className="dock-item"
-							data-active={path === item.path}
-							aria-label={item.label}
-						>
-							<item.icon size={22} weight={path === item.path ? "fill" : "regular"} />
-							<span>{item.label}</span>
-						</Link>
+						<NavLink key={item.path} to={item.path} className="dock-item" aria-label={item.label}>
+							{({ isActive }) => (
+								<>
+									<item.icon size={22} weight={isActive ? "fill" : "regular"} />
+									<span>{item.label}</span>
+								</>
+							)}
+						</NavLink>
 					))}
 					<button className="dock-item" aria-label="Zmień motyw" onClick={onToggleTheme}>
 						{theme === "dark" ? <SunIcon size={22} /> : <MoonIcon size={22} />}

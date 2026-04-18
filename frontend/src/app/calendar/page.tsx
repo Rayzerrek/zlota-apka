@@ -103,8 +103,9 @@ export function CalendarPage() {
 
 			<section className="mt-6">
 				<div className="flex items-baseline justify-between gap-3 mb-5 pb-3 border-b border-[var(--rule)]">
-					<h2 className="section-title">
-						<span className="num mono">02 —</span> {dayLong(selected)}
+					<h2 className="display font-normal text-[22px] tracking-[-0.01em] text-[var(--ink)] flex items-baseline gap-3">
+						<span className="mono text-xs text-[var(--amber)] tracking-[0.08em]">02 —</span>{" "}
+						{dayLong(selected)}
 					</h2>
 					<span className="mono text-[11px] tracking-[0.14em] uppercase text-[var(--ink-faint)]">
 						{selectedSessions.length === 0
@@ -154,8 +155,9 @@ export function CalendarPage() {
 
 			<section className="mt-16">
 				<div className="flex items-baseline justify-between gap-3 mb-5 pb-3 border-b border-[var(--rule)]">
-					<h2 className="section-title">
-						<span className="num mono">03 —</span> Sprawdziany na horyzoncie
+					<h2 className="display font-normal text-[22px] tracking-[-0.01em] text-[var(--ink)] flex items-baseline gap-3">
+						<span className="mono text-xs text-[var(--amber)] tracking-[0.08em]">03 —</span> Sprawdziany
+						na horyzoncie
 					</h2>
 					<span className="mono text-[11px] tracking-[0.14em] uppercase text-[var(--ink-faint)]">
 						{upcomingExams.length} terminów

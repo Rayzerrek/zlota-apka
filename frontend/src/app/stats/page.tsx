@@ -23,8 +23,8 @@ export function StatsPage() {
 
 			<div className="grid grid-cols-1 gap-6 pb-10 border-b border-[var(--rule)] mb-10 min-[800px]:grid-cols-[1.2fr_1fr] min-[800px]:gap-14 min-[800px]:items-end enter enter-d1">
 				<div>
-					<div className="retention-number">
-						<em>{STUDY_STATS.retentionPct}</em>
+					<div className="display font-light text-[clamp(140px,18vw,220px)] leading-[0.85] tracking-[-0.06em] text-[var(--ink)] flex items-start gap-2">
+						<em className="italic text-[var(--amber)] font-light">{STUDY_STATS.retentionPct}</em>
 					</div>
 				</div>
 				<div className="flex flex-col gap-3">
@@ -53,8 +53,8 @@ export function StatsPage() {
 
 			<section className="enter enter-d2">
 				<div className="flex items-baseline justify-between gap-3 mb-5 pb-3 border-b border-[var(--rule)]">
-					<h2 className="section-title">
-						<span className="num mono">01 —</span> Etap kart
+					<h2 className="display font-normal text-[22px] tracking-[-0.01em] text-[var(--ink)] flex items-baseline gap-3">
+						<span className="mono text-xs text-[var(--amber)] tracking-[0.08em]">01 —</span> Etap kart
 					</h2>
 					<span className="mono text-[11px] tracking-[0.14em] uppercase text-[var(--ink-faint)]">
 						łącznie {CARDS.length}
@@ -62,21 +62,21 @@ export function StatsPage() {
 				</div>
 				<div className="grid grid-cols-3 border border-[var(--rule)] bg-[var(--paper-2)] mb-10">
 					<div className="px-5 py-6 flex flex-col gap-1.5">
-						<div className="stats-brk-num mature mono">{mature}</div>
+						<div className="display mono text-[40px] leading-none text-[var(--rating-4)]">{mature}</div>
 						<div className="mono text-[10px] tracking-[0.16em] uppercase text-[var(--ink-muted)]">
 							Dojrzałe
 						</div>
 						<div className="mono text-[11px] text-[var(--ink-faint)]">interwał ≥ 14 dni</div>
 					</div>
 					<div className="px-5 py-6 flex flex-col gap-1.5 border-l border-[var(--rule)]">
-						<div className="stats-brk-num young mono">{young}</div>
+						<div className="display mono text-[40px] leading-none text-[var(--amber)]">{young}</div>
 						<div className="mono text-[10px] tracking-[0.16em] uppercase text-[var(--ink-muted)]">
 							Młode
 						</div>
 						<div className="mono text-[11px] text-[var(--ink-faint)]">w trakcie utrwalania</div>
 					</div>
 					<div className="px-5 py-6 flex flex-col gap-1.5 border-l border-[var(--rule)]">
-						<div className="stats-brk-num new mono">{news}</div>
+						<div className="display mono text-[40px] leading-none text-[var(--sub-mat)]">{news}</div>
 						<div className="mono text-[10px] tracking-[0.16em] uppercase text-[var(--ink-muted)]">
 							Nowe / dzisiejsze
 						</div>
@@ -87,8 +87,9 @@ export function StatsPage() {
 
 			<section className="mt-16 enter enter-d3">
 				<div className="flex items-baseline justify-between gap-3 mb-5 pb-3 border-b border-[var(--rule)]">
-					<h2 className="section-title">
-						<span className="num mono">02 —</span> Retencja wg przedmiotu
+					<h2 className="display font-normal text-[22px] tracking-[-0.01em] text-[var(--ink)] flex items-baseline gap-3">
+						<span className="mono text-xs text-[var(--amber)] tracking-[0.08em]">02 —</span> Retencja wg
+						przedmiotu
 					</h2>
 					<span className="mono text-[11px] tracking-[0.14em] uppercase text-[var(--ink-faint)]">
 						ostatnie 30 dni
@@ -124,8 +125,9 @@ export function StatsPage() {
 
 			<section className="mt-16 enter enter-d4">
 				<div className="flex items-baseline justify-between gap-3 mb-5 pb-3 border-b border-[var(--rule)]">
-					<h2 className="section-title">
-						<span className="num mono">03 —</span> Aktywność — 180 dni
+					<h2 className="display font-normal text-[22px] tracking-[-0.01em] text-[var(--ink)] flex items-baseline gap-3">
+						<span className="mono text-xs text-[var(--amber)] tracking-[0.08em]">03 —</span> Aktywność —
+						180 dni
 					</h2>
 					<span className="mono text-[11px] tracking-[0.14em] uppercase text-[var(--ink-faint)]">
 						1 kwadrat = 1 dzień

@@ -15,7 +15,9 @@ export function PageHead({ eyebrow, title, date }: Props) {
 						{eyebrow}
 					</span>
 				)}
-				<h1 className="page-title">{title}</h1>
+				<h1 className="display italic text-[clamp(36px,6vw,56px)] font-normal leading-[0.95] tracking-[-0.02em] m-0 text-[var(--ink)] [&_em]:not-italic [&_em]:text-[var(--amber)]">
+					{title}
+				</h1>
 			</div>
 			{date && (
 				<div className="mono text-[10px] tracking-[0.2em] uppercase text-[var(--amber)] flex flex-col gap-0.5 text-right">

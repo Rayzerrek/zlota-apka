@@ -48,7 +48,7 @@ export function BrowsePage() {
 			<PageHead
 				title={
 					<>
-						<h1>Cos</h1>
+						<span>Cos</span>
 					</>
 				}
 			/>
@@ -73,8 +73,8 @@ export function BrowsePage() {
 					className={cn(
 						"h-auto rounded-full border px-3.5 py-2 mono text-[11px] tracking-[0.12em] uppercase transition-all shadow-none",
 						filter === "all"
-							? "border-[var(--ink)] bg-[var(--ink)] text-[var(--paper)]"
-							: "border-[var(--rule)] bg-transparent text-[var(--ink-muted)] hover:border-[var(--rule-strong)] hover:text-[var(--ink)]",
+							? "border-[var(--ink)] bg-transparent !text-[var(--ink)]"
+							: "border-[var(--rule)] bg-transparent hover:bg-transparent text-[var(--ink-muted)] hover:border-[var(--rule-strong)] hover:text-[var(--ink)]",
 					)}
 				>
 					Wszystkie
@@ -88,8 +88,8 @@ export function BrowsePage() {
 						className={cn(
 							"h-auto rounded-full border px-3.5 py-2 mono text-[11px] tracking-[0.12em] uppercase transition-all shadow-none",
 							filter === k
-								? "border-[var(--ink)] bg-[var(--ink)] text-[var(--paper)]"
-								: "border-[var(--rule)] bg-transparent text-[var(--ink-muted)] hover:border-[var(--rule-strong)] hover:text-[var(--ink)]",
+								? "border-[var(--ink)] bg-transparent !text-[var(--ink)]"
+								: "border-[var(--rule)] bg-transparent hover:bg-transparent text-[var(--ink-muted)] hover:border-[var(--rule-strong)] hover:text-[var(--ink)]",
 						)}
 					>
 						<span

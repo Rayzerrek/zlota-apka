@@ -1,5 +1,5 @@
 import { Button } from "@cloudflare/kumo";
-import { ArrowRightIcon, FlameIcon, ClockCounterClockwiseIcon } from "@phosphor-icons/react";
+import { ArrowRightIcon, FlameIcon } from "@phosphor-icons/react";
 
 import { PageHead } from "../../components/PageHead";
 import { EXAMS, SESSIONS, STUDY_STATS, TODAY } from "../../data/mock";
@@ -47,13 +47,6 @@ export function TodayPage({ onStart, onOpenSession }: Props) {
 							Zacznij powtórkę
 							<ArrowRightIcon size={18} weight="bold" className="ml-1" />
 						</Button>
-						<Button
-							variant="outline"
-							icon={ClockCounterClockwiseIcon}
-							className="rounded-sm ring-[var(--rule-strong)] text-[var(--ink)] hover:ring-[var(--amber)] hover:text-[var(--amber)] py-3.5 px-5 text-sm"
-						>
-							Przełóż na jutro
-						</Button>
 					</div>
 				</div>
 
@@ -61,10 +54,14 @@ export function TodayPage({ onStart, onOpenSession }: Props) {
 					{nextExam && (
 						<div className="exam-card">
 							<div className="exam-eyebrow">Najbliższy sprawdzian</div>
-							<div className="exam-title">{nextExam.name}</div>
+							<div className="display italic text-[32px] font-medium leading-none text-[var(--ink)]">
+								{nextExam.name}
+							</div>
 							<div className="flex items-baseline gap-2.5">
-								<span className="days mono">{examDays}</span>
-								<span className="days-label">
+								<span className="mono font-light text-[72px] leading-[0.9] tracking-[-0.04em] text-[var(--amber)]">
+									{examDays}
+								</span>
+								<span className="mono text-xs text-[var(--ink-muted)] tracking-[0.16em] uppercase">
 									{examDays === 1 ? "dzień" : "dni"}
 									<br />
 									do terminu
@@ -79,8 +76,8 @@ export function TodayPage({ onStart, onOpenSession }: Props) {
 
 					<div className="grid grid-cols-2 border border-[var(--rule)] rounded-sm bg-[var(--paper-2)]">
 						<div className="p-[18px] flex flex-col gap-1">
-							<div className="streak-num">
-								<em>{STUDY_STATS.streakDays}</em>
+							<div className="display font-normal text-[36px] leading-none text-[var(--ink)]">
+								<em className="italic text-[var(--amber)]">{STUDY_STATS.streakDays}</em>
 							</div>
 							<div className="mono text-[10px] tracking-[0.16em] uppercase text-[var(--ink-faint)]">
 								<FlameIcon size={10} style={{ marginRight: 4, verticalAlign: -1 }} />
@@ -88,7 +85,9 @@ export function TodayPage({ onStart, onOpenSession }: Props) {
 							</div>
 						</div>
 						<div className="p-[18px] flex flex-col gap-1 border-l border-[var(--rule)]">
-							<div className="streak-num mono">{STUDY_STATS.weekMinutes}</div>
+							<div className="display mono font-normal text-[36px] leading-none text-[var(--ink)]">
+								{STUDY_STATS.weekMinutes}
+							</div>
 							<div className="mono text-[10px] tracking-[0.16em] uppercase text-[var(--ink-faint)]">
 								min w tym tygodniu
 							</div>
@@ -99,8 +98,8 @@ export function TodayPage({ onStart, onOpenSession }: Props) {
 
 			<section className="mt-16">
 				<div className="flex items-baseline justify-between gap-3 mb-5 pb-3 border-b border-[var(--rule)]">
-					<h2 className="section-title">
-						<span className="num mono">01 —</span> Plan dnia
+					<h2 className="display font-normal text-[22px] tracking-[-0.01em] text-[var(--ink)] flex items-baseline gap-3">
+						<span className="mono text-xs text-[var(--amber)] tracking-[0.08em]">01 —</span> Plan dnia
 					</h2>
 					<span className="mono text-[11px] tracking-[0.14em] uppercase text-[var(--ink-faint)]">
 						{todaySessions.filter((s) => s.done).length} / {todaySessions.length} ukończone

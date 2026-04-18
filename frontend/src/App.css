@@ -153,20 +153,6 @@ textarea {
 	font-weight: 500;
 }
 
-.shell {
-	display: grid;
-	grid-template-columns: 1fr;
-	height: 100dvh;
-	width: 100vw;
-	overflow: hidden;
-}
-
-@media (min-width: 1024px) {
-	.shell {
-		grid-template-columns: 240px 1fr;
-	}
-}
-
 .sidebar {
 	display: none;
 	flex-direction: column;
@@ -198,38 +184,6 @@ textarea {
 	.sidebar {
 		display: flex;
 	}
-}
-
-/* Brand logotype — font-variation-settings kept in CSS */
-.brand-mark {
-	font-family: var(--font-display);
-	font-style: italic;
-	font-weight: 600;
-	font-size: 28px;
-	color: var(--amber);
-	line-height: 1;
-	letter-spacing: -0.02em;
-}
-
-.brand-sub {
-	font-family: var(--font-mono);
-	font-size: 10px;
-	letter-spacing: 0.2em;
-	text-transform: uppercase;
-	color: var(--ink-faint);
-	margin-left: auto;
-}
-
-.sidebar-section-title {
-	font-family: var(--font-mono);
-	font-size: 10px;
-	letter-spacing: 0.2em;
-	text-transform: uppercase;
-	color: var(--ink-faint);
-	padding: 0 10px 10px;
-	margin-top: 24px;
-	border-bottom: 1px solid var(--rule);
-	margin-bottom: 8px;
 }
 
 .nav-item {
@@ -342,52 +296,6 @@ textarea {
 	height: 2px;
 }
 
-.page-title {
-	font-family: var(--font-display);
-	font-style: italic;
-	font-size: clamp(36px, 6vw, 56px);
-	font-weight: 400;
-	line-height: 0.95;
-	letter-spacing: -0.02em;
-	margin: 0;
-	color: var(--ink);
-}
-
-.page-title em {
-	font-style: normal;
-	color: var(--amber);
-}
-
-.hero-number {
-	font-family: var(--font-display);
-	font-variation-settings:
-		"opsz" 144,
-		"SOFT" 100;
-	font-weight: 300;
-	font-size: clamp(160px, 22vw, 280px);
-	line-height: 0.82;
-	letter-spacing: -0.06em;
-	color: var(--ink);
-	display: flex;
-	align-items: flex-start;
-	gap: 10px;
-}
-
-.hero-number em {
-	font-style: italic;
-	color: var(--amber);
-	font-weight: 300;
-}
-
-.hero-number .sub-unit {
-	font-family: var(--font-mono);
-	font-size: 14px;
-	color: var(--ink-faint);
-	letter-spacing: 0.12em;
-	text-transform: uppercase;
-	margin-top: 18px;
-}
-
 .exam-card {
 	display: flex;
 	flex-direction: column;
@@ -433,63 +341,6 @@ textarea {
 	opacity: 0.4;
 }
 
-.exam-title {
-	font-family: var(--font-display);
-	font-style: italic;
-	font-size: 32px;
-	font-weight: 500;
-	line-height: 1;
-	color: var(--ink);
-}
-
-.days {
-	font-family: var(--font-display);
-	font-weight: 300;
-	font-size: 72px;
-	line-height: 0.9;
-	letter-spacing: -0.04em;
-	color: var(--amber);
-}
-
-.days-label {
-	font-family: var(--font-mono);
-	font-size: 12px;
-	color: var(--ink-muted);
-	letter-spacing: 0.16em;
-	text-transform: uppercase;
-}
-
-.streak-num {
-	font-family: var(--font-display);
-	font-weight: 400;
-	font-size: 36px;
-	line-height: 1;
-	color: var(--ink);
-}
-
-.streak-num em {
-	font-style: italic;
-	color: var(--amber);
-}
-
-.section-title {
-	font-family: var(--font-display);
-	font-weight: 400;
-	font-size: 22px;
-	letter-spacing: -0.01em;
-	color: var(--ink);
-	display: flex;
-	align-items: baseline;
-	gap: 12px;
-}
-
-.section-title .num {
-	font-family: var(--font-mono);
-	font-size: 12px;
-	color: var(--amber);
-	letter-spacing: 0.08em;
-}
-
 .cal-day {
 	padding: 14px 10px 16px;
 	border: 1px solid var(--rule);
@@ -530,9 +381,14 @@ textarea {
 	font-style: italic;
 }
 
-/* ============================================================
-   Review — 3D card flip (backface-visibility, preserve-3d)
-   ============================================================ */
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
 
 .review {
 	position: fixed;
@@ -542,15 +398,6 @@ textarea {
 	display: flex;
 	flex-direction: column;
 	animation: fadeIn 0.3s var(--ease-out);
-}
-
-@keyframes fadeIn {
-	from {
-		opacity: 0;
-	}
-	to {
-		opacity: 1;
-	}
 }
 
 .review-progress-bar {
@@ -611,29 +458,10 @@ textarea {
 	border-radius: 2px;
 }
 
-/* Review text — kept for clamp() */
-.review-question {
-	font-family: var(--font-display);
-	font-weight: 300;
-	font-size: clamp(28px, 4.5vw, 44px);
-	line-height: 1.2;
-	letter-spacing: -0.02em;
-	color: var(--ink);
-	max-width: 28ch;
-}
+/* ============================================================
+   Rate buttons
+   ============================================================ */
 
-.review-answer {
-	font-family: var(--font-display);
-	font-style: italic;
-	font-weight: 500;
-	font-size: clamp(32px, 5vw, 52px);
-	line-height: 1.15;
-	letter-spacing: -0.02em;
-	color: var(--amber);
-	max-width: 28ch;
-}
-
-/* Rate buttons — kept for data-rating hover colors */
 .rate-btn {
 	display: flex;
 	flex-direction: column;
@@ -725,100 +553,6 @@ textarea {
 	}
 }
 
-/* Review done screen — kept for data-tone color logic */
-.review-done-title {
-	font-family: var(--font-display);
-	font-weight: 400;
-	font-size: 36px;
-	letter-spacing: -0.02em;
-}
-
-.review-done-title em {
-	font-style: italic;
-	color: var(--amber);
-}
-
-.review-done-stat {
-	display: flex;
-	flex-direction: column;
-	gap: 4px;
-}
-
-.review-done-stat .n {
-	font-family: var(--font-display);
-	font-size: 34px;
-	line-height: 1;
-	color: var(--ink);
-}
-
-.review-done-stat[data-tone="good"] .n {
-	color: var(--rating-4);
-}
-.review-done-stat[data-tone="bad"] .n {
-	color: var(--rating-1);
-}
-
-.review-done-stat .l {
-	font-family: var(--font-mono);
-	font-size: 10px;
-	letter-spacing: 0.16em;
-	text-transform: uppercase;
-	color: var(--ink-faint);
-}
-
-/* ============================================================
-   Stats — retention number (clamp)
-   ============================================================ */
-
-.retention-number {
-	font-family: var(--font-display);
-	font-weight: 300;
-	font-size: clamp(140px, 18vw, 220px);
-	line-height: 0.85;
-	letter-spacing: -0.06em;
-	color: var(--ink);
-	display: flex;
-	align-items: flex-start;
-	gap: 8px;
-}
-
-.retention-number em {
-	font-style: italic;
-	color: var(--amber);
-	font-weight: 300;
-}
-
-.retention-number .pct {
-	font-family: var(--font-mono);
-	font-size: 24px;
-	color: var(--ink-muted);
-	margin-top: 16px;
-	letter-spacing: 0.05em;
-}
-
-/* Stats brk numbers — kept for modifier class colors */
-.stats-brk-num {
-	font-family: var(--font-display);
-	font-weight: 400;
-	font-size: 40px;
-	line-height: 1;
-	color: var(--ink);
-}
-
-.stats-brk-num.mature {
-	color: var(--rating-4);
-}
-.stats-brk-num.young {
-	color: var(--amber);
-}
-.stats-brk-num.new {
-	color: var(--sub-mat);
-}
-
-/* ============================================================
-   Browse — card tile (::before subject color bar)
-   ============================================================ */
-
 .card-tile {
 	display: flex;
 	flex-direction: column;
@@ -867,6 +601,10 @@ textarea {
 .card-stage[data-stage="due"] {
 	color: var(--rating-1);
 }
+
+/* ============================================================
+   Entrance animations
+   ============================================================ */
 
 @keyframes slide-up {
 	from {
