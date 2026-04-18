@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./App.css";
 import { CARDS, SESSIONS, TODAY } from "./data/mock";
 import { Shell } from "./components/Shell";
@@ -12,6 +12,16 @@ import { useRouter } from "./app/router";
 function App() {
   const { path } = useRouter();
   const [reviewSessionId, setReviewSessionId] = useState<string | null>(null);
+  const [theme, setTheme] = useState<"dark" | "light">(
+    () => (localStorage.getItem("theme") as "dark" | "light") ?? "dark"
+  );
+
+  useEffect(() => {
+    document.documentElement.dataset.mode = theme;
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
 
   const reviewCards = useMemo(() => {
     if (!reviewSessionId) return [];
@@ -27,7 +37,7 @@ function App() {
 
   return (
     <>
-      <Shell path={path}>
+      <Shell path={path} theme={theme} onToggleTheme={toggleTheme}>
         {path === "/today" && (
           <TodayPage
             onStart={() => setReviewSessionId("__all_today__")}

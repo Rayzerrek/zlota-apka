@@ -24,7 +24,7 @@ export function TodayPage({ onStart, onOpenSession }: Props) {
         eyebrow={`${dayLong(TODAY)} · ${longDate(TODAY)}`}
         title={
           <>
-            <h1 className="text-[var(--amber)]">Hello</h1>
+            <span className="text-[var(--amber)]">Hello</span>
           </>
         }
       />

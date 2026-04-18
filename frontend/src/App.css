@@ -40,6 +40,30 @@
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+[data-mode="light"] {
+  color-scheme: light;
+
+  --paper: #f9f8f5;
+  --paper-2: #f0ede7;
+  --paper-3: #e7e3db;
+  --ink: #1c1b18;
+  --ink-muted: #5a5951;
+  --ink-faint: #9a9890;
+  --rule: #ddd9d0;
+  --rule-strong: #c8c4bb;
+
+  --amber: #c98a0a;
+  --amber-dim: #9e6c08;
+  --amber-wash: rgba(201, 138, 10, 0.12);
+}
+
+[data-mode="light"] .dock {
+  background: rgba(240, 237, 231, 0.9);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
 * {
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
@@ -316,7 +340,6 @@ textarea {
   transform: translateX(-50%);
   width: 20px;
   height: 2px;
-  background: var(--amber);
 }
 
 .page-title {

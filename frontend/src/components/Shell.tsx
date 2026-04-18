@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
-import { CalendarBlankIcon, CardsIcon, ChartBarIcon, SunIcon } from "@phosphor-icons/react";
+import { CalendarBlankIcon, CardsIcon, ChartBarIcon, MoonIcon, SunIcon } from "@phosphor-icons/react";
 import {
+  Button,
   Sidebar,
   SidebarProvider,
   SidebarHeader,
@@ -26,9 +27,11 @@ const NAV: { path: PagePath; label: string; icon: typeof SunIcon }[] = [
 type Props = {
   path: PagePath;
   children: ReactNode;
+  theme: "dark" | "light";
+  onToggleTheme: () => void;
 };
 
-export function Shell({ path, children }: Props) {
+export function Shell({ path, children, theme, onToggleTheme }: Props) {
   return (
     <SidebarProvider collapsible="none" style={{ display: "contents" }}>
       <div className="shell">
@@ -69,12 +72,18 @@ export function Shell({ path, children }: Props) {
               <div className="w-[34px] h-[34px] rounded-sm bg-[var(--amber)] text-[var(--paper)] grid place-items-center display italic font-bold text-base shrink-0">
                 {STUDENT_INITIAL}
               </div>
-              <div>
+              <div className="flex-1 min-w-0">
                 <div className="text-[13px] font-medium">{STUDENT_NAME}</div>
                 <div className="mono text-[10px] text-[var(--ink-faint)] tracking-[0.08em]">
                   {STUDENT_CLASS}
                 </div>
               </div>
+              <Button
+                variant="ghost"
+                icon={theme === "dark" ? <SunIcon size={16} /> : <MoonIcon size={16} />}
+                aria-label="Zmień motyw"
+                onClick={onToggleTheme}
+              />
             </div>
           </SidebarFooter>
         </Sidebar>
@@ -90,7 +99,6 @@ export function Shell({ path, children }: Props) {
             <Link
               key={item.path}
               href={`#${item.path}`}
-              variant="current"
               className="dock-item"
               data-active={path === item.path}
               aria-label={item.label}
@@ -99,6 +107,10 @@ export function Shell({ path, children }: Props) {
               <span>{item.label}</span>
             </Link>
           ))}
+          <button className="dock-item" aria-label="Zmień motyw" onClick={onToggleTheme}>
+            {theme === "dark" ? <SunIcon size={22} /> : <MoonIcon size={22} />}
+            <span>{theme === "dark" ? "Jasny" : "Ciemny"}</span>
+          </button>
         </nav>
       </div>
     </SidebarProvider>
