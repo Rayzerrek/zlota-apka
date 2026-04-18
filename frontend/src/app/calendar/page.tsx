@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { parseISO, format, addDays, startOfWeek, eachDayOfInterval } from "date-fns";
-import { pl } from "date-fns/locale";
 import { CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react";
 import { Button } from "@cloudflare/kumo";
 import { EXAMS, SESSIONS, TODAY } from "../../data/mock";
@@ -15,10 +14,6 @@ function shiftWeek(iso: string, n: number): string {
 function weekDaysFrom(iso: string): string[] {
   const start = startOfWeek(parseISO(iso), { weekStartsOn: 1 });
   return eachDayOfInterval({ start, end: addDays(start, 6) }).map((d) => format(d, "yyyy-MM-dd"));
-}
-
-function monthYear(iso: string): string {
-  return format(parseISO(iso), "LLLL yyyy", { locale: pl });
 }
 
 export function CalendarPage() {
