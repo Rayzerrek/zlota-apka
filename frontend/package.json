@@ -12,12 +12,6 @@
 		"lint:fix": "oxlint --fix",
 		"test": "vitest run"
 	},
-	"lint-staged": {
-		"*.{js,ts,jsx,tsx}": [
-			"oxlint",
-			"oxfmt"
-		]
-	},
 	"dependencies": {
 		"@cloudflare/kumo": "^1.19.0",
 		"@phosphor-icons/react": "^2.1.10",
@@ -46,5 +40,14 @@
 		"typescript": "~6.0.2",
 		"typescript-eslint": "^8.58.0",
 		"vite": "^8.0.4"
+	},
+	"lint-staged": {
+		"*.{js,ts,jsx,tsx}": [
+			"oxlint",
+			"oxfmt"
+		],
+		"*.{json, jsonc, css}": [
+			"oxfmt"
+		]
 	}
 }
