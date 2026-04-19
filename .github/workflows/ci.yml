@@ -39,28 +39,28 @@ jobs:
    - name: Build
      run: pnpm build
 
- # backend:
- #   name: Backend
- #   runs-on: ubuntu-latest
- #   defaults:
- #     run:
- #       working-directory: ./backend
- #   steps:
- #     - uses: actions/checkout@v4
- #     - uses: pnpm/action-setup@v4
- #     - name: Setup Node.js
- #       uses: actions/setup-node@v4
- #       with:
- #         node-version: '24.x'
- #         cache: 'pnpm'
- #         cache-dependency-path: './backend/pnpm-lock.yaml'
- #     - name: Install dependencies
- #       run: pnpm install --frozen-lockfile
- #     - name: Format check
- #       run: pnpm fmt:check
- #     - name: Lint
- #       run: pnpm lint
- #     - name: Type check
- #       run: pnpm exec tsc -b
- #     - name: Test
- #       run: pnpm test
+ backend:
+   name: Backend
+   runs-on: ubuntu-latest
+   defaults:
+     run:
+       working-directory: ./backend
+   steps:
+     - uses: actions/checkout@v4
+     - uses: pnpm/action-setup@v4
+     - name: Setup Node.js
+       uses: actions/setup-node@v4
+       with:
+         node-version: '24.x'
+         cache: 'pnpm'
+         cache-dependency-path: './backend/pnpm-lock.yaml'
+     - name: Install dependencies
+       run: pnpm install --frozen-lockfile
+     - name: Format check
+       run: pnpm fmt:check
+     - name: Lint
+       run: pnpm lint
+     - name: Type check
+       run: pnpm exec tsc -b
+     - name: Test
+       run: pnpm test
