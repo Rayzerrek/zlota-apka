@@ -75,7 +75,7 @@ export function ProfilePage({ theme, onThemeChange }: Props) {
             Zapisz zmiany
           </Button>
           {saved && (
-            <span className="mono text-[11px] tracking-[0.14em] uppercase text-rating-4 flex items-center gap-1.5">
+            <span className="mono text-[14px] tracking-[0.14em] uppercase text-rating-4 flex items-center gap-1.5">
               <CheckIcon size={12} weight="bold" />
               Zapisano
             </span>

@@ -29,13 +29,13 @@ export function ReviewCard({ card, flipped, onFlip }: Props) {
       )}
     >
       <div className={cn(faceBaseCls, faceInsetRuleCls)}>
-        <div className="flex items-center gap-3 mono text-[11px] tracking-[0.16em] uppercase text-ink-muted">
+        <div className="flex items-center gap-3 mono text-[14px] tracking-[0.16em] uppercase text-ink-muted">
           <span
             className="w-2 h-2 rounded-full shrink-0"
             style={{ background: subj.color }}
           />
           {subj.name} · {card.topic}
-          <span className="mono text-[10px] tracking-[0.24em] text-ink-faint ml-auto">
+          <span className="mono text-[13px] tracking-[0.24em] text-ink-faint ml-auto">
             awers
           </span>
         </div>
@@ -44,7 +44,7 @@ export function ReviewCard({ card, flipped, onFlip }: Props) {
             {card.question}
           </div>
         </div>
-        <div className="mono text-[11px] tracking-[0.16em] uppercase text-ink-faint text-center">
+        <div className="mono text-[14px] tracking-[0.16em] uppercase text-ink-faint text-center">
           Kliknij lub spacja, żeby odwrócić
         </div>
       </div>
@@ -56,13 +56,13 @@ export function ReviewCard({ card, flipped, onFlip }: Props) {
           "[transform:rotateY(180deg)] !bg-[linear-gradient(180deg,rgba(242,184,48,0.05),transparent_50%),var(--color-paper-2)]",
         )}
       >
-        <div className="flex items-center gap-3 mono text-[11px] tracking-[0.16em] uppercase text-ink-muted">
+        <div className="flex items-center gap-3 mono text-[14px] tracking-[0.16em] uppercase text-ink-muted">
           <span
             className="w-2 h-2 rounded-full shrink-0"
             style={{ background: subj.color }}
           />
           {subj.name} · {card.topic}
-          <span className="mono text-[10px] tracking-[0.24em] text-ink-faint ml-auto">
+          <span className="mono text-[13px] tracking-[0.24em] text-ink-faint ml-auto">
             rewers
           </span>
         </div>
@@ -71,7 +71,7 @@ export function ReviewCard({ card, flipped, onFlip }: Props) {
             {card.answer}
           </div>
         </div>
-        <div className="mono text-[11px] tracking-[0.16em] uppercase text-ink-faint text-center">
+        <div className="mono text-[14px] tracking-[0.16em] uppercase text-ink-faint text-center">
           Oceń, jak dobrze znałeś odpowiedź
         </div>
       </div>

@@ -15,11 +15,11 @@ export function ReviewHeader({ current, total, progress, onExit }: Props) {
         variant="ghost"
         icon={XIcon}
         onClick={onExit}
-        className="text-ink-muted hover:text-amber mono text-[11px] tracking-[0.16em] uppercase"
+        className="text-ink-muted hover:text-amber mono text-[14px] tracking-[0.16em] uppercase"
       >
         Zamknij
       </Button>
-      <span className="mono text-[11px] tracking-[0.16em] uppercase text-ink-muted">
+      <span className="mono text-[14px] tracking-[0.16em] uppercase text-ink-muted">
         <span className="text-ink font-semibold">{current}</span> / {total}
       </span>
       <span className="w-20" />

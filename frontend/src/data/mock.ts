@@ -343,9 +343,9 @@ export const HISTORY: ReviewHistoryEntry[] = [
 ];
 
 export const STUDY_STATS = {
-  retentionPct: 87,
-  streakDays: 12,
-  weekMinutes: 184,
+  retentionPct: 67,
+  streakDays: 69,
+  weekMinutes: 2115,
   totalCards: CARDS.length,
   mature: CARDS.filter((c) => c.stage === "review" && c.intervalDays >= 14)
     .length,

@@ -50,16 +50,16 @@ export function ReviewRatings({ flipped, onRate }: Props) {
         >
           <span
             className={cn(
-              "display font-normal text-[22px] leading-none",
+              "display font-normal text-[25px] leading-none",
               RATING_NUM_COLOR[r],
             )}
           >
             {r}
           </span>
-          <span className="mono text-[9px] tracking-[0.16em] uppercase text-ink-muted max-[520px]:text-[8px]">
+          <span className="mono text-[12px] tracking-[0.16em] uppercase text-ink-muted max-[520px]:text-[11px]">
             {RATING_LABELS[r].label}
           </span>
-          <span className="mono text-[9px] text-ink-faint mt-0.5 max-[520px]:hidden">
+          <span className="mono text-[12px] text-ink-faint mt-0.5 max-[520px]:hidden">
             Klawisz {r}
           </span>
         </button>

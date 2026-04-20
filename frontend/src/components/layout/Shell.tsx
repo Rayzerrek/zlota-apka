@@ -64,7 +64,7 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
           />
           <SidebarHeader className="px-1 pb-0">
             <div className="flex items-baseline gap-2.5 mb-10 pl-1">
-              <span className="display italic font-semibold text-[28px] text-amber leading-none tracking-[-0.02em]">
+              <span className="display italic font-semibold text-[31px] text-amber leading-none tracking-[-0.02em]">
                 Nazwa
               </span>
             </div>
@@ -88,7 +88,7 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
                               />
                             }
                             className={cn(
-                              "relative flex items-center gap-3.5 p-2.5 bg-transparent text-[15px] font-medium text-left rounded-sm transition-colors duration-200",
+                              "relative flex items-center gap-3.5 p-2.5 bg-transparent text-[18px] font-medium text-left rounded-sm transition-colors duration-200",
                               isActive
                                 ? "text-ink before:content-[''] before:absolute before:left-[-20px] before:top-1/2 before:-translate-y-1/2 before:w-[3px] before:h-[22px] before:bg-amber"
                                 : "text-ink-muted hover:text-ink",
@@ -121,10 +121,10 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
                     {STUDENT_INITIAL}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-[13px] font-medium text-ink">
+                    <div className="text-[16px] font-medium text-ink">
                       {STUDENT_NAME}
                     </div>
-                    <div className="mono text-[10px] text-ink-faint tracking-[0.08em]">
+                    <div className="mono text-[13px] text-ink-faint tracking-[0.08em]">
                       {STUDENT_CLASS}
                     </div>
                   </div>
@@ -197,7 +197,7 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
               aria-label={item.label}
               className={({ isActive }) =>
                 cn(
-                  "flex-1 flex flex-col items-center justify-center gap-0.5 px-1 py-2 bg-transparent border-0 rounded-sm mono text-[10px] tracking-[0.1em] uppercase cursor-pointer transition-colors duration-200",
+                  "flex-1 flex flex-col items-center justify-center gap-0.5 px-1 py-2 bg-transparent border-0 rounded-sm mono text-[13px] tracking-[0.1em] uppercase cursor-pointer transition-colors duration-200",
                   isActive ? "text-amber" : "text-ink-faint hover:text-ink",
                 )
               }
@@ -215,7 +215,7 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
             aria-label="Profil"
             className={({ isActive }) =>
               cn(
-                "flex-1 flex flex-col items-center justify-center gap-0.5 px-1 py-2 bg-transparent border-0 rounded-sm mono text-[10px] tracking-[0.1em] uppercase cursor-pointer transition-colors duration-200",
+                "flex-1 flex flex-col items-center justify-center gap-0.5 px-1 py-2 bg-transparent border-0 rounded-sm mono text-[13px] tracking-[0.1em] uppercase cursor-pointer transition-colors duration-200",
                 isActive ? "text-amber" : "text-ink-faint hover:text-ink",
               )
             }

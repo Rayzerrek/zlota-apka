@@ -18,7 +18,7 @@ const TIMEZONES: { value: string; label: string }[] = [
 ];
 
 const inputCls =
-  "w-full px-3.5 py-3 bg-paper-2 border border-rule rounded-[2px] text-ink text-[15px] outline-none transition-colors duration-200 hover:border-rule-strong focus:border-amber focus:bg-paper-3";
+  "w-full px-3.5 py-3 bg-paper-2 border border-rule rounded-[2px] text-ink text-[18px] outline-none transition-colors duration-200 hover:border-rule-strong focus:border-amber focus:bg-paper-3";
 
 type Props = {
   email: string;
@@ -41,7 +41,7 @@ export function ProfileAccountSection({
     <section className="enter enter-d1 flex flex-col gap-6">
       <div className="pb-3 border-b border-rule flex items-baseline gap-3">
         <span className="mono text-xs text-amber tracking-[0.16em]">01 —</span>
-        <h2 className="display text-[20px] tracking-[-0.01em] text-ink">
+        <h2 className="display text-[23px] tracking-[-0.01em] text-ink">
           Konto
         </h2>
       </div>

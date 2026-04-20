@@ -17,7 +17,7 @@ export function BrowseSearchBar({ value, onChange, resultCount }: Props) {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         aria-label="Szukaj kart"
-        className="flex-1 bg-transparent ring-0 shadow-none rounded-none px-0 h-auto text-ink text-[15px] border-0"
+        className="flex-1 bg-transparent ring-0 shadow-none rounded-none px-0 h-auto text-ink text-[18px] border-0"
       />
       <span className="mono text-xs text-ink-faint">{resultCount}</span>
     </div>

@@ -55,12 +55,12 @@ export function SettingsPage() {
               <span className="mono text-xs text-amber tracking-[0.16em]">
                 01 —
               </span>
-              <h2 className="display text-[20px] tracking-[-0.01em] text-ink">
+              <h2 className="display text-[23px] tracking-[-0.01em] text-ink">
                 Nauka
               </h2>
             </div>
             {saved && (
-              <span className="mono text-[10px] tracking-[0.14em] uppercase text-rating-4 flex items-center gap-1.5">
+              <span className="mono text-[13px] tracking-[0.14em] uppercase text-rating-4 flex items-center gap-1.5">
                 <CheckIcon size={11} weight="bold" />
                 Zapisano
               </span>
@@ -83,8 +83,8 @@ export function SettingsPage() {
 
           <label className="flex items-center justify-between gap-6 py-4 border-b border-dashed border-rule">
             <div className="flex flex-col gap-1">
-              <span className="text-[15px] text-ink">Dzienny limit kart</span>
-              <span className="text-[12px] text-ink-faint">
+              <span className="text-[18px] text-ink">Dzienny limit kart</span>
+              <span className="text-[15px] text-ink-faint">
                 Maksymalna liczba nowych kart dziennie.
               </span>
             </div>
@@ -100,7 +100,7 @@ export function SettingsPage() {
                 }
                 className="range-amber"
               />
-              <span className="mono text-[20px] text-amber tabular-nums w-[48px] text-right">
+              <span className="mono text-[23px] text-amber tabular-nums w-[48px] text-right">
                 {dailyTarget}
               </span>
             </div>
@@ -112,16 +112,16 @@ export function SettingsPage() {
             <span className="mono text-xs text-amber tracking-[0.16em]">
               02 —
             </span>
-            <h2 className="display text-[20px] tracking-[-0.01em] text-ink">
+            <h2 className="display text-[23px] tracking-[-0.01em] text-ink">
               O aplikacji
             </h2>
           </div>
-          <dl className="grid grid-cols-[140px_1fr] gap-y-3 text-[14px]">
-            <dt className="mono text-[11px] text-ink-faint tracking-[0.14em] uppercase self-center">
+          <dl className="grid grid-cols-[140px_1fr] gap-y-3 text-[17px]">
+            <dt className="mono text-[14px] text-ink-faint tracking-[0.14em] uppercase self-center">
               Wersja
             </dt>
             <dd className="mono text-ink-muted">0.0.0 — dev</dd>
-            <dt className="mono text-[11px] text-ink-faint tracking-[0.14em] uppercase self-center">
+            <dt className="mono text-[14px] text-ink-faint tracking-[0.14em] uppercase self-center">
               Build
             </dt>
             <dd className="mono text-ink-muted">local</dd>
@@ -146,8 +146,8 @@ function ToggleRow({
   return (
     <label className="flex items-center justify-between gap-6 py-4 border-b border-dashed border-rule cursor-pointer">
       <div className="flex flex-col gap-1">
-        <span className="text-[15px] text-ink">{label}</span>
-        {hint && <span className="text-[12px] text-ink-faint">{hint}</span>}
+        <span className="text-[18px] text-ink">{label}</span>
+        {hint && <span className="text-[15px] text-ink-faint">{hint}</span>}
       </div>
       <button
         type="button"

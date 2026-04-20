@@ -13,7 +13,7 @@ export function ProfileAppearanceSection({ theme, onThemeChange }: Props) {
     <section className="enter enter-d2 flex flex-col gap-6">
       <div className="pb-3 border-b border-rule flex items-baseline gap-3">
         <span className="mono text-xs text-amber tracking-[0.16em]">02 —</span>
-        <h2 className="display text-[20px] tracking-[-0.01em] text-ink">
+        <h2 className="display text-[23px] tracking-[-0.01em] text-ink">
           Wygląd
         </h2>
       </div>

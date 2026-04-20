@@ -56,7 +56,7 @@ export function BrowsePage() {
       </div>
 
       {visible.length === 0 && (
-        <div className="py-16 text-center text-ink-faint display italic text-[22px]">
+        <div className="py-16 text-center text-ink-faint display italic text-[25px]">
           nic nie znaleziono.
         </div>
       )}

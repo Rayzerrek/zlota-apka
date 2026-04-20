@@ -20,7 +20,7 @@ export function PageHead({ eyebrow, title, date }: Props) {
         </h1>
       </div>
       {date && (
-        <div className="mono text-[10px] tracking-[0.2em] uppercase text-amber flex flex-col gap-0.5 text-right">
+        <div className="mono text-[13px] tracking-[0.2em] uppercase text-amber flex flex-col gap-0.5 text-right">
           <span>{date}</span>
         </div>
       )}

@@ -38,22 +38,22 @@ export function StatsPage() {
           </p>
           <div className="flex gap-6 pt-4 border-t border-dashed border-rule-strong mt-1">
             <div>
-              <div className="display text-[28px] leading-none">
+              <div className="display text-[31px] leading-none">
                 {STUDY_STATS.streakDays}
               </div>
-              <div className="eyebrow text-[10px]">seria</div>
+              <div className="eyebrow text-[13px]">seria</div>
             </div>
             <div>
-              <div className="mono text-[28px] leading-none">
+              <div className="mono text-[31px] leading-none">
                 {STUDY_STATS.weekMinutes}
               </div>
-              <div className="eyebrow text-[10px]">min / tydzień</div>
+              <div className="eyebrow text-[13px]">min / tydzień</div>
             </div>
             <div>
-              <div className="mono text-[28px] leading-none">
+              <div className="mono text-[31px] leading-none">
                 {CARDS.length}
               </div>
-              <div className="eyebrow text-[10px]">aktywnych kart</div>
+              <div className="eyebrow text-[13px]">aktywnych kart</div>
             </div>
           </div>
         </div>
@@ -61,47 +61,47 @@ export function StatsPage() {
 
       <section className="enter enter-d2">
         <div className="flex items-baseline justify-between gap-3 mb-5 pb-3 border-b border-rule">
-          <h2 className="display font-normal text-[22px] tracking-[-0.01em] text-ink flex items-baseline gap-3">
+          <h2 className="display font-normal text-[25px] tracking-[-0.01em] text-ink flex items-baseline gap-3">
             <span className="mono text-xs text-amber tracking-[0.08em]">
               01 —
             </span>{" "}
             Etap kart
           </h2>
-          <span className="mono text-[11px] tracking-[0.14em] uppercase text-ink-faint">
+          <span className="mono text-[14px] tracking-[0.14em] uppercase text-ink-faint">
             łącznie {CARDS.length}
           </span>
         </div>
         <div className="grid grid-cols-3 border border-rule bg-paper-2 mb-10">
           <div className="px-5 py-6 flex flex-col gap-1.5">
-            <div className="display mono text-[40px] leading-none text-rating-4">
+            <div className="display mono text-[43px] leading-none text-rating-4">
               {mature}
             </div>
-            <div className="mono text-[10px] tracking-[0.16em] uppercase text-ink-muted">
+            <div className="mono text-[13px] tracking-[0.16em] uppercase text-ink-muted">
               Dojrzałe
             </div>
-            <div className="mono text-[11px] text-ink-faint">
+            <div className="mono text-[14px] text-ink-faint">
               interwał ≥ 14 dni
             </div>
           </div>
           <div className="px-5 py-6 flex flex-col gap-1.5 border-l border-rule">
-            <div className="display mono text-[40px] leading-none text-amber">
+            <div className="display mono text-[43px] leading-none text-amber">
               {young}
             </div>
-            <div className="mono text-[10px] tracking-[0.16em] uppercase text-ink-muted">
+            <div className="mono text-[13px] tracking-[0.16em] uppercase text-ink-muted">
               Młode
             </div>
-            <div className="mono text-[11px] text-ink-faint">
+            <div className="mono text-[14px] text-ink-faint">
               w trakcie utrwalania
             </div>
           </div>
           <div className="px-5 py-6 flex flex-col gap-1.5 border-l border-rule">
-            <div className="display mono text-[40px] leading-none text-sub-mat">
+            <div className="display mono text-[43px] leading-none text-sub-mat">
               {dueOrNew}
             </div>
-            <div className="mono text-[10px] tracking-[0.16em] uppercase text-ink-muted">
+            <div className="mono text-[13px] tracking-[0.16em] uppercase text-ink-muted">
               Nowe / dzisiejsze
             </div>
-            <div className="mono text-[11px] text-ink-faint">
+            <div className="mono text-[14px] text-ink-faint">
               czekają na pierwszą powtórkę
             </div>
           </div>
@@ -110,13 +110,13 @@ export function StatsPage() {
 
       <section className="enter enter-d3 mt-16">
         <div className="flex items-baseline justify-between gap-3 mb-5 pb-3 border-b border-rule">
-          <h2 className="display font-normal text-[22px] tracking-[-0.01em] text-ink flex items-baseline gap-3">
+          <h2 className="display font-normal text-[25px] tracking-[-0.01em] text-ink flex items-baseline gap-3">
             <span className="mono text-xs text-amber tracking-[0.08em]">
               02 —
             </span>{" "}
             Retencja wg przedmiotu
           </h2>
-          <span className="mono text-[11px] tracking-[0.14em] uppercase text-ink-faint">
+          <span className="mono text-[14px] tracking-[0.14em] uppercase text-ink-faint">
             ostatnie 30 dni
           </span>
         </div>
@@ -142,7 +142,7 @@ export function StatsPage() {
                   }}
                 />
               </span>
-              <span className="mono text-[13px] text-ink text-right">
+              <span className="mono text-[16px] text-ink text-right">
                 {row.pct}%
               </span>
             </div>
@@ -152,13 +152,13 @@ export function StatsPage() {
 
       <section className="enter enter-d4 mt-16">
         <div className="flex items-baseline justify-between gap-3 mb-5 pb-3 border-b border-rule">
-          <h2 className="display font-normal text-[22px] tracking-[-0.01em] text-ink flex items-baseline gap-3">
+          <h2 className="display font-normal text-[25px] tracking-[-0.01em] text-ink flex items-baseline gap-3">
             <span className="mono text-xs text-amber tracking-[0.08em]">
               03 —
             </span>{" "}
             Aktywność — 180 dni
           </h2>
-          <span className="mono text-[11px] tracking-[0.14em] uppercase text-ink-faint">
+          <span className="mono text-[14px] tracking-[0.14em] uppercase text-ink-faint">
             1 kwadrat = 1 dzień
           </span>
         </div>
@@ -183,7 +183,7 @@ export function StatsPage() {
             />
           ))}
         </div>
-        <div className="flex items-center gap-2.5 mt-4 mono text-[10px] text-ink-faint tracking-[0.14em] uppercase">
+        <div className="flex items-center gap-2.5 mt-4 mono text-[13px] text-ink-faint tracking-[0.14em] uppercase">
           <span>mniej</span>
           <div className="flex gap-[3px]">
             {[

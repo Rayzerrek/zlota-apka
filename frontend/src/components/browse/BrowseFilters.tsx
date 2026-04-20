@@ -20,7 +20,7 @@ export function BrowseFilters({ filter, onFilterChange, counts }: Props) {
         variant="ghost"
         onClick={() => onFilterChange("all")}
         className={cn(
-          "h-auto rounded-full border px-3.5 py-2 mono text-[11px] tracking-[0.12em] uppercase transition-all shadow-none",
+          "h-auto rounded-full border px-3.5 py-2 mono text-[14px] tracking-[0.12em] uppercase transition-all shadow-none",
           filter === "all"
             ? "border-ink bg-transparent !text-ink"
             : "border-rule bg-transparent hover:bg-transparent text-ink-muted hover:border-rule-strong hover:text-ink",
@@ -35,7 +35,7 @@ export function BrowseFilters({ filter, onFilterChange, counts }: Props) {
           variant="ghost"
           onClick={() => onFilterChange(k)}
           className={cn(
-            "h-auto rounded-full border px-3.5 py-2 mono text-[11px] tracking-[0.12em] uppercase transition-all shadow-none",
+            "h-auto rounded-full border px-3.5 py-2 mono text-[14px] tracking-[0.12em] uppercase transition-all shadow-none",
             filter === k
               ? "border-ink bg-transparent !text-ink"
               : "border-rule bg-transparent hover:bg-transparent text-ink-muted hover:border-rule-strong hover:text-ink",

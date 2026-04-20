@@ -13,13 +13,13 @@ export function UpcomingExams({ exams }: Props) {
   return (
     <section className="mt-16">
       <div className="flex items-baseline justify-between gap-3 mb-5 pb-3 border-b border-rule">
-        <h2 className="display font-normal text-[22px] tracking-[-0.01em] text-ink flex items-baseline gap-3">
+        <h2 className="display font-normal text-[25px] tracking-[-0.01em] text-ink flex items-baseline gap-3">
           <span className="mono text-xs text-amber tracking-[0.08em]">
             03 —
           </span>{" "}
           Sprawdziany na horyzoncie
         </h2>
-        <span className="mono text-[11px] tracking-[0.14em] uppercase text-ink-faint">
+        <span className="mono text-[14px] tracking-[0.14em] uppercase text-ink-faint">
           {exams.length} terminów
         </span>
       </div>
@@ -35,17 +35,17 @@ export function UpcomingExams({ exams }: Props) {
             >
               <div
                 className={cn(
-                  "display font-normal text-[44px] leading-none tracking-[-0.02em] text-right",
+                  "display font-normal text-[47px] leading-none tracking-[-0.02em] text-right",
                   near ? "italic text-amber" : "not-italic text-ink-muted",
                 )}
               >
                 {daysUntil}
               </div>
               <div>
-                <div className="display text-[18px] leading-[1.2] text-ink">
+                <div className="display text-[21px] leading-[1.2] text-ink">
                   {e.name}
                 </div>
-                <div className="mono text-[11px] text-ink-faint tracking-[0.12em] uppercase mt-1">
+                <div className="mono text-[14px] text-ink-faint tracking-[0.12em] uppercase mt-1">
                   {subjectName(e.subject)} · {longDate(e.dateISO)}
                 </div>
               </div>
