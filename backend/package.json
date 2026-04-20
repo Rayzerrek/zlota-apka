@@ -4,8 +4,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "$npm_execpath run build && vite preview",
-    "deploy": "$npm_execpath run build && wrangler deploy",
+    "preview": "pnpm run build && vite preview",
+    "deploy": "pnpm run build && wrangler deploy -c dist/zlota_apka/wrangler.json",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
@@ -22,7 +22,7 @@
     "oxlint": "^1.60.0",
     "vite": "^6.3.5",
     "vite-ssr-components": "^0.5.2",
-    "wrangler": "^4.17.0"
+    "wrangler": "^4.83.0"
   },
   "lint-staged": {
     "*.{js,ts,jsx,tsx}": [
