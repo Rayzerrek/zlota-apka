@@ -37,7 +37,7 @@ export function BrowsePage() {
         eyebrow="Okej"
         title={
           <>
-            <span>Cos</span>
+            <em>Cos</em>
           </>
         }
       />
