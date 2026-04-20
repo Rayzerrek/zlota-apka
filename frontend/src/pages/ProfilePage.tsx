@@ -1,13 +1,14 @@
 import { Button } from "@cloudflare/kumo";
 import { CheckIcon } from "@phosphor-icons/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-import { PageHead } from "../../components/layout/PageHead";
-import { ProfileAccountSection } from "../../components/profile/ProfileAccountSection";
-import { ProfileAppearanceSection } from "../../components/profile/ProfileAppearanceSection";
-import { ProfileDangerZone } from "../../components/profile/ProfileDangerZone";
-import { ProfileHeader } from "../../components/profile/ProfileHeader";
-import { STUDENT_CLASS, STUDENT_INITIAL, STUDENT_NAME } from "../../data/mock";
+import { PageHead } from "../components/layout/PageHead";
+import { ProfileAccountSection } from "../components/profile/ProfileAccountSection";
+import { ProfileAppearanceSection } from "../components/profile/ProfileAppearanceSection";
+import { ProfileDangerZone } from "../components/profile/ProfileDangerZone";
+import { ProfileHeader } from "../components/profile/ProfileHeader";
+import { STUDENT_CLASS, STUDENT_INITIAL, STUDENT_NAME } from "../data/mock";
+import { useSavedFeedback } from "../hooks/useSavedFeedback";
 
 type Props = {
   theme: "dark" | "light";
@@ -22,19 +23,13 @@ export function ProfilePage({ theme, onThemeChange }: Props) {
   const [timezone, setTimezone] = useState(
     () => localStorage.getItem("profile.timezone") ?? "Europe/Warsaw",
   );
-  const [saved, setSaved] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
-
-  useEffect(() => {
-    if (!saved) return;
-    const id = setTimeout(() => setSaved(false), 2200);
-    return () => clearTimeout(id);
-  }, [saved]);
+  const { saved, markSaved } = useSavedFeedback(2200);
 
   const handleSave = () => {
     localStorage.setItem("profile.language", language);
     localStorage.setItem("profile.timezone", timezone);
-    setSaved(true);
+    markSaved();
   };
 
   const handleDelete = () => {

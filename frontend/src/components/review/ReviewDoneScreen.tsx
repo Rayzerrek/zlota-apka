@@ -1,0 +1,90 @@
+import { Button } from "@cloudflare/kumo";
+import { ArrowRightIcon, XIcon } from "@phosphor-icons/react";
+
+import type { Rating } from "../../types";
+
+const reviewShellCls =
+  "fixed inset-0 bg-paper z-50 flex flex-col animate-[fadeIn_0.3s_var(--ease-out)]";
+
+type Props = {
+  ratings: Rating[];
+  total: number;
+  onExit: () => void;
+};
+
+export function ReviewDoneScreen({ ratings, total, onExit }: Props) {
+  const correct = ratings.filter((r) => r >= 3).length;
+  const wrong = ratings.length - correct;
+
+  return (
+    <div className={reviewShellCls}>
+      <div className="flex items-center justify-between px-6 py-5 border-b border-rule relative">
+        <Button
+          variant="ghost"
+          icon={XIcon}
+          onClick={onExit}
+          className="text-ink-muted hover:text-amber mono text-[11px] tracking-[0.16em] uppercase"
+        >
+          Zamknij
+        </Button>
+        <span className="mono text-[11px] tracking-[0.16em] uppercase text-ink-muted">
+          <span className="text-ink font-semibold">Ukończono</span>
+        </span>
+        <span className="w-20" />
+        <div
+          className="absolute bottom-0 left-0 h-0.5 bg-amber transition-[width] duration-[0.4s] [transition-timing-function:var(--ease-out)]"
+          style={{ width: "100%" }}
+        />
+      </div>
+      <div className="flex-1 grid place-items-center p-6 [perspective:1800px]">
+        <div className="text-center flex flex-col items-center gap-5 px-10 py-10 animate-[fadeIn_0.5s_var(--ease-out)]">
+          <div className="display italic text-[120px] text-amber leading-[0.9] font-light">
+            ✓
+          </div>
+          <div className="display font-normal text-[36px] tracking-[-0.02em] [&_em]:italic [&_em]:text-amber">
+            <em>Koniec</em> sesji.
+          </div>
+          <p className="text-ink-muted max-w-[40ch]">
+            Dobra robota. Kolejne powtórki zaplanowaliśmy na podstawie ocen —
+            karty „idealne" wrócą za dłużej, trudne wrócą jutro.
+          </p>
+          <div className="flex gap-9 mt-4 py-5 border-t border-b border-rule">
+            <div className="flex flex-col gap-1">
+              <div className="display text-[34px] leading-none text-rating-4">
+                {correct}
+              </div>
+              <div className="mono text-[10px] tracking-[0.16em] uppercase text-ink-faint">
+                Poprawnych
+              </div>
+            </div>
+            <div className="flex flex-col gap-1">
+              <div className="display text-[34px] leading-none text-rating-1">
+                {wrong}
+              </div>
+              <div className="mono text-[10px] tracking-[0.16em] uppercase text-ink-faint">
+                Do poprawy
+              </div>
+            </div>
+            <div className="flex flex-col gap-1">
+              <div className="display text-[34px] leading-none text-ink">
+                {total}
+              </div>
+              <div className="mono text-[10px] tracking-[0.16em] uppercase text-ink-faint">
+                Razem
+              </div>
+            </div>
+          </div>
+          <Button
+            size="lg"
+            variant="ghost"
+            onClick={onExit}
+            className="bg-amber text-paper rounded-sm hover:bg-[#ffcc4a] font-semibold px-7 py-4 tracking-[0.02em]"
+          >
+            Wróć do planu
+            <ArrowRightIcon size={18} weight="bold" className="ml-1" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}

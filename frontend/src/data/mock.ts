@@ -1,9 +1,4 @@
-import type {
-  Card,
-  Exam,
-  ReviewHistoryEntry,
-  StudySession,
-} from "../types/types";
+import type { Card, Exam, ReviewHistoryEntry, StudySession } from "../types";
 
 export const TODAY = "2026-04-18";
 export const STUDENT_NAME = "Kacper";
@@ -374,7 +369,7 @@ export const HEATMAP: number[] = [
 
 /** Subject retention for stats bars, 0-100 */
 export const SUBJECT_RETENTION: {
-  subject: import("../types/types").SubjectKey;
+  subject: import("../types/index").SubjectKey;
   pct: number;
 }[] = [
   { subject: "pol", pct: 94 },

@@ -1,11 +1,6 @@
-import { PageHead } from "../../components/PageHead";
-import {
-  CARDS,
-  HEATMAP,
-  STUDY_STATS,
-  SUBJECT_RETENTION,
-} from "../../data/mock";
-import { SUBJECTS } from "../../utils/subjects";
+import { PageHead } from "../components/layout/PageHead";
+import { CARDS, HEATMAP, STUDY_STATS, SUBJECT_RETENTION } from "../data/mock";
+import { SUBJECTS } from "../utils/subjects";
 
 const { mature, young } = STUDY_STATS;
 const dueOrNew = CARDS.filter(

@@ -1,30 +1,21 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Navigate, Route, Routes } from "react-router";
 
 import "./App.css";
-import { BrowsePage } from "./app/browse/page";
-import { CalendarPage } from "./app/calendar/page";
-import { ProfilePage } from "./app/profile/page";
-import { ReviewPage } from "./app/review/page";
-import { SettingsPage } from "./app/settings/page";
-import { StatsPage } from "./app/stats/page";
-import { TodayPage } from "./app/today/page";
-import { Shell } from "./components/Shell";
+import { Shell } from "./components/layout/Shell";
 import { CARDS, SESSIONS, TODAY } from "./data/mock";
+import { useTheme } from "./hooks/useTheme";
+import { BrowsePage } from "./pages/BrowsePage";
+import { CalendarPage } from "./pages/CalendarPage";
+import { ProfilePage } from "./pages/ProfilePage";
+import { ReviewPage } from "./pages/ReviewPage";
+import { SettingsPage } from "./pages/SettingsPage";
+import { StatsPage } from "./pages/StatsPage";
+import { TodayPage } from "./pages/TodayPage";
 
 function App() {
   const [reviewSessionId, setReviewSessionId] = useState<string | null>(null);
-  const [theme, setTheme] = useState<"dark" | "light">(() => {
-    const raw = localStorage.getItem("theme");
-    return raw === "light" ? "light" : "dark";
-  });
-
-  useEffect(() => {
-    document.documentElement.dataset.mode = theme;
-    localStorage.setItem("theme", theme);
-  }, [theme]);
-
-  const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
+  const { theme, setTheme, toggleTheme } = useTheme();
 
   const reviewCards = useMemo(() => {
     if (!reviewSessionId) return [];

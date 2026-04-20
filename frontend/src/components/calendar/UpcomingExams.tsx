@@ -1,0 +1,62 @@
+import { TODAY } from "../../data/mock";
+import { cn } from "../../utils/cn";
+import { daysBetween, longDate } from "../../utils/date";
+import { subjectName } from "../../utils/subjects";
+
+import type { Exam } from "../../types";
+
+type Props = {
+  exams: Exam[];
+};
+
+export function UpcomingExams({ exams }: Props) {
+  return (
+    <section className="mt-16">
+      <div className="flex items-baseline justify-between gap-3 mb-5 pb-3 border-b border-rule">
+        <h2 className="display font-normal text-[22px] tracking-[-0.01em] text-ink flex items-baseline gap-3">
+          <span className="mono text-xs text-amber tracking-[0.08em]">
+            03 —
+          </span>{" "}
+          Sprawdziany na horyzoncie
+        </h2>
+        <span className="mono text-[11px] tracking-[0.14em] uppercase text-ink-faint">
+          {exams.length} terminów
+        </span>
+      </div>
+      <div className="flex flex-col">
+        {exams.map((e, idx) => {
+          const daysUntil = daysBetween(TODAY, e.dateISO);
+          const near = daysUntil <= 7;
+          return (
+            <div
+              key={e.id}
+              className="enter grid grid-cols-[80px_1fr_auto] gap-5 items-center py-5 border-b border-rule"
+              style={{ animationDelay: `${0.2 + idx * 0.05}s` }}
+            >
+              <div
+                className={cn(
+                  "display font-normal text-[44px] leading-none tracking-[-0.02em] text-right",
+                  near ? "italic text-amber" : "not-italic text-ink-muted",
+                )}
+              >
+                {daysUntil}
+              </div>
+              <div>
+                <div className="display text-[18px] leading-[1.2] text-ink">
+                  {e.name}
+                </div>
+                <div className="mono text-[11px] text-ink-faint tracking-[0.12em] uppercase mt-1">
+                  {subjectName(e.subject)} · {longDate(e.dateISO)}
+                </div>
+              </div>
+              <div className="mono text-xs text-ink-muted text-right">
+                <div>waga</div>
+                <div className="text-ink text-lg mt-0.5">{e.weight}</div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}

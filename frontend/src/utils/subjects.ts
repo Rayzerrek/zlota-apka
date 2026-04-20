@@ -1,4 +1,4 @@
-import type { Subject, SubjectKey } from "../types/types";
+import type { Subject, SubjectKey } from "../types";
 
 export const SUBJECTS: Record<SubjectKey, Subject> = {
   mat: { key: "mat", name: "Matematyka", color: "var(--color-sub-mat)" },

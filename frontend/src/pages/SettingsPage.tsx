@@ -1,8 +1,9 @@
 import { CheckIcon } from "@phosphor-icons/react";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
-import { PageHead } from "../../components/PageHead";
-import { cn } from "../../utils/utils";
+import { PageHead } from "../components/layout/PageHead";
+import { useSavedFeedback } from "../hooks/useSavedFeedback";
+import { cn } from "../utils/cn";
 
 export function SettingsPage() {
   const [notifications, setNotifications] = useState(
@@ -16,14 +17,7 @@ export function SettingsPage() {
   const [sound, setSound] = useState(
     () => localStorage.getItem("settings.sound") === "true",
   );
-  const [saved, setSaved] = useState(false);
-  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  function markSaved() {
-    setSaved(true);
-    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-    saveTimerRef.current = setTimeout(() => setSaved(false), 1600);
-  }
+  const { saved, markSaved } = useSavedFeedback(1600);
 
   function handleNotificationsChange(v: boolean) {
     setNotifications(v);

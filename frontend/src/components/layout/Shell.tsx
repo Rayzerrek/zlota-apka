@@ -25,8 +25,8 @@ import {
 } from "@phosphor-icons/react";
 import { NavLink, useNavigate } from "react-router";
 
-import { STUDENT_CLASS, STUDENT_INITIAL, STUDENT_NAME } from "../data/mock";
-import { cn } from "../utils/utils";
+import { STUDENT_CLASS, STUDENT_INITIAL, STUDENT_NAME } from "../../data/mock";
+import { cn } from "../../utils/cn";
 
 import type { ReactNode } from "react";
 
