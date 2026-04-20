@@ -4,7 +4,9 @@ import { Navigate, Route, Routes } from "react-router";
 import "./App.css";
 import { BrowsePage } from "./app/browse/page";
 import { CalendarPage } from "./app/calendar/page";
+import { ProfilePage } from "./app/profile/page";
 import { ReviewPage } from "./app/review/page";
+import { SettingsPage } from "./app/settings/page";
 import { StatsPage } from "./app/stats/page";
 import { TodayPage } from "./app/today/page";
 import { Shell } from "./components/Shell";
@@ -51,6 +53,11 @@ function App() {
           <Route path="/calendar" element={<CalendarPage />} />
           <Route path="/browse" element={<BrowsePage />} />
           <Route path="/stats" element={<StatsPage />} />
+          <Route
+            path="/profile"
+            element={<ProfilePage theme={theme} onThemeChange={setTheme} />}
+          />
+          <Route path="/settings" element={<SettingsPage />} />
           <Route path="*" element={<Navigate to="/today" replace />} />
         </Routes>
       </Shell>

@@ -1,4 +1,4 @@
-import { Button, Input, cn } from "@cloudflare/kumo";
+import { Button, Input } from "@cloudflare/kumo";
 import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
 
@@ -6,6 +6,7 @@ import { PageHead } from "../../components/PageHead";
 import { CARDS, TODAY } from "../../data/mock";
 import { daysBetween } from "../../utils/date";
 import { SUBJECTS } from "../../utils/subjects";
+import { cn } from "../../utils/utils";
 
 import type { SubjectKey } from "../../types/types";
 
@@ -14,6 +15,13 @@ const STAGE_LABELS: Record<string, string> = {
   learning: "uczona",
   review: "utrwalona",
   due: "na dziś",
+};
+
+const STAGE_COLORS: Record<string, string> = {
+  new: "text-sub-mat",
+  learning: "text-amber",
+  review: "text-rating-4",
+  due: "text-rating-1",
 };
 
 type Filter = "all" | SubjectKey;
@@ -53,33 +61,28 @@ export function BrowsePage() {
         }
       />
 
-      <div className="flex items-center gap-3 px-4 py-3 border border-[var(--rule)] rounded-sm mb-5 bg-[var(--paper-2)]">
-        <MagnifyingGlassIcon
-          size={16}
-          className="text-[var(--ink-faint)] shrink-0"
-        />
+      <div className="flex items-center gap-3 px-4 py-3 border border-rule rounded-sm mb-5 bg-paper-2">
+        <MagnifyingGlassIcon size={16} className="text-ink-faint shrink-0" />
         <Input
           type="search"
           placeholder="Szukaj w pytaniach, tematach, odpowiedziach…"
           value={q}
           onChange={(e) => setQ(e.target.value)}
           aria-label="Szukaj kart"
-          className="flex-1 bg-transparent ring-0 shadow-none rounded-none px-0 h-auto text-[var(--ink)] text-[15px] border-0"
+          className="flex-1 bg-transparent ring-0 shadow-none rounded-none px-0 h-auto text-ink text-[15px] border-0"
         />
-        <span className="mono text-xs text-[var(--ink-faint)]">
-          {visible.length}
-        </span>
+        <span className="mono text-xs text-ink-faint">{visible.length}</span>
       </div>
 
-      <div className="flex gap-2 flex-wrap mb-7 pb-5 border-b border-[var(--rule)]">
+      <div className="flex gap-2 flex-wrap mb-7 pb-5 border-b border-rule">
         <Button
           variant="ghost"
           onClick={() => setFilter("all")}
           className={cn(
             "h-auto rounded-full border px-3.5 py-2 mono text-[11px] tracking-[0.12em] uppercase transition-all shadow-none",
             filter === "all"
-              ? "border-[var(--ink)] bg-transparent !text-[var(--ink)]"
-              : "border-[var(--rule)] bg-transparent hover:bg-transparent text-[var(--ink-muted)] hover:border-[var(--rule-strong)] hover:text-[var(--ink)]",
+              ? "border-ink bg-transparent !text-ink"
+              : "border-rule bg-transparent hover:bg-transparent text-ink-muted hover:border-rule-strong hover:text-ink",
           )}
         >
           Wszystkie
@@ -93,8 +96,8 @@ export function BrowsePage() {
             className={cn(
               "h-auto rounded-full border px-3.5 py-2 mono text-[11px] tracking-[0.12em] uppercase transition-all shadow-none",
               filter === k
-                ? "border-[var(--ink)] bg-transparent !text-[var(--ink)]"
-                : "border-[var(--rule)] bg-transparent hover:bg-transparent text-[var(--ink-muted)] hover:border-[var(--rule-strong)] hover:text-[var(--ink)]",
+                ? "border-ink bg-transparent !text-ink"
+                : "border-rule bg-transparent hover:bg-transparent text-ink-muted hover:border-rule-strong hover:text-ink",
             )}
           >
             <span
@@ -120,15 +123,15 @@ export function BrowsePage() {
           return (
             <div
               key={card.id}
-              className="card-tile enter"
-              style={
-                {
-                  animationDelay: `${0.04 * (idx % 20)}s`,
-                  ["--sub-color" as string]: subj.color,
-                } as React.CSSProperties
-              }
+              className="enter relative overflow-hidden flex flex-col gap-3.5 p-[20px_20px_18px] border border-rule bg-paper-2 rounded-[3px] cursor-pointer transition-all duration-[0.25s] hover:border-rule-strong hover:-translate-y-0.5"
+              style={{ animationDelay: `${0.04 * (idx % 20)}s` }}
             >
-              <div className="flex items-center justify-between mono text-[10px] tracking-[0.16em] uppercase text-[var(--ink-muted)]">
+              <span
+                aria-hidden
+                className="absolute left-0 top-0 bottom-0 w-[3px]"
+                style={{ background: subj.color }}
+              />
+              <div className="flex items-center justify-between mono text-[10px] tracking-[0.16em] uppercase text-ink-muted">
                 <span className="flex items-center gap-2">
                   <span
                     className="w-2 h-2 rounded-full shrink-0"
@@ -136,16 +139,21 @@ export function BrowsePage() {
                   />
                   {subj.name}
                 </span>
-                <span className="card-stage" data-stage={card.stage}>
+                <span
+                  className={cn(
+                    "px-1.5 py-[2px] border border-current rounded-[2px] leading-none",
+                    STAGE_COLORS[card.stage],
+                  )}
+                >
                   {STAGE_LABELS[card.stage]}
                 </span>
               </div>
-              <div className="display text-[18px] leading-[1.3] text-[var(--ink)] tracking-[-0.005em]">
+              <div className="display text-[18px] leading-[1.3] text-ink tracking-[-0.005em]">
                 {card.question}
               </div>
-              <div className="flex justify-between mono text-[10px] text-[var(--ink-faint)] pt-2.5 border-t border-dashed border-[var(--rule)]">
+              <div className="flex justify-between mono text-[10px] text-ink-faint pt-2.5 border-t border-dashed border-rule">
                 <span>{card.topic}</span>
-                <span className={dueDays <= 0 ? "text-[var(--amber)]" : ""}>
+                <span className={dueDays <= 0 ? "text-amber" : ""}>
                   {dueText}
                 </span>
               </div>
@@ -155,7 +163,7 @@ export function BrowsePage() {
       </div>
 
       {visible.length === 0 && (
-        <div className="py-16 text-center text-[var(--ink-faint)] display italic text-[22px]">
+        <div className="py-16 text-center text-ink-faint display italic text-[22px]">
           nic nie znaleziono.
         </div>
       )}

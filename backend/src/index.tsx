@@ -7,7 +7,7 @@ const app = new Hono();
 app.use(renderer);
 
 app.get("/", (c) => {
-  return c.render(<h1>UwU!</h1>);
+  return c.render(<h1>UwU! asdasd</h1>);
 });
 
 export default app;
