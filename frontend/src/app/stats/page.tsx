@@ -7,18 +7,12 @@ import {
 } from "../../data/mock";
 import { SUBJECTS } from "../../utils/subjects";
 
-export function StatsPage() {
-  const mature = CARDS.filter(
-    (c) => c.stage === "review" && c.intervalDays >= 14,
-  ).length;
-  const young = CARDS.filter(
-    (c) =>
-      c.stage === "learning" || (c.stage === "review" && c.intervalDays < 14),
-  ).length;
-  const news = CARDS.filter(
-    (c) => c.stage === "new" || c.stage === "due",
-  ).length;
+const { mature, young } = STUDY_STATS;
+const dueOrNew = CARDS.filter(
+  (c) => c.stage === "new" || c.stage === "due",
+).length;
 
+export function StatsPage() {
   return (
     <>
       <PageHead
@@ -107,7 +101,7 @@ export function StatsPage() {
           </div>
           <div className="px-5 py-6 flex flex-col gap-1.5 border-l border-rule">
             <div className="display mono text-[40px] leading-none text-sub-mat">
-              {news}
+              {dueOrNew}
             </div>
             <div className="mono text-[10px] tracking-[0.16em] uppercase text-ink-muted">
               Nowe / dzisiejsze

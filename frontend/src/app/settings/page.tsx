@@ -1,5 +1,5 @@
 import { CheckIcon } from "@phosphor-icons/react";
-import { useEffect, useState } from "react";
+import { useRef, useState } from "react";
 
 import { PageHead } from "../../components/PageHead";
 import { cn } from "../../utils/utils";
@@ -8,22 +8,40 @@ export function SettingsPage() {
   const [notifications, setNotifications] = useState(
     () => localStorage.getItem("settings.notifications") !== "false",
   );
-  const [dailyTarget, setDailyTarget] = useState(() =>
-    Number(localStorage.getItem("settings.dailyTarget") ?? 20),
-  );
+  const [dailyTarget, setDailyTarget] = useState(() => {
+    const raw = localStorage.getItem("settings.dailyTarget");
+    const n = raw !== null ? Number(raw) : NaN;
+    return Number.isFinite(n) ? n : 20;
+  });
   const [sound, setSound] = useState(
     () => localStorage.getItem("settings.sound") === "true",
   );
   const [saved, setSaved] = useState(false);
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
-    localStorage.setItem("settings.notifications", String(notifications));
-    localStorage.setItem("settings.dailyTarget", String(dailyTarget));
-    localStorage.setItem("settings.sound", String(sound));
+  function markSaved() {
     setSaved(true);
-    const id = setTimeout(() => setSaved(false), 1600);
-    return () => clearTimeout(id);
-  }, [notifications, dailyTarget, sound]);
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => setSaved(false), 1600);
+  }
+
+  function handleNotificationsChange(v: boolean) {
+    setNotifications(v);
+    localStorage.setItem("settings.notifications", String(v));
+    markSaved();
+  }
+
+  function handleSoundChange(v: boolean) {
+    setSound(v);
+    localStorage.setItem("settings.sound", String(v));
+    markSaved();
+  }
+
+  function handleDailyTargetChange(v: number) {
+    setDailyTarget(v);
+    localStorage.setItem("settings.dailyTarget", String(v));
+    markSaved();
+  }
 
   return (
     <>
@@ -59,14 +77,14 @@ export function SettingsPage() {
             label="Powiadomienia"
             hint="Codzienne przypomnienia o powtórkach."
             checked={notifications}
-            onChange={setNotifications}
+            onChange={handleNotificationsChange}
           />
 
           <ToggleRow
             label="Dźwięki"
             hint="Subtelne dźwięki przy ocenianiu kart."
             checked={sound}
-            onChange={setSound}
+            onChange={handleSoundChange}
           />
 
           <label className="flex items-center justify-between gap-6 py-4 border-b border-dashed border-rule">
@@ -83,7 +101,9 @@ export function SettingsPage() {
                 max={100}
                 step={5}
                 value={dailyTarget}
-                onChange={(e) => setDailyTarget(Number(e.target.value))}
+                onChange={(e) =>
+                  handleDailyTargetChange(Number(e.target.value))
+                }
                 className="range-amber"
               />
               <span className="mono text-[20px] text-amber tabular-nums w-[48px] text-right">

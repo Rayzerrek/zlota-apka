@@ -8,16 +8,16 @@ import { daysBetween } from "../../utils/date";
 import { SUBJECTS } from "../../utils/subjects";
 import { cn } from "../../utils/utils";
 
-import type { SubjectKey } from "../../types/types";
+import type { CardStage, SubjectKey } from "../../types/types";
 
-const STAGE_LABELS: Record<string, string> = {
+const STAGE_LABELS: Record<CardStage, string> = {
   new: "nowa",
   learning: "uczona",
   review: "utrwalona",
   due: "na dziś",
 };
 
-const STAGE_COLORS: Record<string, string> = {
+const STAGE_COLORS: Record<CardStage, string> = {
   new: "text-sub-mat",
   learning: "text-amber",
   review: "text-rating-4",

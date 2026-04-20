@@ -14,9 +14,10 @@ import { CARDS, SESSIONS, TODAY } from "./data/mock";
 
 function App() {
   const [reviewSessionId, setReviewSessionId] = useState<string | null>(null);
-  const [theme, setTheme] = useState<"dark" | "light">(
-    () => (localStorage.getItem("theme") as "dark" | "light") ?? "dark",
-  );
+  const [theme, setTheme] = useState<"dark" | "light">(() => {
+    const raw = localStorage.getItem("theme");
+    return raw === "light" ? "light" : "dark";
+  });
 
   useEffect(() => {
     document.documentElement.dataset.mode = theme;

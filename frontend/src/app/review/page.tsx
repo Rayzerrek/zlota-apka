@@ -20,6 +20,8 @@ const RATING_LABELS: Record<Rating, { label: string; sub: string }> = {
   5: { label: "Idealnie", sub: "natychmiast" },
 };
 
+const RATINGS: readonly Rating[] = [1, 2, 3, 4, 5];
+
 const RATING_HOVER: Record<Rating, string> = {
   1: "hover:border-rating-1 hover:bg-rating-1/6",
   2: "hover:border-rating-2 hover:bg-rating-2/6",
@@ -56,8 +58,7 @@ export function ReviewPage({ cards, onExit }: Props) {
 
   const handleRate = useCallback(
     (r: Rating) => {
-      const next = [...ratings, r];
-      setRatings(next);
+      setRatings((prev) => [...prev, r]);
       if (idx + 1 >= cards.length) {
         setDone(true);
       } else {
@@ -65,7 +66,7 @@ export function ReviewPage({ cards, onExit }: Props) {
         setTimeout(() => setIdx(idx + 1), 100);
       }
     },
-    [idx, cards.length, ratings],
+    [idx, cards.length],
   );
 
   if (!current) return null;
@@ -231,7 +232,7 @@ export function ReviewPage({ cards, onExit }: Props) {
       </div>
 
       <div className="grid grid-cols-5 gap-2.5 px-6 pb-6 pt-5 max-w-[720px] w-full mx-auto">
-        {([1, 2, 3, 4, 5] as Rating[]).map((r) => (
+        {RATINGS.map((r) => (
           <button
             key={r}
             type="button"

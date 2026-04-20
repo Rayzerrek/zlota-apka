@@ -7,7 +7,7 @@ import {
   startOfWeek,
   eachDayOfInterval,
 } from "date-fns";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { PageHead } from "../../components/PageHead";
 import { EXAMS, SESSIONS, TODAY } from "../../data/mock";
@@ -32,26 +32,25 @@ function weekDaysFrom(iso: string): string[] {
   );
 }
 
+const upcomingExams = [...EXAMS]
+  .filter((e) => e.dateISO >= TODAY)
+  .sort((a, b) => a.dateISO.localeCompare(b.dateISO));
+
 export function CalendarPage() {
   const [weekAnchor, setWeekAnchor] = useState(TODAY);
   const [selected, setSelected] = useState(TODAY);
 
-  const days = weekDaysFrom(weekAnchor);
-  const selectedSessions = SESSIONS.filter((s) => s.dateISO === selected);
-
-  const upcomingExams = [...EXAMS]
-    .filter((e) => e.dateISO >= TODAY)
-    .sort((a, b) => a.dateISO.localeCompare(b.dateISO));
+  const days = useMemo(() => weekDaysFrom(weekAnchor), [weekAnchor]);
+  const selectedSessions = useMemo(
+    () => SESSIONS.filter((s) => s.dateISO === selected),
+    [selected],
+  );
 
   return (
     <>
-      <PageHead
-        eyebrow="plan tygodniowy"
-        title={<em>Tydzien</em>}
-        date={`Tydzień z ${longDate(days[0])}`}
-      />
+      <PageHead eyebrow="plan tygodniowy" />
 
-      <div className="flex gap-2.5 mb-5 items-center">
+      <div className="flex gap-2.5 mb-5 items-center justify-center">
         <Button
           variant="outline"
           icon={CaretLeftIcon}
@@ -215,8 +214,8 @@ export function CalendarPage() {
         </div>
         <div className="flex flex-col">
           {upcomingExams.map((e, idx) => {
-            const days = daysBetween(TODAY, e.dateISO);
-            const near = days <= 7;
+            const daysUntil = daysBetween(TODAY, e.dateISO);
+            const near = daysUntil <= 7;
             return (
               <div
                 key={e.id}
@@ -229,7 +228,7 @@ export function CalendarPage() {
                     near ? "italic text-amber" : "not-italic text-ink-muted",
                   )}
                 >
-                  {days}
+                  {daysUntil}
                 </div>
                 <div>
                   <div className="display text-[18px] leading-[1.2] text-ink">

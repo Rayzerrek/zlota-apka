@@ -33,7 +33,7 @@ import type { ReactNode } from "react";
 type PagePath = "/today" | "/calendar" | "/browse" | "/stats";
 
 const NAV: { path: PagePath; label: string; icon: typeof SunIcon }[] = [
-  { path: "/today", label: "asd", icon: SunIcon },
+  { path: "/today", label: "Dziś", icon: SunIcon },
   { path: "/calendar", label: "Kalendarz", icon: CalendarBlankIcon },
   { path: "/browse", label: "Nauka", icon: CardsIcon },
   { path: "/stats", label: "Postęp", icon: ChartBarIcon },

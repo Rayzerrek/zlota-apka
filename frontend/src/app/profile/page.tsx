@@ -6,7 +6,7 @@ import {
   TrashIcon,
   WarningIcon,
 } from "@phosphor-icons/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { PageHead } from "../../components/PageHead";
 import { STUDENT_CLASS, STUDENT_INITIAL, STUDENT_NAME } from "../../data/mock";
@@ -58,17 +58,12 @@ export function ProfilePage({ theme, onThemeChange }: Props) {
   const [saved, setSaved] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
-  useEffect(() => {
-    if (!saved) return;
-    const id = setTimeout(() => setSaved(false), 2200);
-    return () => clearTimeout(id);
-  }, [saved]);
-
   const handleSave = () => {
     localStorage.setItem("profile.email", email);
     localStorage.setItem("profile.language", language);
     localStorage.setItem("profile.timezone", timezone);
     setSaved(true);
+    setTimeout(() => setSaved(false), 2200);
   };
 
   const handleDelete = () => {
