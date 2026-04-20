@@ -34,6 +34,7 @@ export function BrowsePage() {
   return (
     <>
       <PageHead
+        eyebrow="Okej"
         title={
           <>
             <span>Cos</span>

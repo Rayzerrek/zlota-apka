@@ -41,7 +41,7 @@ export function CalendarPage() {
 
   return (
     <>
-      <PageHead eyebrow="plan tygodniowy" />
+      <PageHead eyebrow="plan tygodniowy" title="Jakis plan" />
 
       <CalendarNav
         onPrev={() => setWeekAnchor(shiftWeek(weekAnchor, -7))}
