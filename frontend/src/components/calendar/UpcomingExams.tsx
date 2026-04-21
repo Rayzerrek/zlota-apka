@@ -1,7 +1,12 @@
+import { NotePencilIcon } from "@phosphor-icons/react";
+import { useState } from "react";
+
 import { TODAY } from "../../data/mock";
 import { cn } from "../../utils/cn";
 import { daysBetween, longDate } from "../../utils/date";
 import { subjectName } from "../../utils/subjects";
+import { ExamMenu } from "../exam/ExamMenu";
+import { NoteModal } from "../exam/NoteModal";
 
 import type { Exam } from "../../types";
 
@@ -10,6 +15,8 @@ type Props = {
 };
 
 export function UpcomingExams({ exams }: Props) {
+  const [noteExam, setNoteExam] = useState<Exam | null>(null);
+
   return (
     <section className="mt-16">
       <div className="flex items-baseline justify-between gap-3 mb-5 pb-3 border-b border-rule">
@@ -30,7 +37,7 @@ export function UpcomingExams({ exams }: Props) {
           return (
             <div
               key={e.id}
-              className="enter grid grid-cols-[80px_1fr_auto] gap-5 items-center py-5 border-b border-rule"
+              className="enter grid grid-cols-[80px_1fr_auto_auto] gap-5 items-center py-5 border-b border-rule"
               style={{ animationDelay: `${0.2 + idx * 0.05}s` }}
             >
               <div
@@ -53,10 +60,25 @@ export function UpcomingExams({ exams }: Props) {
                 <div>waga</div>
                 <div className="text-ink text-lg mt-0.5">{e.weight}</div>
               </div>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  title="Wygeneruj notatkę"
+                  onClick={() => setNoteExam(e)}
+                  className="w-7 h-7 flex items-center justify-center rounded-[3px] text-ink-faint hover:text-amber hover:bg-amber-wash transition-colors"
+                >
+                  <NotePencilIcon size={16} />
+                </button>
+                <ExamMenu onGenerateNote={() => setNoteExam(e)} />
+              </div>
             </div>
           );
         })}
       </div>
+
+      {noteExam && (
+        <NoteModal exam={noteExam} onClose={() => setNoteExam(null)} />
+      )}
     </section>
   );
 }

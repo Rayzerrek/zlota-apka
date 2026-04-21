@@ -1,6 +1,5 @@
 import { PageHead } from "../components/layout/PageHead";
-import { CARDS, HEATMAP, STUDY_STATS, SUBJECT_RETENTION } from "../data/mock";
-import { SUBJECTS } from "../utils/subjects";
+import { CARDS, HEATMAP, STUDY_STATS } from "../data/mock";
 
 const { mature, young } = STUDY_STATS;
 const dueOrNew = CARDS.filter(
@@ -113,48 +112,6 @@ export function StatsPage() {
           <h2 className="display font-normal text-[25px] tracking-[-0.01em] text-ink flex items-baseline gap-3">
             <span className="mono text-xs text-amber tracking-[0.08em]">
               02 —
-            </span>{" "}
-            Retencja wg przedmiotu
-          </h2>
-          <span className="mono text-[14px] tracking-[0.14em] uppercase text-ink-faint">
-            ostatnie 30 dni
-          </span>
-        </div>
-        <div className="flex flex-col">
-          {SUBJECT_RETENTION.map((row) => (
-            <div
-              key={row.subject}
-              className="grid grid-cols-[110px_1fr_60px] gap-4 items-center py-3.5 border-b border-rule"
-            >
-              <span className="display text-base flex items-center gap-2.5">
-                <span
-                  className="w-2 h-2 rounded-full shrink-0"
-                  style={{ background: SUBJECTS[row.subject].color }}
-                />
-                {SUBJECTS[row.subject].name}
-              </span>
-              <span className="relative h-[6px] bg-rule rounded-sm overflow-hidden">
-                <span
-                  className="absolute left-0 top-0 bottom-0 rounded-sm transition-[width] duration-700"
-                  style={{
-                    width: `${row.pct}%`,
-                    background: SUBJECTS[row.subject].color,
-                  }}
-                />
-              </span>
-              <span className="mono text-[16px] text-ink text-right">
-                {row.pct}%
-              </span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="enter enter-d4 mt-16">
-        <div className="flex items-baseline justify-between gap-3 mb-5 pb-3 border-b border-rule">
-          <h2 className="display font-normal text-[25px] tracking-[-0.01em] text-ink flex items-baseline gap-3">
-            <span className="mono text-xs text-amber tracking-[0.08em]">
-              03 —
             </span>{" "}
             Aktywność — 180 dni
           </h2>

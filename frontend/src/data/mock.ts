@@ -356,7 +356,6 @@ export const STUDY_STATS = {
   news: CARDS.filter((c) => c.stage === "new").length,
 };
 
-/** 6 × 30 heatmap: last 180 days of activity intensity (0-4). */
 export const HEATMAP: number[] = [
   0, 1, 2, 1, 3, 2, 0, 1, 0, 2, 3, 4, 2, 1, 0, 0, 2, 1, 3, 2, 4, 3, 2, 1, 0, 2,
   3, 1, 0, 0, 1, 2, 0, 1, 3, 2, 4, 2, 1, 2, 0, 0, 1, 3, 2, 1, 0, 2, 4, 3, 2, 1,
@@ -367,7 +366,6 @@ export const HEATMAP: number[] = [
   3, 4, 3, 2, 3, 4, 3, 4, 3, 2, 4, 3, 4, 3, 2, 3, 4, 3, 4, 3, 4, 2, 3, 4,
 ];
 
-/** Subject retention for stats bars, 0-100 */
 export const SUBJECT_RETENTION: {
   subject: import("../types/index").SubjectKey;
   pct: number;
