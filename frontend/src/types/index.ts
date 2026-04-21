@@ -29,7 +29,12 @@ export type Card = {
   lapses: number;
 };
 
-export type Rating = 1 | 2 | 3 | 4 | 5;
+export type Rating = 1 | 2 | 3 | 4;
+
+export const RATING_AGAIN = 1 satisfies Rating;
+export const RATING_HARD = 2 satisfies Rating;
+export const RATING_GOOD = 3 satisfies Rating;
+export const RATING_EASY = 4 satisfies Rating;
 
 export type StudySession = {
   id: string;

@@ -3,29 +3,26 @@ import { cn } from "../../utils/cn";
 import type { Rating } from "../../types";
 
 const RATING_LABELS: Record<Rating, { label: string; sub: string }> = {
-  1: { label: "Nie wiem", sub: "od nowa" },
-  2: { label: "Ledwo", sub: "trudne" },
-  3: { label: "OK", sub: "z wysiłkiem" },
-  4: { label: "Łatwo", sub: "pewnie" },
-  5: { label: "Idealnie", sub: "natychmiast" },
+  1: { label: "Znowu", sub: "od nowa" },
+  2: { label: "Trudne", sub: "krótki interwał" },
+  3: { label: "Dobre", sub: "standardowo" },
+  4: { label: "Łatwe", sub: "długi interwał" },
 };
 
-const RATINGS: readonly Rating[] = [1, 2, 3, 4, 5];
+const RATINGS: readonly Rating[] = [1, 2, 3, 4];
 
 const RATING_HOVER: Record<Rating, string> = {
   1: "hover:border-rating-1 hover:bg-rating-1/6",
   2: "hover:border-rating-2 hover:bg-rating-2/6",
-  3: "hover:border-rating-3 hover:bg-rating-3/6",
-  4: "hover:border-rating-4 hover:bg-rating-4/6",
-  5: "hover:border-rating-5 hover:bg-rating-5/6",
+  3: "hover:border-rating-4 hover:bg-rating-4/6",
+  4: "hover:border-rating-5 hover:bg-rating-5/6",
 };
 
 const RATING_NUM_COLOR: Record<Rating, string> = {
   1: "text-rating-1",
   2: "text-rating-2",
-  3: "text-rating-3",
-  4: "text-rating-4",
-  5: "text-rating-5",
+  3: "text-rating-4",
+  4: "text-rating-5",
 };
 
 type Props = {
@@ -35,7 +32,7 @@ type Props = {
 
 export function ReviewRatings({ flipped, onRate }: Props) {
   return (
-    <div className="grid grid-cols-5 gap-2.5 px-6 pb-6 pt-5 max-w-[720px] w-full mx-auto">
+    <div className="grid grid-cols-4 gap-2.5 px-6 pb-6 pt-5 max-w-[720px] w-full mx-auto">
       {RATINGS.map((r) => (
         <button
           key={r}
@@ -59,7 +56,10 @@ export function ReviewRatings({ flipped, onRate }: Props) {
           <span className="mono text-[12px] tracking-[0.16em] uppercase text-ink-muted max-[520px]:text-[11px]">
             {RATING_LABELS[r].label}
           </span>
-          <span className="mono text-[12px] text-ink-faint mt-0.5 max-[520px]:hidden">
+          <span className="mono text-[11px] text-ink-faint mt-0.5 max-[520px]:hidden">
+            {RATING_LABELS[r].sub}
+          </span>
+          <span className="mono text-[11px] text-ink-faint max-[520px]:hidden">
             Klawisz {r}
           </span>
         </button>

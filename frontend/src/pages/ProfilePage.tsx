@@ -6,6 +6,7 @@ import { PageHead } from "../components/layout/PageHead";
 import { ProfileAccountSection } from "../components/profile/ProfileAccountSection";
 import { ProfileAppearanceSection } from "../components/profile/ProfileAppearanceSection";
 import { ProfileDangerZone } from "../components/profile/ProfileDangerZone";
+import { ProfileDataExport } from "../components/profile/ProfileDataExport";
 import { ProfileHeader } from "../components/profile/ProfileHeader";
 import { STUDENT_CLASS, STUDENT_INITIAL, STUDENT_NAME } from "../data/mock";
 import { useSavedFeedback } from "../hooks/useSavedFeedback";
@@ -83,6 +84,8 @@ export function ProfilePage({ theme, onThemeChange }: Props) {
         </section>
 
         <ProfileAppearanceSection theme={theme} onThemeChange={onThemeChange} />
+
+        <ProfileDataExport />
 
         <ProfileDangerZone
           confirmDelete={confirmDelete}

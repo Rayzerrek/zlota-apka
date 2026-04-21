@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 import { PageHead } from "../components/layout/PageHead";
 import { ExamWidget } from "../components/today/ExamWidget";
 import { SessionList } from "../components/today/SessionList";
@@ -12,10 +14,17 @@ type Props = {
 };
 
 export function TodayPage({ onStart, onOpenSession }: Props) {
-  const todaySessions = SESSIONS.filter((s) => s.dateISO === TODAY);
-  const nextExam = [...EXAMS]
-    .filter((e) => e.dateISO >= TODAY)
-    .sort((a, b) => a.dateISO.localeCompare(b.dateISO))[0];
+  const todaySessions = useMemo(
+    () => SESSIONS.filter((s) => s.dateISO === TODAY),
+    [],
+  );
+  const nextExam = useMemo(
+    () =>
+      [...EXAMS]
+        .filter((e) => e.dateISO >= TODAY)
+        .sort((a, b) => a.dateISO.localeCompare(b.dateISO))[0],
+    [],
+  );
 
   return (
     <>

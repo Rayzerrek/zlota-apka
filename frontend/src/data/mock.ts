@@ -326,20 +326,20 @@ export const EXAMS: Exam[] = [
 ];
 
 export const HISTORY: ReviewHistoryEntry[] = [
-  { cardId: "c-001", dateISO: "2026-04-10", rating: 4 },
-  { cardId: "c-002", dateISO: "2026-03-28", rating: 5 },
-  { cardId: "c-003", dateISO: "2026-04-05", rating: 4 },
-  { cardId: "c-004", dateISO: "2026-04-13", rating: 3 },
-  { cardId: "c-005", dateISO: "2026-04-08", rating: 4 },
-  { cardId: "c-007", dateISO: "2026-04-06", rating: 3 },
-  { cardId: "c-008", dateISO: "2026-04-01", rating: 5 },
-  { cardId: "c-009", dateISO: "2026-03-19", rating: 5 },
-  { cardId: "c-010", dateISO: "2026-04-12", rating: 2 },
-  { cardId: "c-012", dateISO: "2026-03-30", rating: 5 },
-  { cardId: "c-014", dateISO: "2026-04-11", rating: 3 },
-  { cardId: "c-015", dateISO: "2026-04-03", rating: 4 },
-  { cardId: "c-018", dateISO: "2026-03-25", rating: 5 },
-  { cardId: "c-019", dateISO: "2026-04-09", rating: 3 },
+  { cardId: "c-001", dateISO: "2026-04-10", rating: 3 },
+  { cardId: "c-002", dateISO: "2026-03-28", rating: 4 },
+  { cardId: "c-003", dateISO: "2026-04-05", rating: 3 },
+  { cardId: "c-004", dateISO: "2026-04-13", rating: 2 },
+  { cardId: "c-005", dateISO: "2026-04-08", rating: 3 },
+  { cardId: "c-007", dateISO: "2026-04-06", rating: 2 },
+  { cardId: "c-008", dateISO: "2026-04-01", rating: 4 },
+  { cardId: "c-009", dateISO: "2026-03-19", rating: 4 },
+  { cardId: "c-010", dateISO: "2026-04-12", rating: 1 },
+  { cardId: "c-012", dateISO: "2026-03-30", rating: 4 },
+  { cardId: "c-014", dateISO: "2026-04-11", rating: 2 },
+  { cardId: "c-015", dateISO: "2026-04-03", rating: 3 },
+  { cardId: "c-018", dateISO: "2026-03-25", rating: 4 },
+  { cardId: "c-019", dateISO: "2026-04-09", rating: 2 },
 ];
 
 export const STUDY_STATS = {

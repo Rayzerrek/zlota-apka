@@ -1,4 +1,10 @@
-import { ArrowRightIcon } from "@phosphor-icons/react";
+import { Button, Empty } from "@cloudflare/kumo";
+import {
+  ArrowRightIcon,
+  CalendarPlusIcon,
+  CoffeeIcon,
+} from "@phosphor-icons/react";
+import { useNavigate } from "react-router";
 
 import { cn } from "../../utils/cn";
 import { SUBJECTS } from "../../utils/subjects";
@@ -11,6 +17,42 @@ type Props = {
 };
 
 export function SessionList({ sessions, onOpenSession }: Props) {
+  const navigate = useNavigate();
+
+  if (sessions.length === 0) {
+    return (
+      <section className="mt-16">
+        <div className="flex items-baseline justify-between gap-3 mb-5 pb-3 border-b border-rule">
+          <h2 className="display font-normal text-[25px] tracking-[-0.01em] text-ink flex items-baseline gap-3">
+            <span className="mono text-xs text-amber tracking-[0.08em]">
+              01 —
+            </span>{" "}
+            Plan dnia
+          </h2>
+        </div>
+        <Empty
+          icon={<CoffeeIcon size={44} weight="duotone" />}
+          title="Brak sesji na dziś"
+          description="Nic na dziś w planie. Dodaj materiał albo ustaw nadchodzący sprawdzian — scheduler rozpisze powtórki."
+          contents={
+            <div className="flex gap-2.5 flex-wrap justify-center">
+              <Button
+                variant="primary"
+                icon={CalendarPlusIcon}
+                onClick={() => navigate("/calendar")}
+              >
+                Zaplanuj sprawdzian
+              </Button>
+              <Button variant="secondary" onClick={() => navigate("/browse")}>
+                Przejrzyj karty
+              </Button>
+            </div>
+          }
+        />
+      </section>
+    );
+  }
+
   return (
     <section className="mt-16">
       <div className="flex items-baseline justify-between gap-3 mb-5 pb-3 border-b border-rule">
