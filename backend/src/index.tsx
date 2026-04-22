@@ -2,7 +2,7 @@ import { OpenAPIHono } from "@hono/zod-openapi";
 import { Scalar } from "@scalar/hono-api-reference";
 import { cors } from "hono/cors";
 
-import { createAuth, type Env } from "./lib/auth";
+import { type Env } from "./lib/auth";
 import { cardsRouter } from "./routes/cards";
 import { dashboardRouter } from "./routes/dashboard";
 import { examsRouter } from "./routes/exams";
@@ -24,26 +24,6 @@ app.use(
   }),
 );
 
-app.all("/api/auth/*", (c) => {
-  try {
-    const auth = createAuth(c.env);
-    return auth.handler(c.req.raw);
-  } catch (error) {
-    console.error("Better Auth handler failed", {
-      path: c.req.path,
-      method: c.req.method,
-      message: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined,
-      hasDatabaseUrl: Boolean(c.env.DATABASE_URL),
-      hasBetterAuthSecret: Boolean(c.env.BETTER_AUTH_SECRET),
-      hasBetterAuthUrl: Boolean(c.env.BETTER_AUTH_URL),
-      hasBetterAuthApiKey: Boolean(c.env.BETTER_AUTH_API_KEY),
-      hasResendApiKey: Boolean(c.env.RESEND_API_KEY),
-    });
-    throw error;
-  }
-});
-
 app.route("/api/onboarding", onboardingRouter);
 app.route("/api/users", usersRouter);
 app.route("/api/subjects", subjectsRouter);
@@ -58,6 +38,17 @@ app.doc("/api/doc", {
 
 app.get("/", (c) => {
   return c.text("Działa");
+});
+
+app.get("/api/debug/env", (c) => {
+  return c.json({
+    hasDatabaseUrl: Boolean(c.env.DATABASE_URL),
+    databaseUrlLength: c.env.DATABASE_URL?.length ?? 0,
+    hasBetterAuthSecret: Boolean(c.env.BETTER_AUTH_SECRET),
+    hasBetterAuthUrl: Boolean(c.env.BETTER_AUTH_URL),
+    hasBetterAuthApiKey: Boolean(c.env.BETTER_AUTH_API_KEY),
+    hasResendApiKey: Boolean(c.env.RESEND_API_KEY),
+  });
 });
 
 app.get("/api/reference", Scalar({ url: "/api/doc" }));
