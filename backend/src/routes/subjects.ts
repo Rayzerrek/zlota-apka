@@ -1,23 +1,16 @@
 import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import { and, eq } from "drizzle-orm";
-import { z } from "zod";
 
 import { subjects } from "../db/schema";
 import { createDb } from "../lib/db";
 import { requireAuth } from "../middleware/auth";
+import {
+  idParamsSchema,
+  subjectCreateSchema,
+  subjectPatchSchema,
+} from "../types/schemas";
 
 import type { HonoEnv } from "../lib/factory";
-
-const createSchema = z.object({
-  key: z.string().min(1).max(64),
-  name: z.string().min(1).max(128),
-  color: z.string().regex(/^#[0-9a-f]{6}$/i),
-  difficulty: z.number().int().min(1).max(5),
-});
-
-const patchSchema = createSchema.partial();
-
-const idParams = z.object({ id: z.string() });
 
 const listRoute = createRoute({
   method: "get",
@@ -32,7 +25,7 @@ const createSubjectRoute = createRoute({
   tags: ["Subjects"],
   request: {
     body: {
-      content: { "application/json": { schema: createSchema } },
+      content: { "application/json": { schema: subjectCreateSchema } },
       required: true,
     },
   },
@@ -44,9 +37,9 @@ const patchSubjectRoute = createRoute({
   path: "/{id}",
   tags: ["Subjects"],
   request: {
-    params: idParams,
+    params: idParamsSchema,
     body: {
-      content: { "application/json": { schema: patchSchema } },
+      content: { "application/json": { schema: subjectPatchSchema } },
       required: true,
     },
   },
@@ -60,7 +53,7 @@ const deleteSubjectRoute = createRoute({
   method: "delete",
   path: "/{id}",
   tags: ["Subjects"],
-  request: { params: idParams },
+  request: { params: idParamsSchema },
   responses: {
     200: { description: "Deleted" },
     404: { description: "Not found" },

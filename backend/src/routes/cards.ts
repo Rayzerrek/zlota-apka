@@ -1,27 +1,18 @@
 import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import { and, eq, lte } from "drizzle-orm";
-import { z } from "zod";
 
 import { cards, reviewHistory } from "../db/schema";
 import { createDb } from "../lib/db";
 import { scheduleReview, type Rating } from "../lib/fsrs";
 import { requireAuth } from "../middleware/auth";
+import {
+  cardCreateSchema,
+  cardReviewSchema,
+  idParamsSchema,
+  topicIdParamsSchema,
+} from "../types/schemas";
 
 import type { HonoEnv } from "../lib/factory";
-
-const createCardSchema = z.object({
-  front: z.string().min(1).max(2000),
-  back: z.string().min(1).max(2000),
-  source: z.enum(["manual", "ai"]).default("manual"),
-});
-
-const reviewSchema = z.object({
-  rating: z.number().int().min(1).max(4),
-  sessionId: z.string().optional(),
-});
-
-const topicIdParams = z.object({ topicId: z.string() });
-const cardIdParams = z.object({ id: z.string() });
 
 const dueCardsRoute = createRoute({
   method: "get",
@@ -34,7 +25,7 @@ const listCardsRoute = createRoute({
   method: "get",
   path: "/topics/{topicId}/cards",
   tags: ["Cards"],
-  request: { params: topicIdParams },
+  request: { params: topicIdParamsSchema },
   responses: { 200: { description: "Cards for topic" } },
 });
 
@@ -43,9 +34,9 @@ const createCardRoute = createRoute({
   path: "/topics/{topicId}/cards",
   tags: ["Cards"],
   request: {
-    params: topicIdParams,
+    params: topicIdParamsSchema,
     body: {
-      content: { "application/json": { schema: createCardSchema } },
+      content: { "application/json": { schema: cardCreateSchema } },
       required: true,
     },
   },
@@ -56,7 +47,7 @@ const deleteCardRoute = createRoute({
   method: "delete",
   path: "/cards/{id}",
   tags: ["Cards"],
-  request: { params: cardIdParams },
+  request: { params: idParamsSchema },
   responses: {
     200: { description: "Deleted" },
     404: { description: "Not found" },
@@ -68,9 +59,9 @@ const reviewCardRoute = createRoute({
   path: "/cards/{id}/review",
   tags: ["Cards"],
   request: {
-    params: cardIdParams,
+    params: idParamsSchema,
     body: {
-      content: { "application/json": { schema: reviewSchema } },
+      content: { "application/json": { schema: cardReviewSchema } },
       required: true,
     },
   },

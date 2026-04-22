@@ -1,6 +1,5 @@
 import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import { and, eq } from "drizzle-orm";
-import { z } from "zod";
 
 import {
   exams,
@@ -12,31 +11,13 @@ import {
 import { createDb } from "../lib/db";
 import { generatePlan } from "../lib/scheduler";
 import { requireAuth } from "../middleware/auth";
+import {
+  examCreateSchema,
+  examPatchSchema,
+  idParamsSchema,
+} from "../types/schemas";
 
 import type { HonoEnv } from "../lib/factory";
-
-const createSchema = z.object({
-  subjectId: z.string().min(1),
-  name: z.string().min(1).max(256),
-  examDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  difficulty: z.number().int().min(1).max(5).default(3),
-  materialSize: z.enum(["small", "medium", "large"]).default("medium"),
-  notes: z.string().max(1000).optional(),
-  topicNames: z.array(z.string().min(1).max(256)).default([]),
-});
-
-const patchSchema = z.object({
-  name: z.string().min(1).max(256).optional(),
-  examDate: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/)
-    .optional(),
-  difficulty: z.number().int().min(1).max(5).optional(),
-  materialSize: z.enum(["small", "medium", "large"]).optional(),
-  notes: z.string().max(1000).optional(),
-});
-
-const idParams = z.object({ id: z.string() });
 
 const listExamsRoute = createRoute({
   method: "get",
@@ -51,7 +32,7 @@ const createExamRoute = createRoute({
   tags: ["Exams"],
   request: {
     body: {
-      content: { "application/json": { schema: createSchema } },
+      content: { "application/json": { schema: examCreateSchema } },
       required: true,
     },
   },
@@ -62,7 +43,7 @@ const getExamRoute = createRoute({
   method: "get",
   path: "/{id}",
   tags: ["Exams"],
-  request: { params: idParams },
+  request: { params: idParamsSchema },
   responses: {
     200: { description: "Exam detail" },
     404: { description: "Not found" },
@@ -74,9 +55,9 @@ const patchExamRoute = createRoute({
   path: "/{id}",
   tags: ["Exams"],
   request: {
-    params: idParams,
+    params: idParamsSchema,
     body: {
-      content: { "application/json": { schema: patchSchema } },
+      content: { "application/json": { schema: examPatchSchema } },
       required: true,
     },
   },
@@ -90,7 +71,7 @@ const deleteExamRoute = createRoute({
   method: "delete",
   path: "/{id}",
   tags: ["Exams"],
-  request: { params: idParams },
+  request: { params: idParamsSchema },
   responses: {
     200: { description: "Deleted" },
     404: { description: "Not found" },

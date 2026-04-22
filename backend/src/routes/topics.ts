@@ -1,32 +1,23 @@
 import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import { and, eq } from "drizzle-orm";
-import { z } from "zod";
 
 import { topics } from "../db/schema";
 import { createDb } from "../lib/db";
 import { requireAuth } from "../middleware/auth";
+import {
+  examIdParamsSchema,
+  idParamsSchema,
+  topicCreateSchema,
+  topicPatchSchema,
+} from "../types/schemas";
 
 import type { HonoEnv } from "../lib/factory";
-
-const createSchema = z.object({
-  name: z.string().min(1).max(256),
-  subjectId: z.string().min(1),
-  position: z.number().int().min(0).default(0),
-});
-
-const patchSchema = z.object({
-  name: z.string().min(1).max(256).optional(),
-  position: z.number().int().min(0).optional(),
-});
-
-const examIdParams = z.object({ examId: z.string() });
-const idParams = z.object({ id: z.string() });
 
 const listTopicsRoute = createRoute({
   method: "get",
   path: "/exams/{examId}/topics",
   tags: ["Topics"],
-  request: { params: examIdParams },
+  request: { params: examIdParamsSchema },
   responses: { 200: { description: "Topics for exam" } },
 });
 
@@ -35,9 +26,9 @@ const createTopicRoute = createRoute({
   path: "/exams/{examId}/topics",
   tags: ["Topics"],
   request: {
-    params: examIdParams,
+    params: examIdParamsSchema,
     body: {
-      content: { "application/json": { schema: createSchema } },
+      content: { "application/json": { schema: topicCreateSchema } },
       required: true,
     },
   },
@@ -49,9 +40,9 @@ const patchTopicRoute = createRoute({
   path: "/topics/{id}",
   tags: ["Topics"],
   request: {
-    params: idParams,
+    params: idParamsSchema,
     body: {
-      content: { "application/json": { schema: patchSchema } },
+      content: { "application/json": { schema: topicPatchSchema } },
       required: true,
     },
   },
@@ -65,7 +56,7 @@ const deleteTopicRoute = createRoute({
   method: "delete",
   path: "/topics/{id}",
   tags: ["Topics"],
-  request: { params: idParams },
+  request: { params: idParamsSchema },
   responses: {
     200: { description: "Deleted" },
     404: { description: "Not found" },

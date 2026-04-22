@@ -1,42 +1,22 @@
 import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import { and, eq, gte, lte } from "drizzle-orm";
-import { z } from "zod";
 
 import { studySessions } from "../db/schema";
 import { createDb } from "../lib/db";
 import { requireAuth } from "../middleware/auth";
+import {
+  idParamsSchema,
+  sessionCompleteSchema,
+  sessionDateQuerySchema,
+} from "../types/schemas";
 
 import type { HonoEnv } from "../lib/factory";
-
-const completeSchema = z.object({
-  actualMinutes: z.number().int().min(1),
-  evaluationScore: z.number().int().min(1).max(5).optional(),
-  completedScope: z.enum(["yes", "no", "partially"]).optional(),
-  difficultyNotes: z.string().max(500).optional(),
-});
-
-const dateQuerySchema = z.object({
-  date: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/)
-    .optional(),
-  from: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/)
-    .optional(),
-  to: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/)
-    .optional(),
-});
-
-const idParams = z.object({ id: z.string() });
 
 const listSessionsRoute = createRoute({
   method: "get",
   path: "/",
   tags: ["Sessions"],
-  request: { query: dateQuerySchema },
+  request: { query: sessionDateQuerySchema },
   responses: { 200: { description: "List of sessions" } },
 });
 
@@ -45,9 +25,9 @@ const completeSessionRoute = createRoute({
   path: "/{id}/complete",
   tags: ["Sessions"],
   request: {
-    params: idParams,
+    params: idParamsSchema,
     body: {
-      content: { "application/json": { schema: completeSchema } },
+      content: { "application/json": { schema: sessionCompleteSchema } },
       required: true,
     },
   },
@@ -61,7 +41,7 @@ const skipSessionRoute = createRoute({
   method: "patch",
   path: "/{id}/skip",
   tags: ["Sessions"],
-  request: { params: idParams },
+  request: { params: idParamsSchema },
   responses: {
     200: { description: "Skipped session" },
     404: { description: "Not found" },

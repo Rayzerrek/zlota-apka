@@ -10,6 +10,7 @@ import { onboardingRouter } from "./routes/onboarding";
 import { sessionsRouter } from "./routes/sessions";
 import { subjectsRouter } from "./routes/subjects";
 import { topicsRouter } from "./routes/topics";
+import { usersRouter } from "./routes/users";
 
 const app = new OpenAPIHono<{ Bindings: Env }>();
 
@@ -29,24 +30,30 @@ app.all("/api/auth/*", (c) => {
 });
 
 app.route("/api/onboarding", onboardingRouter);
+app.route("/api/users", usersRouter);
 app.route("/api/subjects", subjectsRouter);
 app.route("/api/exams", examsRouter);
-app.route("/api", topicsRouter);
 app.route("/api/dashboard", dashboardRouter);
 app.route("/api/sessions", sessionsRouter);
-app.route("/api", cardsRouter);
-
-app.onError((err, c) => {
-  console.error(err);
-  return c.json({ error: "Internal server error" }, 500);
-});
 
 app.doc("/api/doc", {
   openapi: "3.0.0",
   info: { title: "Powtórki API", version: "1.0.0" },
 });
 
+app.get("/", (c) => {
+  return c.text("Działa");
+});
+
 app.get("/api/reference", Scalar({ url: "/api/doc" }));
+
+app.route("/api", topicsRouter);
+app.route("/api", cardsRouter);
+
+app.onError((err, c) => {
+  console.error(err);
+  return c.json({ error: "Internal server error" }, 500);
+});
 
 export type AppType = typeof app;
 
