@@ -1,10 +1,75 @@
 import { PageHead } from "../components/layout/PageHead";
-import { CARDS, HEATMAP, STUDY_STATS } from "../data/mock";
+import { CARDS, STUDY_STATS, SUBJECT_RETENTION } from "../data/mock";
+import { SUBJECTS } from "../utils/subjects";
 
 const { mature, young } = STUDY_STATS;
 const dueOrNew = CARDS.filter(
   (c) => c.stage === "new" || c.stage === "due",
 ).length;
+const total = CARDS.length;
+
+function formatMinutes(mins: number): string {
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  if (h === 0) return `${m}m`;
+  if (m === 0) return `${h}h`;
+  return `${h}h ${m}m`;
+}
+
+function retentionLabel(pct: number): { text: string; color: string } {
+  if (pct >= 90)
+    return { text: "Świetny wynik!", color: "var(--color-rating-4)" };
+  if (pct >= 85)
+    return {
+      text: "Dobry poziom — blisko celu",
+      color: "var(--color-rating-3)",
+    };
+  if (pct >= 70)
+    return {
+      text: "Dobry start — ucz się regularnie",
+      color: "var(--color-amber)",
+    };
+  return {
+    text: "Poniżej normy — warto powtórzyć materiał",
+    color: "var(--color-rating-1)",
+  };
+}
+
+const retentionStatus = retentionLabel(STUDY_STATS.retentionPct);
+
+const CX = 80;
+const CY = 80;
+const R = 58;
+const SW = 14;
+const CIRC = 2 * Math.PI * R;
+
+type DonutSegmentProps = {
+  fraction: number;
+  rotateOffset: number;
+  color: string;
+};
+
+function DonutSegment({ fraction, rotateOffset, color }: DonutSegmentProps) {
+  const dash = fraction * CIRC;
+  return (
+    <circle
+      cx={CX}
+      cy={CY}
+      r={R}
+      fill="none"
+      stroke={color}
+      strokeWidth={SW}
+      strokeDasharray={`${dash} ${CIRC - dash}`}
+      strokeDashoffset={CIRC * 0.25}
+      strokeLinecap="butt"
+      transform={`rotate(${rotateOffset * 360} ${CX} ${CY})`}
+    />
+  );
+}
+
+const matureFrac = mature / total;
+const youngFrac = young / total;
+const pendingFrac = dueOrNew / total;
 
 export function StatsPage() {
   return (
@@ -13,151 +78,215 @@ export function StatsPage() {
         eyebrow="Statystyki"
         title={
           <>
-            <em>asd</em>
+            <em>postęp</em>
           </>
         }
         date="Aktualizacja dziś"
       />
 
+      {/* Hero — retencja */}
       <div className="enter enter-d1 grid grid-cols-1 gap-6 pb-10 border-b border-rule mb-10 min-[800px]:grid-cols-[1.2fr_1fr] min-[800px]:gap-14 min-[800px]:items-end">
         <div>
-          <div className="display font-light text-[clamp(140px,18vw,220px)] leading-[0.85] tracking-[-0.06em] text-ink flex items-start gap-2">
+          <div className="display font-light text-[clamp(140px,18vw,220px)] leading-[0.85] tracking-[-0.06em] flex items-start gap-2">
             <em className="italic text-amber font-light">
               {STUDY_STATS.retentionPct}
             </em>
+            <span className="text-[clamp(50px,6vw,80px)] text-ink-muted mt-4">
+              %
+            </span>
+          </div>
+          <div
+            className="mono text-[13px] tracking-[0.1em] uppercase mt-3"
+            style={{ color: retentionStatus.color }}
+          >
+            {retentionStatus.text}
           </div>
         </div>
         <div className="flex flex-col gap-3">
           <span className="eyebrow">Co to znaczy</span>
           <p className="text-ink-muted leading-relaxed">
             <strong className="text-ink">{STUDY_STATS.retentionPct}%</strong>{" "}
-            kart oceniasz na poziomie 3 lub wyżej przy pierwszym podejściu,
-            licząc z ostatnich 90 dni. Powyżej 85% — masz stabilną podstawę. Cel
-            standardowy dla FSRS: <span className="mono">0.90</span>.
+            kart pamiętasz przy pierwszym podejściu. Cel to{" "}
+            <strong className="text-ink">90%</strong> — im bliżej, tym mniej
+            czasu tracisz na powtarzanie tych samych kart.
           </p>
           <div className="flex gap-6 pt-4 border-t border-dashed border-rule-strong mt-1">
             <div>
               <div className="display text-[31px] leading-none">
                 {STUDY_STATS.streakDays}
               </div>
-              <div className="eyebrow text-[13px]">seria</div>
+              <div className="eyebrow text-[13px]">dni z rzędu</div>
             </div>
             <div>
               <div className="mono text-[31px] leading-none">
-                {STUDY_STATS.weekMinutes}
+                {formatMinutes(STUDY_STATS.weekMinutes)}
               </div>
-              <div className="eyebrow text-[13px]">min / tydzień</div>
+              <div className="eyebrow text-[13px]">/ tydzień</div>
             </div>
             <div>
               <div className="mono text-[31px] leading-none">
-                {CARDS.length}
+                {mature}
+                <span className="text-ink-faint text-[18px]">/{total}</span>
               </div>
-              <div className="eyebrow text-[13px]">aktywnych kart</div>
+              <div className="eyebrow text-[13px]">opanowanych</div>
             </div>
           </div>
         </div>
       </div>
 
-      <section className="enter enter-d2">
-        <div className="flex items-baseline justify-between gap-3 mb-5 pb-3 border-b border-rule">
+      {/* Sekcja 01 — Etap kart */}
+      <section className="enter enter-d2 mb-10 pb-10 border-b border-rule">
+        <div className="flex items-baseline justify-between gap-3 mb-8 pb-3 border-b border-rule">
           <h2 className="display font-normal text-[25px] tracking-[-0.01em] text-ink flex items-baseline gap-3">
             <span className="mono text-xs text-amber tracking-[0.08em]">
               01 —
             </span>{" "}
-            Etap kart
+            Jak dobrze znasz karty
           </h2>
           <span className="mono text-[14px] tracking-[0.14em] uppercase text-ink-faint">
-            łącznie {CARDS.length}
+            {total} kart
           </span>
         </div>
-        <div className="grid grid-cols-3 border border-rule bg-paper-2 mb-10">
-          <div className="px-5 py-6 flex flex-col gap-1.5">
-            <div className="display mono text-[43px] leading-none text-rating-4">
-              {mature}
-            </div>
-            <div className="mono text-[13px] tracking-[0.16em] uppercase text-ink-muted">
-              Dojrzałe
-            </div>
-            <div className="mono text-[14px] text-ink-faint">
-              interwał ≥ 14 dni
-            </div>
+
+        <div className="flex flex-col gap-10 min-[640px]:flex-row min-[640px]:items-center min-[640px]:gap-14">
+          {/* Donut chart */}
+          <div className="shrink-0 self-center">
+            <svg width="160" height="160" viewBox="0 0 160 160">
+              {/* Track */}
+              <circle
+                cx={CX}
+                cy={CY}
+                r={R}
+                fill="none"
+                stroke="var(--color-rule)"
+                strokeWidth={SW}
+              />
+              {pendingFrac > 0 && (
+                <DonutSegment
+                  fraction={pendingFrac}
+                  rotateOffset={matureFrac + youngFrac}
+                  color="var(--color-ink-faint)"
+                />
+              )}
+              {youngFrac > 0 && (
+                <DonutSegment
+                  fraction={youngFrac}
+                  rotateOffset={matureFrac}
+                  color="var(--color-amber)"
+                />
+              )}
+              {matureFrac > 0 && (
+                <DonutSegment
+                  fraction={matureFrac}
+                  rotateOffset={0}
+                  color="var(--color-rating-4)"
+                />
+              )}
+              {/* Center label */}
+              <text
+                x={CX}
+                y={CY - 8}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                fontSize="28"
+                fontWeight="300"
+                fill="var(--color-ink)"
+                fontFamily="var(--font-display)"
+              >
+                {Math.round(matureFrac * 100)}%
+              </text>
+              <text
+                x={CX}
+                y={CY + 18}
+                textAnchor="middle"
+                fontSize="10"
+                letterSpacing="0.12em"
+                fill="var(--color-ink-muted)"
+                fontFamily="var(--font-mono)"
+              >
+                OPANOWANE
+              </text>
+            </svg>
           </div>
-          <div className="px-5 py-6 flex flex-col gap-1.5 border-l border-rule">
-            <div className="display mono text-[43px] leading-none text-amber">
-              {young}
-            </div>
-            <div className="mono text-[13px] tracking-[0.16em] uppercase text-ink-muted">
-              Młode
-            </div>
-            <div className="mono text-[14px] text-ink-faint">
-              w trakcie utrwalania
-            </div>
-          </div>
-          <div className="px-5 py-6 flex flex-col gap-1.5 border-l border-rule">
-            <div className="display mono text-[43px] leading-none text-sub-mat">
-              {dueOrNew}
-            </div>
-            <div className="mono text-[13px] tracking-[0.16em] uppercase text-ink-muted">
-              Nowe / dzisiejsze
-            </div>
-            <div className="mono text-[14px] text-ink-faint">
-              czekają na pierwszą powtórkę
-            </div>
+
+          {/* Legend */}
+          <div className="flex flex-col gap-5 flex-1">
+            {[
+              {
+                count: mature,
+                label: "Dobrze opanowane",
+                sub: "zapamiętasz je długo",
+                color: "var(--color-rating-4)",
+              },
+              {
+                count: young,
+                label: "W trakcie nauki",
+                sub: "powtarzaj regularnie",
+                color: "var(--color-amber)",
+              },
+              {
+                count: dueOrNew,
+                label: "Czekają na Ciebie",
+                sub: "zacznij dziś",
+                color: "var(--color-ink-faint)",
+              },
+            ].map(({ count, label, sub, color }) => (
+              <div key={label} className="flex items-center gap-4">
+                <div
+                  className="w-2.5 h-2.5 rounded-full shrink-0"
+                  style={{ background: color }}
+                />
+                <div className="flex-1">
+                  <div className="mono text-[13px] tracking-[0.12em] uppercase text-ink-muted">
+                    {label}
+                  </div>
+                  <div className="mono text-[12px] text-ink-faint">{sub}</div>
+                </div>
+                <div
+                  className="display text-[32px] leading-none"
+                  style={{ color }}
+                >
+                  {count}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="enter enter-d3 mt-16">
+      {/* Sekcja 02 — Retencja per przedmiot */}
+      <section className="enter enter-d3 mt-4">
         <div className="flex items-baseline justify-between gap-3 mb-5 pb-3 border-b border-rule">
           <h2 className="display font-normal text-[25px] tracking-[-0.01em] text-ink flex items-baseline gap-3">
             <span className="mono text-xs text-amber tracking-[0.08em]">
               02 —
             </span>{" "}
-            Aktywność — 180 dni
+            Z czego ci idzie najlepiej
           </h2>
-          <span className="mono text-[14px] tracking-[0.14em] uppercase text-ink-faint">
-            1 kwadrat = 1 dzień
-          </span>
         </div>
-        <div className="grid grid-cols-[repeat(30,1fr)] gap-[3px] mt-5">
-          {HEATMAP.map((level, i) => (
-            <div
-              key={i}
-              className="aspect-square rounded-sm transition-transform duration-[0.15s] relative hover:scale-125 hover:outline hover:outline-1 hover:outline-ink"
-              title={`Dzień ${i + 1}: poziom ${level}`}
-              style={{
-                background:
-                  level === 0
-                    ? "var(--color-rule)"
-                    : level === 1
-                      ? "rgba(242, 184, 48, 0.18)"
-                      : level === 2
-                        ? "rgba(242, 184, 48, 0.35)"
-                        : level === 3
-                          ? "rgba(242, 184, 48, 0.6)"
-                          : "var(--color-amber)",
-              }}
-            />
+        <div className="flex flex-col gap-4">
+          {SUBJECT_RETENTION.map(({ subject, pct }) => (
+            <div key={subject} className="flex items-center gap-4">
+              <div className="mono text-[13px] tracking-[0.08em] uppercase text-ink-muted w-24 shrink-0">
+                {SUBJECTS[subject].name}
+              </div>
+              <div className="flex-1 h-2 bg-paper-2 rounded-sm overflow-hidden">
+                <div
+                  className="h-full rounded-sm transition-all"
+                  style={{
+                    width: `${pct}%`,
+                    background: SUBJECTS[subject].color,
+                  }}
+                />
+              </div>
+              <div
+                className="mono text-[14px] w-10 text-right shrink-0"
+                style={{ color: SUBJECTS[subject].color }}
+              >
+                {pct}%
+              </div>
+            </div>
           ))}
-        </div>
-        <div className="flex items-center gap-2.5 mt-4 mono text-[13px] text-ink-faint tracking-[0.14em] uppercase">
-          <span>mniej</span>
-          <div className="flex gap-[3px]">
-            {[
-              "var(--color-rule)",
-              "rgba(242, 184, 48, 0.18)",
-              "rgba(242, 184, 48, 0.35)",
-              "rgba(242, 184, 48, 0.6)",
-              "var(--color-amber)",
-            ].map((bg, i) => (
-              <span
-                key={i}
-                className="w-3 h-3 rounded-sm"
-                style={{ background: bg }}
-              />
-            ))}
-          </div>
-          <span>więcej</span>
         </div>
       </section>
     </>

@@ -7,10 +7,10 @@ import {
 import { useNavigate } from "react-router";
 
 type Props = {
-  onGenerateNote: () => void;
+  examId: string;
 };
 
-export function ExamMenu({ onGenerateNote }: Props) {
+export function ExamMenu({ examId }: Props) {
   const navigate = useNavigate();
 
   return (
@@ -31,7 +31,7 @@ export function ExamMenu({ onGenerateNote }: Props) {
           }}
         >
           <DropdownMenu.Item
-            onSelect={onGenerateNote}
+            onSelect={() => navigate(`/notes/${examId}`)}
             className="flex items-center gap-2.5 w-full px-3.5 py-2.5 text-left text-[13px] text-ink-muted hover:text-ink hover:bg-white/[0.04] transition-colors outline-none cursor-pointer"
           >
             <span className="text-ink-faint">

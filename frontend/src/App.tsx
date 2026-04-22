@@ -7,6 +7,7 @@ import { CARDS, SESSIONS, TODAY } from "./data/mock";
 import { useTheme } from "./hooks/useTheme";
 import { BrowsePage } from "./pages/BrowsePage";
 import { CalendarPage } from "./pages/CalendarPage";
+import { NotePage } from "./pages/NotePage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { ReviewPage } from "./pages/ReviewPage";
 import { SettingsPage } from "./pages/SettingsPage";
@@ -50,6 +51,7 @@ function App() {
             element={<ProfilePage theme={theme} onThemeChange={setTheme} />}
           />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/notes/:examId" element={<NotePage />} />
           <Route path="*" element={<Navigate to="/today" replace />} />
         </Routes>
       </Shell>

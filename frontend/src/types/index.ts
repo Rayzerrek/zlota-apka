@@ -52,7 +52,6 @@ export type Exam = {
   name: string;
   subject: SubjectKey;
   dateISO: string;
-  weight: number;
 };
 
 export type ReviewHistoryEntry = {

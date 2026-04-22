@@ -1,12 +1,11 @@
 import { NotePencilIcon } from "@phosphor-icons/react";
-import { useState } from "react";
+import { useNavigate } from "react-router";
 
 import { TODAY } from "../../data/mock";
 import { cn } from "../../utils/cn";
 import { daysBetween, longDate } from "../../utils/date";
 import { subjectName } from "../../utils/subjects";
 import { ExamMenu } from "../exam/ExamMenu";
-import { NoteModal } from "../exam/NoteModal";
 
 import type { Exam } from "../../types";
 
@@ -15,7 +14,7 @@ type Props = {
 };
 
 export function UpcomingExams({ exams }: Props) {
-  const [noteExam, setNoteExam] = useState<Exam | null>(null);
+  const navigate = useNavigate();
 
   return (
     <section className="mt-16">
@@ -56,29 +55,21 @@ export function UpcomingExams({ exams }: Props) {
                   {subjectName(e.subject)} · {longDate(e.dateISO)}
                 </div>
               </div>
-              <div className="mono text-xs text-ink-muted text-right">
-                <div>waga</div>
-                <div className="text-ink text-lg mt-0.5">{e.weight}</div>
-              </div>
               <div className="flex items-center gap-1">
                 <button
                   type="button"
                   title="Wygeneruj notatkę"
-                  onClick={() => setNoteExam(e)}
+                  onClick={() => navigate(`/notes/${e.id}`)}
                   className="w-7 h-7 flex items-center justify-center rounded-[3px] text-ink-faint hover:text-amber hover:bg-amber-wash transition-colors"
                 >
                   <NotePencilIcon size={16} />
                 </button>
-                <ExamMenu onGenerateNote={() => setNoteExam(e)} />
+                <ExamMenu examId={e.id} />
               </div>
             </div>
           );
         })}
       </div>
-
-      {noteExam && (
-        <NoteModal exam={noteExam} onClose={() => setNoteExam(null)} />
-      )}
     </section>
   );
 }
