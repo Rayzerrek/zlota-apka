@@ -1,4 +1,4 @@
-export type Rating = 1 | 2 | 3 | 4; // Again | Hard | Good | Easy
+export type Rating = 1 | 2 | 3 | 4;
 
 export interface CardSchedule {
   stability: number;
@@ -33,7 +33,6 @@ export function scheduleReview(
   let nextState: number;
 
   if (card.state === 0) {
-    // New
     if (rating === 1) {
       stability = 0.5;
       difficulty = Math.min(10, difficulty + 1);
@@ -72,7 +71,6 @@ export function scheduleReview(
       nextState = 2;
     }
   } else {
-    // Learning / Relearning
     if (rating === 1) {
       stability = Math.max(0.5, stability * 0.8);
       scheduledDays = 0;
