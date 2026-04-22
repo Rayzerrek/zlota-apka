@@ -293,35 +293,30 @@ export const EXAMS: Exam[] = [
     name: "Matura próbna — matematyka",
     subject: "mat",
     dateISO: "2026-04-27",
-    weight: 100,
   },
   {
     id: "e-02",
     name: "Kartkówka — fotosynteza",
     subject: "bio",
     dateISO: "2026-04-22",
-    weight: 20,
   },
   {
     id: "e-03",
     name: "Sprawdzian — II RP",
     subject: "hist",
     dateISO: "2026-04-29",
-    weight: 50,
   },
   {
     id: "e-04",
     name: "Matura próbna — polski",
     subject: "pol",
     dateISO: "2026-05-05",
-    weight: 100,
   },
   {
     id: "e-05",
     name: "Kartkówka — redoks",
     subject: "chem",
     dateISO: "2026-04-24",
-    weight: 20,
   },
 ];
 
