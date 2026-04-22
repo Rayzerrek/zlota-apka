@@ -1,9 +1,9 @@
+import { Switch } from "@cloudflare/kumo/components/switch";
 import { CheckIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 
 import { PageHead } from "../components/layout/PageHead";
 import { useSavedFeedback } from "../hooks/useSavedFeedback";
-import { cn } from "../utils/cn";
 
 export function SettingsPage() {
   const [notifications, setNotifications] = useState(
@@ -67,19 +67,28 @@ export function SettingsPage() {
             )}
           </div>
 
-          <ToggleRow
-            label="Powiadomienia"
-            hint="Codzienne przypomnienia o powtórkach."
-            checked={notifications}
-            onChange={handleNotificationsChange}
-          />
+          <label className="flex items-center justify-between gap-6 py-4 border-b border-dashed border-rule cursor-pointer">
+            <div className="flex flex-col gap-1">
+              <span className="text-[18px] text-ink">Powiadomienia</span>
+              <span className="text-[15px] text-ink-faint">
+                Codzienne przypomnienia o powtórkach.
+              </span>
+            </div>
+            <Switch
+              checked={notifications}
+              onCheckedChange={handleNotificationsChange}
+            />
+          </label>
 
-          <ToggleRow
-            label="Dźwięki"
-            hint="Subtelne dźwięki przy ocenianiu kart."
-            checked={sound}
-            onChange={handleSoundChange}
-          />
+          <label className="flex items-center justify-between gap-6 py-4 border-b border-dashed border-rule cursor-pointer">
+            <div className="flex flex-col gap-1">
+              <span className="text-[18px] text-ink">Dźwięki</span>
+              <span className="text-[15px] text-ink-faint">
+                Subtelne dźwięki przy ocenianiu kart.
+              </span>
+            </div>
+            <Switch checked={sound} onCheckedChange={handleSoundChange} />
+          </label>
 
           <label className="flex items-center justify-between gap-6 py-4 border-b border-dashed border-rule">
             <div className="flex flex-col gap-1">
@@ -129,43 +138,5 @@ export function SettingsPage() {
         </section>
       </div>
     </>
-  );
-}
-
-function ToggleRow({
-  label,
-  hint,
-  checked,
-  onChange,
-}: {
-  label: string;
-  hint?: string;
-  checked: boolean;
-  onChange: (v: boolean) => void;
-}) {
-  return (
-    <label className="flex items-center justify-between gap-6 py-4 border-b border-dashed border-rule cursor-pointer">
-      <div className="flex flex-col gap-1">
-        <span className="text-[18px] text-ink">{label}</span>
-        {hint && <span className="text-[15px] text-ink-faint">{hint}</span>}
-      </div>
-      <button
-        type="button"
-        role="switch"
-        aria-checked={checked}
-        onClick={() => onChange(!checked)}
-        className={cn(
-          "relative w-[38px] h-[22px] p-0 rounded-full cursor-pointer shrink-0 border transition-all duration-[0.25s]",
-          checked ? "bg-amber border-amber" : "bg-paper-2 border-rule",
-        )}
-      >
-        <span
-          className={cn(
-            "absolute top-0.5 left-0.5 w-4 h-4 rounded-full transition-all duration-[0.25s] [transition-timing-function:var(--ease-spring)]",
-            checked ? "translate-x-4 bg-paper" : "bg-ink-muted",
-          )}
-        />
-      </button>
-    </label>
   );
 }

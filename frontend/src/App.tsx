@@ -7,10 +7,12 @@ import { CARDS, SESSIONS, TODAY } from "./data/mock";
 import { useTheme } from "./hooks/useTheme";
 import { BrowsePage } from "./pages/BrowsePage";
 import { CalendarPage } from "./pages/CalendarPage";
+import { LoginPage } from "./pages/LoginPage";
 import { NotePage } from "./pages/NotePage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { ReviewPage } from "./pages/ReviewPage";
 import { SettingsPage } from "./pages/SettingsPage";
+import { SignUpPage } from "./pages/SignUpPage";
 import { StatsPage } from "./pages/StatsPage";
 import { TodayPage } from "./pages/TodayPage";
 
@@ -32,29 +34,46 @@ function App() {
 
   return (
     <>
-      <Shell theme={theme} onToggleTheme={toggleTheme}>
-        <Routes>
-          <Route
-            path="/today"
-            element={
-              <TodayPage
-                onStart={() => setReviewSessionId("__all_today__")}
-                onOpenSession={(id) => setReviewSessionId(id)}
-              />
-            }
-          />
-          <Route path="/calendar" element={<CalendarPage />} />
-          <Route path="/browse" element={<BrowsePage />} />
-          <Route path="/stats" element={<StatsPage />} />
-          <Route
-            path="/profile"
-            element={<ProfilePage theme={theme} onThemeChange={setTheme} />}
-          />
-          <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/notes/:examId" element={<NotePage />} />
-          <Route path="*" element={<Navigate to="/today" replace />} />
-        </Routes>
-      </Shell>
+      <Routes>
+        <Route
+          path="/login"
+          element={<LoginPage theme={theme} onToggleTheme={toggleTheme} />}
+        />
+        <Route
+          path="/sign-up"
+          element={<SignUpPage theme={theme} onToggleTheme={toggleTheme} />}
+        />
+        <Route
+          path="/*"
+          element={
+            <Shell theme={theme} onToggleTheme={toggleTheme}>
+              <Routes>
+                <Route
+                  path="/today"
+                  element={
+                    <TodayPage
+                      onStart={() => setReviewSessionId("__all_today__")}
+                      onOpenSession={(id) => setReviewSessionId(id)}
+                    />
+                  }
+                />
+                <Route path="/calendar" element={<CalendarPage />} />
+                <Route path="/browse" element={<BrowsePage />} />
+                <Route path="/stats" element={<StatsPage />} />
+                <Route
+                  path="/profile"
+                  element={
+                    <ProfilePage theme={theme} onThemeChange={setTheme} />
+                  }
+                />
+                <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/notes/:examId" element={<NotePage />} />
+                <Route path="*" element={<Navigate to="/today" replace />} />
+              </Routes>
+            </Shell>
+          }
+        />
+      </Routes>
 
       {reviewSessionId && reviewCards.length > 0 && (
         <ReviewPage

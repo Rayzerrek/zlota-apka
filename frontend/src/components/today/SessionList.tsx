@@ -7,7 +7,7 @@ import {
 import { useNavigate } from "react-router";
 
 import { cn } from "../../utils/cn";
-import { SUBJECTS } from "../../utils/subjects";
+import { SUBJECT_BG, SUBJECTS } from "../../utils/subjects";
 
 import type { StudySession } from "../../types";
 
@@ -88,8 +88,10 @@ export function SessionList({ sessions, onOpenSession }: Props) {
             <span className="flex flex-col gap-1 min-w-0">
               <span className="flex items-center gap-2 mono text-[13px] tracking-[0.2em] uppercase text-ink-muted">
                 <span
-                  className="w-2 h-2 rounded-full shrink-0"
-                  style={{ background: subj.color }}
+                  className={cn(
+                    "w-2 h-2 rounded-full shrink-0",
+                    SUBJECT_BG[s.subject],
+                  )}
                 />
                 {subj.name}
               </span>

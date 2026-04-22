@@ -110,10 +110,11 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
               <DropdownMenu>
                 <DropdownMenu.Trigger
                   render={
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
                       aria-label="Menu konta"
-                      className="flex items-center gap-2.5 p-1 -m-1 bg-transparent border-0 rounded-[3px] cursor-pointer flex-1 min-w-0 text-left transition-colors duration-200 hover:bg-paper-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber focus-visible:outline-offset-2"
+                      className="flex items-center gap-3 p-2 bg-transparent border-0 rounded-[5px] cursor-pointer flex-1 min-w-0 text-left transition-colors duration-200"
                     />
                   }
                 >

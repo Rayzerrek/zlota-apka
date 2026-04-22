@@ -1,7 +1,7 @@
 import { EXAMS, SESSIONS, TODAY } from "../../data/mock";
 import { cn } from "../../utils/cn";
 import { dayNum, dayShort } from "../../utils/date";
-import { SUBJECTS } from "../../utils/subjects";
+import { SUBJECT_BG } from "../../utils/subjects";
 
 type Props = {
   days: string[];
@@ -50,18 +50,14 @@ export function WeekGrid({ days, selected, onSelect }: Props) {
               {uniqSubjects.slice(0, 5).map((s) => (
                 <span
                   key={s}
-                  className="w-[6px] h-[6px] rounded-full opacity-85"
-                  style={{ background: SUBJECTS[s].color }}
+                  className={cn(
+                    "w-[6px] h-[6px] rounded-full opacity-85",
+                    SUBJECT_BG[s],
+                  )}
                 />
               ))}
               {examOnDay && (
-                <span
-                  className="w-[6px] h-[6px] rounded-full opacity-85"
-                  style={{
-                    background: "var(--color-amber)",
-                    boxShadow: "0 0 6px var(--color-amber)",
-                  }}
-                />
+                <span className="w-[6px] h-[6px] rounded-full opacity-85 bg-amber shadow-[0_0_6px_var(--color-amber)]" />
               )}
             </span>
           </button>

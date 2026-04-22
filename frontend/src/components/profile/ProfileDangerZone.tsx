@@ -1,13 +1,5 @@
+import { Button } from "@cloudflare/kumo";
 import { TrashIcon, WarningIcon } from "@phosphor-icons/react";
-
-const ghostBtnCls =
-  "inline-flex items-center gap-2 px-4 py-2.5 bg-transparent border border-rule rounded-[2px] text-ink-muted text-[16px] font-medium cursor-pointer transition-all duration-200 hover:border-rule-strong hover:text-ink";
-
-const dangerBtnCls =
-  "inline-flex items-center gap-2 px-4 py-2.5 bg-transparent border border-rating-1 rounded-[2px] text-rating-1 text-[16px] font-medium cursor-pointer transition-all duration-200 hover:bg-rating-1/8";
-
-const dangerSolidBtnCls =
-  "inline-flex items-center gap-2 px-4 py-2.5 bg-rating-1 border border-rating-1 rounded-[2px] text-paper text-[16px] font-medium cursor-pointer transition-all duration-200 hover:bg-[#c94a4a]";
 
 type Props = {
   confirmDelete: boolean;
@@ -31,35 +23,25 @@ export function ProfileDangerZone({
       </div>
 
       {!confirmDelete ? (
-        <button
-          type="button"
+        <Button
+          variant="secondary-destructive"
+          icon={TrashIcon}
           onClick={() => setConfirmDelete(true)}
-          className={dangerBtnCls}
         >
-          <TrashIcon size={14} />
           Usuń profil
-        </button>
+        </Button>
       ) : (
         <div className="flex flex-col gap-3 p-4 border border-rating-1 rounded-sm bg-rating-1/5">
           <div className="mono text-[14px] tracking-[0.14em] uppercase text-rating-1">
             Czy na pewno?
           </div>
           <div className="flex gap-2 flex-wrap">
-            <button
-              type="button"
-              onClick={onDelete}
-              className={dangerSolidBtnCls}
-            >
-              <TrashIcon size={14} />
+            <Button variant="destructive" icon={TrashIcon} onClick={onDelete}>
               Tak, usuń trwale
-            </button>
-            <button
-              type="button"
-              onClick={() => setConfirmDelete(false)}
-              className={ghostBtnCls}
-            >
+            </Button>
+            <Button variant="ghost" onClick={() => setConfirmDelete(false)}>
               Anuluj
-            </button>
+            </Button>
           </div>
         </div>
       )}

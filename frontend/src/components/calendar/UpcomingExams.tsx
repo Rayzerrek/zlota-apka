@@ -1,3 +1,4 @@
+import { Button } from "@cloudflare/kumo";
 import { NotePencilIcon } from "@phosphor-icons/react";
 import { useNavigate } from "react-router";
 
@@ -56,14 +57,16 @@ export function UpcomingExams({ exams }: Props) {
                 </div>
               </div>
               <div className="flex items-center gap-1">
-                <button
-                  type="button"
+                <Button
+                  variant="ghost"
+                  shape="square"
+                  size="sm"
+                  aria-label="Wygeneruj notatkę"
                   title="Wygeneruj notatkę"
+                  icon={NotePencilIcon}
                   onClick={() => navigate(`/notes/${e.id}`)}
-                  className="w-7 h-7 flex items-center justify-center rounded-[3px] text-ink-faint hover:text-amber hover:bg-amber-wash transition-colors"
-                >
-                  <NotePencilIcon size={16} />
-                </button>
+                  className="text-ink-faint hover:text-amber hover:!bg-amber-wash"
+                />
                 <ExamMenu examId={e.id} />
               </div>
             </div>

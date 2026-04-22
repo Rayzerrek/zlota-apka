@@ -18,7 +18,7 @@ const TIMEZONES: { value: string; label: string }[] = [
 ];
 
 const inputCls =
-  "w-full px-3.5 py-3 bg-paper-2 border border-rule rounded-[2px] text-ink text-[18px] outline-none transition-colors duration-200 hover:border-rule-strong focus:border-amber focus:bg-paper-3";
+  "w-full px-3.5 py-3 bg-kumo-base border border-rule rounded-[2px] text-ink text-[18px] outline-none transition-colors duration-200 hover:border-rule-strong focus:border-amber";
 
 type Props = {
   email: string;

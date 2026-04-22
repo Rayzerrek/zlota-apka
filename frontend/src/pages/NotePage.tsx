@@ -1,3 +1,4 @@
+import { Button } from "@cloudflare/kumo";
 import {
   ArrowLeftIcon,
   CopySimpleIcon,
@@ -7,6 +8,7 @@ import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 
 import { CARDS, EXAMS } from "../data/mock";
+import { cn } from "../utils/cn";
 import { longDate } from "../utils/date";
 import { generateExamNote, noteToMarkdown } from "../utils/examNote";
 
@@ -41,14 +43,15 @@ export function NotePage() {
     <>
       <div className="enter flex items-end justify-between gap-4 mb-9 pb-4 border-b border-rule">
         <div className="flex flex-col gap-3">
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="xs"
+            icon={ArrowLeftIcon}
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 mono text-[12px] tracking-[0.12em] uppercase text-ink-muted hover:text-ink transition-colors w-fit border-0 bg-transparent p-0 cursor-pointer"
+            className="mono tracking-[0.12em] uppercase text-ink-muted hover:text-ink hover:bg-transparent"
           >
-            <ArrowLeftIcon size={13} />
             Wróć
-          </button>
+          </Button>
           <div className="flex flex-col gap-1.5">
             <span className="mono text-[11px] tracking-[0.18em] uppercase text-amber">
               Notatka · {note.subject}
@@ -62,25 +65,19 @@ export function NotePage() {
           </div>
         </div>
 
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          icon={copied ? CheckIcon : CopySimpleIcon}
           onClick={handleCopy}
-          className="shrink-0 flex items-center gap-2 mono text-[13px] tracking-[0.08em] px-4 py-2 rounded-[3px] transition-colors cursor-pointer border"
-          style={{
-            background: copied
-              ? "var(--color-amber-wash)"
-              : "var(--color-paper-3)",
-            color: copied ? "var(--color-amber)" : "var(--color-ink-muted)",
-            borderColor: "var(--color-rule)",
-          }}
-        >
-          {copied ? (
-            <CheckIcon size={14} weight="bold" />
-          ) : (
-            <CopySimpleIcon size={14} />
+          className={cn(
+            "shrink-0 mono text-[13px] tracking-[0.08em] border border-rule !rounded-[3px]",
+            copied
+              ? "!bg-amber-wash !text-amber"
+              : "!bg-kumo-base !text-ink-muted",
           )}
+        >
           {copied ? "Skopiowano" : "Kopiuj markdown"}
-        </button>
+        </Button>
       </div>
 
       <div className="flex flex-col gap-10 pb-16">
@@ -103,10 +100,7 @@ export function NotePage() {
                     <div className="text-[15px] text-ink-muted leading-[1.6]">
                       {q}
                     </div>
-                    <div
-                      className="text-[15px] text-ink leading-[1.6] pl-4"
-                      style={{ borderLeft: "2px solid var(--color-amber)" }}
-                    >
+                    <div className="text-[15px] text-ink leading-[1.6] pl-4 border-l-2 border-amber">
                       {a}
                     </div>
                   </div>

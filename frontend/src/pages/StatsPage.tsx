@@ -1,6 +1,15 @@
+import { Chart } from "@cloudflare/kumo/components/chart";
+import { PieChart as EChartsPieChart } from "echarts/charts";
+import { TooltipComponent } from "echarts/components";
+import * as echarts from "echarts/core";
+import { CanvasRenderer } from "echarts/renderers";
+
 import { PageHead } from "../components/layout/PageHead";
 import { CARDS, STUDY_STATS, SUBJECT_RETENTION } from "../data/mock";
-import { SUBJECTS } from "../utils/subjects";
+import { cn } from "../utils/cn";
+import { SUBJECT_BG, SUBJECT_TEXT, SUBJECTS } from "../utils/subjects";
+
+echarts.use([EChartsPieChart, TooltipComponent, CanvasRenderer]);
 
 const { mature, young } = STUDY_STATS;
 const dueOrNew = CARDS.filter(
@@ -16,62 +25,81 @@ function formatMinutes(mins: number): string {
   return `${h}h ${m}m`;
 }
 
-function retentionLabel(pct: number): { text: string; color: string } {
-  if (pct >= 90)
-    return { text: "Świetny wynik!", color: "var(--color-rating-4)" };
-  if (pct >= 85)
-    return {
-      text: "Dobry poziom — blisko celu",
-      color: "var(--color-rating-3)",
-    };
-  if (pct >= 70)
-    return {
-      text: "Dobry start — ucz się regularnie",
-      color: "var(--color-amber)",
-    };
-  return {
-    text: "Poniżej normy — warto powtórzyć materiał",
-    color: "var(--color-rating-1)",
-  };
-}
-
-const retentionStatus = retentionLabel(STUDY_STATS.retentionPct);
-
-const CX = 80;
-const CY = 80;
-const R = 58;
-const SW = 14;
-const CIRC = 2 * Math.PI * R;
-
-type DonutSegmentProps = {
-  fraction: number;
-  rotateOffset: number;
-  color: string;
-};
-
-function DonutSegment({ fraction, rotateOffset, color }: DonutSegmentProps) {
-  const dash = fraction * CIRC;
-  return (
-    <circle
-      cx={CX}
-      cy={CY}
-      r={R}
-      fill="none"
-      stroke={color}
-      strokeWidth={SW}
-      strokeDasharray={`${dash} ${CIRC - dash}`}
-      strokeDashoffset={CIRC * 0.25}
-      strokeLinecap="butt"
-      transform={`rotate(${rotateOffset * 360} ${CX} ${CY})`}
-    />
-  );
+function cssVar(name: string): string {
+  return getComputedStyle(document.documentElement)
+    .getPropertyValue(name)
+    .trim();
 }
 
 const matureFrac = mature / total;
-const youngFrac = young / total;
-const pendingFrac = dueOrNew / total;
+
+const legendItems = [
+  {
+    count: mature,
+    label: "Dobrze opanowane",
+    sub: "zapamiętasz je długo",
+    bg: "bg-rating-4",
+    text: "text-rating-4",
+  },
+  {
+    count: young,
+    label: "W trakcie nauki",
+    sub: "powtarzaj regularnie",
+    bg: "bg-amber",
+    text: "text-amber",
+  },
+  {
+    count: dueOrNew,
+    label: "Czekają na Ciebie",
+    sub: "zacznij dziś",
+    bg: "bg-ink-faint",
+    text: "text-ink-faint",
+  },
+];
 
 export function StatsPage() {
+  const donutOptions = {
+    tooltip: {
+      trigger: "item" as const,
+      formatter: "{b}: {c} kart",
+      backgroundColor: cssVar("--color-paper-3"),
+      borderColor: cssVar("--color-rule-strong"),
+      borderWidth: 1,
+      textStyle: {
+        fontFamily: cssVar("--font-mono"),
+        fontSize: 12,
+        color: cssVar("--color-ink"),
+      },
+    },
+    series: [
+      {
+        type: "pie" as const,
+        radius: ["51px", "65px"],
+        center: ["50%", "50%"],
+        startAngle: 90,
+        data: [
+          {
+            name: "Opanowane",
+            value: mature,
+            itemStyle: { color: cssVar("--color-rating-4") },
+          },
+          {
+            name: "W trakcie",
+            value: young,
+            itemStyle: { color: cssVar("--color-amber") },
+          },
+          {
+            name: "Do zrobienia",
+            value: dueOrNew,
+            itemStyle: { color: cssVar("--color-ink-faint") },
+          },
+        ].filter((d) => d.value > 0),
+        label: { show: false },
+        emphasis: { scale: false },
+      },
+    ],
+  };
+
   return (
     <>
       <PageHead
@@ -84,22 +112,12 @@ export function StatsPage() {
         date="Aktualizacja dziś"
       />
 
-      {/* Hero — retencja */}
       <div className="enter enter-d1 grid grid-cols-1 gap-6 pb-10 border-b border-rule mb-10 min-[800px]:grid-cols-[1.2fr_1fr] min-[800px]:gap-14 min-[800px]:items-end">
         <div>
           <div className="display font-light text-[clamp(140px,18vw,220px)] leading-[0.85] tracking-[-0.06em] flex items-start gap-2">
             <em className="italic text-amber font-light">
               {STUDY_STATS.retentionPct}
             </em>
-            <span className="text-[clamp(50px,6vw,80px)] text-ink-muted mt-4">
-              %
-            </span>
-          </div>
-          <div
-            className="mono text-[13px] tracking-[0.1em] uppercase mt-3"
-            style={{ color: retentionStatus.color }}
-          >
-            {retentionStatus.text}
           </div>
         </div>
         <div className="flex flex-col gap-3">
@@ -134,7 +152,6 @@ export function StatsPage() {
         </div>
       </div>
 
-      {/* Sekcja 01 — Etap kart */}
       <section className="enter enter-d2 mb-10 pb-10 border-b border-rule">
         <div className="flex items-baseline justify-between gap-3 mb-8 pb-3 border-b border-rule">
           <h2 className="display font-normal text-[25px] tracking-[-0.01em] text-ink flex items-baseline gap-3">
@@ -149,103 +166,29 @@ export function StatsPage() {
         </div>
 
         <div className="flex flex-col gap-10 min-[640px]:flex-row min-[640px]:items-center min-[640px]:gap-14">
-          {/* Donut chart */}
-          <div className="shrink-0 self-center">
-            <svg width="160" height="160" viewBox="0 0 160 160">
-              {/* Track */}
-              <circle
-                cx={CX}
-                cy={CY}
-                r={R}
-                fill="none"
-                stroke="var(--color-rule)"
-                strokeWidth={SW}
-              />
-              {pendingFrac > 0 && (
-                <DonutSegment
-                  fraction={pendingFrac}
-                  rotateOffset={matureFrac + youngFrac}
-                  color="var(--color-ink-faint)"
-                />
-              )}
-              {youngFrac > 0 && (
-                <DonutSegment
-                  fraction={youngFrac}
-                  rotateOffset={matureFrac}
-                  color="var(--color-amber)"
-                />
-              )}
-              {matureFrac > 0 && (
-                <DonutSegment
-                  fraction={matureFrac}
-                  rotateOffset={0}
-                  color="var(--color-rating-4)"
-                />
-              )}
-              {/* Center label */}
-              <text
-                x={CX}
-                y={CY - 8}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                fontSize="28"
-                fontWeight="300"
-                fill="var(--color-ink)"
-                fontFamily="var(--font-display)"
-              >
+          <div className="shrink-0 self-center relative w-40 h-40">
+            <Chart echarts={echarts} options={donutOptions} height={160} />
+            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none gap-1">
+              <span className="display font-light text-[28px] leading-none text-ink">
                 {Math.round(matureFrac * 100)}%
-              </text>
-              <text
-                x={CX}
-                y={CY + 18}
-                textAnchor="middle"
-                fontSize="10"
-                letterSpacing="0.12em"
-                fill="var(--color-ink-muted)"
-                fontFamily="var(--font-mono)"
-              >
+              </span>
+              <span className="mono text-[10px] tracking-[0.12em] uppercase text-ink-muted">
                 OPANOWANE
-              </text>
-            </svg>
+              </span>
+            </div>
           </div>
 
-          {/* Legend */}
           <div className="flex flex-col gap-5 flex-1">
-            {[
-              {
-                count: mature,
-                label: "Dobrze opanowane",
-                sub: "zapamiętasz je długo",
-                color: "var(--color-rating-4)",
-              },
-              {
-                count: young,
-                label: "W trakcie nauki",
-                sub: "powtarzaj regularnie",
-                color: "var(--color-amber)",
-              },
-              {
-                count: dueOrNew,
-                label: "Czekają na Ciebie",
-                sub: "zacznij dziś",
-                color: "var(--color-ink-faint)",
-              },
-            ].map(({ count, label, sub, color }) => (
+            {legendItems.map(({ count, label, sub, bg, text }) => (
               <div key={label} className="flex items-center gap-4">
-                <div
-                  className="w-2.5 h-2.5 rounded-full shrink-0"
-                  style={{ background: color }}
-                />
+                <div className={cn("w-2.5 h-2.5 rounded-full shrink-0", bg)} />
                 <div className="flex-1">
                   <div className="mono text-[13px] tracking-[0.12em] uppercase text-ink-muted">
                     {label}
                   </div>
                   <div className="mono text-[12px] text-ink-faint">{sub}</div>
                 </div>
-                <div
-                  className="display text-[32px] leading-none"
-                  style={{ color }}
-                >
+                <div className={cn("display text-[32px] leading-none", text)}>
                   {count}
                 </div>
               </div>
@@ -254,7 +197,6 @@ export function StatsPage() {
         </div>
       </section>
 
-      {/* Sekcja 02 — Retencja per przedmiot */}
       <section className="enter enter-d3 mt-4">
         <div className="flex items-baseline justify-between gap-3 mb-5 pb-3 border-b border-rule">
           <h2 className="display font-normal text-[25px] tracking-[-0.01em] text-ink flex items-baseline gap-3">
@@ -270,18 +212,20 @@ export function StatsPage() {
               <div className="mono text-[13px] tracking-[0.08em] uppercase text-ink-muted w-24 shrink-0">
                 {SUBJECTS[subject].name}
               </div>
-              <div className="flex-1 h-2 bg-paper-2 rounded-sm overflow-hidden">
+              <div className="flex-1 h-2 bg-kumo-base rounded-sm overflow-hidden">
                 <div
-                  className="h-full rounded-sm transition-all"
-                  style={{
-                    width: `${pct}%`,
-                    background: SUBJECTS[subject].color,
-                  }}
+                  className={cn(
+                    "h-full rounded-sm transition-all",
+                    SUBJECT_BG[subject],
+                  )}
+                  style={{ width: `${pct}%` }}
                 />
               </div>
               <div
-                className="mono text-[14px] w-10 text-right shrink-0"
-                style={{ color: SUBJECTS[subject].color }}
+                className={cn(
+                  "mono text-[14px] w-10 text-right shrink-0",
+                  SUBJECT_TEXT[subject],
+                )}
               >
                 {pct}%
               </div>

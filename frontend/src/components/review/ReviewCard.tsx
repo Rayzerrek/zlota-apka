@@ -1,5 +1,5 @@
 import { cn } from "../../utils/cn";
-import { SUBJECTS } from "../../utils/subjects";
+import { SUBJECT_BG, SUBJECTS } from "../../utils/subjects";
 
 import type { Card } from "../../types";
 
@@ -31,8 +31,10 @@ export function ReviewCard({ card, flipped, onFlip }: Props) {
       <div className={cn(faceBaseCls, faceInsetRuleCls)}>
         <div className="flex items-center gap-3 mono text-[14px] tracking-[0.16em] uppercase text-ink-muted">
           <span
-            className="w-2 h-2 rounded-full shrink-0"
-            style={{ background: subj.color }}
+            className={cn(
+              "w-2 h-2 rounded-full shrink-0",
+              SUBJECT_BG[card.subject],
+            )}
           />
           {subj.name} · {card.topic}
           <span className="mono text-[13px] tracking-[0.24em] text-ink-faint ml-auto">
@@ -58,8 +60,10 @@ export function ReviewCard({ card, flipped, onFlip }: Props) {
       >
         <div className="flex items-center gap-3 mono text-[14px] tracking-[0.16em] uppercase text-ink-muted">
           <span
-            className="w-2 h-2 rounded-full shrink-0"
-            style={{ background: subj.color }}
+            className={cn(
+              "w-2 h-2 rounded-full shrink-0",
+              SUBJECT_BG[card.subject],
+            )}
           />
           {subj.name} · {card.topic}
           <span className="mono text-[13px] tracking-[0.24em] text-ink-faint ml-auto">

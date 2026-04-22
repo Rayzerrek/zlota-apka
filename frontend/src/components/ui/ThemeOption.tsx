@@ -18,7 +18,7 @@ export function ThemeOption({ active, onClick, icon, label }: Props) {
         "flex items-center gap-2.5 px-4 py-3.5 border rounded-[2px] text-[17px] font-medium cursor-pointer transition-all duration-200 text-left",
         active
           ? "border-amber text-ink bg-[linear-gradient(180deg,var(--color-amber-wash),transparent_80%),var(--color-paper-2)]"
-          : "border-rule bg-paper-2 text-ink-muted hover:border-rule-strong hover:text-ink",
+          : "border-rule bg-kumo-base text-ink-muted hover:border-rule-strong hover:text-ink",
       )}
     >
       {icon}

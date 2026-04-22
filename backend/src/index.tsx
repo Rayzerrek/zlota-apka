@@ -31,9 +31,13 @@ app.route("/api/exams", examsRouter);
 app.route("/api/dashboard", dashboardRouter);
 app.route("/api/sessions", sessionsRouter);
 
+app.get("/api/auth", async (c) => {
+  return c.json({ message: "Hello World!" });
+});
+
 app.doc("/api/doc", {
   openapi: "3.0.0",
-  info: { title: "Powtórki API", version: "1.0.0" },
+  info: { title: "API", version: "1.0.0" },
 });
 
 app.get("/", (c) => {

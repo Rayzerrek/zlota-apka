@@ -13,7 +13,7 @@ type Props = {
 };
 
 const reviewShellCls =
-  "fixed inset-0 bg-paper z-50 flex flex-col animate-[fadeIn_0.3s_var(--ease-out)]";
+  "fixed inset-0 light:bg-kumo-base z-50 flex flex-col animate-[fadeIn_0.3s_var(--ease-out)]";
 
 export function ReviewPage({ cards, onExit }: Props) {
   const [idx, setIdx] = useState(0);

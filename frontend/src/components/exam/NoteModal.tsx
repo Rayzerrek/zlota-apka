@@ -1,8 +1,9 @@
-import { Dialog } from "@cloudflare/kumo";
+import { Button, Dialog } from "@cloudflare/kumo";
 import { XIcon, CopySimpleIcon, CheckIcon } from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
 
 import { CARDS } from "../../data/mock";
+import { cn } from "../../utils/cn";
 import { longDate } from "../../utils/date";
 import { generateExamNote, noteToMarkdown } from "../../utils/examNote";
 
@@ -31,13 +32,7 @@ export function NoteModal({ exam, onClose }: Props) {
         if (!isOpen) onClose();
       }}
     >
-      <Dialog
-        className="!max-w-2xl w-full p-0 flex flex-col max-h-[90dvh] sm:max-h-[80dvh] rounded-[8px] sm:rounded-[4px] overflow-hidden outline-none bg-paper-2"
-        style={{
-          border: "1px solid var(--color-rule-strong)",
-          boxShadow: "0 24px 80px rgba(0,0,0,0.6)",
-        }}
-      >
+      <Dialog className="!max-w-2xl w-full p-0 flex flex-col max-h-[90dvh] sm:max-h-[80dvh] rounded-[8px] sm:rounded-[4px] overflow-hidden outline-none bg-paper-2 border border-rule-strong shadow-[0_24px_80px_rgba(0,0,0,0.6)]">
         <div className="flex items-start justify-between gap-4 px-7 pt-6 pb-5 border-b border-rule shrink-0">
           <div>
             <p className="mono text-[11px] tracking-[0.18em] uppercase text-amber mb-1.5">
@@ -51,12 +46,14 @@ export function NoteModal({ exam, onClose }: Props) {
             </p>
           </div>
           <Dialog.Close>
-            <button
-              type="button"
-              className="shrink-0 mt-0.5 w-8 h-8 flex items-center justify-center rounded-[3px] text-ink-muted hover:text-ink hover:bg-white/5 transition-colors cursor-pointer border-0 bg-transparent outline-none"
-            >
-              <XIcon size={18} />
-            </button>
+            <Button
+              variant="ghost"
+              shape="square"
+              size="sm"
+              aria-label="Zamknij"
+              icon={XIcon}
+              className="shrink-0 mt-0.5 text-ink-muted hover:text-ink"
+            />
           </Dialog.Close>
         </div>
 
@@ -77,10 +74,7 @@ export function NoteModal({ exam, onClose }: Props) {
                       <div className="text-[14px] text-ink-muted leading-[1.5]">
                         {q}
                       </div>
-                      <div
-                        className="text-[14px] text-ink leading-[1.5] pl-3"
-                        style={{ borderLeft: "2px solid var(--color-amber)" }}
-                      >
+                      <div className="text-[14px] text-ink leading-[1.5] pl-3 border-l-2 border-amber">
                         {a}
                       </div>
                     </div>
@@ -92,25 +86,19 @@ export function NoteModal({ exam, onClose }: Props) {
         </div>
 
         <div className="shrink-0 flex justify-end px-7 py-4 border-t border-rule bg-paper-2">
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            icon={copied ? CheckIcon : CopySimpleIcon}
             onClick={handleCopy}
-            className="flex items-center gap-2 mono text-[13px] tracking-[0.08em] px-4 py-2 rounded-[3px] transition-colors cursor-pointer"
-            style={{
-              background: copied
-                ? "var(--color-amber-wash)"
-                : "var(--color-paper-3)",
-              color: copied ? "var(--color-amber)" : "var(--color-ink-muted)",
-              border: "1px solid var(--color-rule)",
-            }}
-          >
-            {copied ? (
-              <CheckIcon size={14} weight="bold" />
-            ) : (
-              <CopySimpleIcon size={14} />
+            className={cn(
+              "mono text-[13px] tracking-[0.08em] border border-rule !rounded-[3px]",
+              copied
+                ? "!bg-amber-wash !text-amber"
+                : "!bg-paper-3 !text-ink-muted",
             )}
+          >
             {copied ? "Skopiowano" : "Kopiuj markdown"}
-          </button>
+          </Button>
         </div>
       </Dialog>
     </Dialog.Root>

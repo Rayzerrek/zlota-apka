@@ -1,7 +1,7 @@
 import { TODAY } from "../../data/mock";
 import { cn } from "../../utils/cn";
 import { daysBetween } from "../../utils/date";
-import { SUBJECTS } from "../../utils/subjects";
+import { SUBJECT_BG, SUBJECTS } from "../../utils/subjects";
 
 import type { Card, CardStage } from "../../types";
 
@@ -41,14 +41,18 @@ export function BrowseCard({ card, idx }: Props) {
     >
       <span
         aria-hidden
-        className="absolute left-0 top-0 bottom-0 w-[3px]"
-        style={{ background: subj.color }}
+        className={cn(
+          "absolute left-0 top-0 bottom-0 w-[3px]",
+          SUBJECT_BG[card.subject],
+        )}
       />
       <div className="flex items-center justify-between mono text-[13px] tracking-[0.16em] uppercase text-ink-muted">
         <span className="flex items-center gap-2">
           <span
-            className="w-2 h-2 rounded-full shrink-0"
-            style={{ background: subj.color }}
+            className={cn(
+              "w-2 h-2 rounded-full shrink-0",
+              SUBJECT_BG[card.subject],
+            )}
           />
           {subj.name}
         </span>

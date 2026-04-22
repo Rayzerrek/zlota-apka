@@ -23,12 +23,7 @@ export function ExamMenu({ examId }: Props) {
         <DropdownMenu.Content
           align="end"
           sideOffset={4}
-          className="enter min-w-[196px] rounded-[4px] overflow-hidden py-1 z-[100] outline-none"
-          style={{
-            background: "var(--color-paper-3)",
-            border: "1px solid var(--color-rule-strong)",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
-          }}
+          className="enter min-w-[196px] rounded-[4px] overflow-hidden py-1 z-[100] outline-none bg-paper-3 border border-rule-strong shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
         >
           <DropdownMenu.Item
             onSelect={() => navigate(`/notes/${examId}`)}

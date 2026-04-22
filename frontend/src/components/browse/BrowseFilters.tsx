@@ -1,7 +1,7 @@
 import { Button } from "@cloudflare/kumo";
 
 import { cn } from "../../utils/cn";
-import { SUBJECTS } from "../../utils/subjects";
+import { SUBJECT_BG, SUBJECTS } from "../../utils/subjects";
 
 import type { SubjectKey } from "../../types";
 
@@ -42,8 +42,7 @@ export function BrowseFilters({ filter, onFilterChange, counts }: Props) {
           )}
         >
           <span
-            className="rounded-full shrink-0"
-            style={{ background: SUBJECTS[k].color, width: 6, height: 6 }}
+            className={cn("w-1.5 h-1.5 rounded-full shrink-0", SUBJECT_BG[k])}
           />
           {SUBJECTS[k].name}
           <span className="opacity-60 ml-1">{counts[k] ?? 0}</span>

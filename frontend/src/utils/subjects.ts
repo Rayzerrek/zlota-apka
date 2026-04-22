@@ -10,6 +10,26 @@ export const SUBJECTS: Record<SubjectKey, Subject> = {
   ang: { key: "ang", name: "Angielski", color: "var(--color-sub-ang)" },
 };
 
+export const SUBJECT_BG: Record<SubjectKey, string> = {
+  mat: "bg-sub-mat",
+  bio: "bg-sub-bio",
+  hist: "bg-sub-hist",
+  pol: "bg-sub-pol",
+  chem: "bg-sub-chem",
+  fiz: "bg-sub-fiz",
+  ang: "bg-sub-ang",
+};
+
+export const SUBJECT_TEXT: Record<SubjectKey, string> = {
+  mat: "text-sub-mat",
+  bio: "text-sub-bio",
+  hist: "text-sub-hist",
+  pol: "text-sub-pol",
+  chem: "text-sub-chem",
+  fiz: "text-sub-fiz",
+  ang: "text-sub-ang",
+};
+
 export function subjectName(key: SubjectKey): string {
   return SUBJECTS[key].name;
 }
