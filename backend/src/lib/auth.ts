@@ -1,4 +1,3 @@
-import { dash } from "@better-auth/infra";
 import { neon } from "@neondatabase/serverless";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
@@ -12,8 +11,8 @@ export type Env = {
   DATABASE_URL: string;
   BETTER_AUTH_SECRET: string;
   BETTER_AUTH_URL: string;
-  BETTER_AUTH_API_KEY?: string;
   RESEND_API_KEY: string;
+  FRONTEND_URL?: string;
 };
 
 export function createAuth(env: Env) {
@@ -22,14 +21,17 @@ export function createAuth(env: Env) {
   const resend = new Resend(env.RESEND_API_KEY);
 
   return betterAuth({
-    database: drizzleAdapter(db, { provider: "pg" }),
+    database: drizzleAdapter(db, { provider: "pg", schema }),
     secret: env.BETTER_AUTH_SECRET,
     baseURL: env.BETTER_AUTH_URL,
-    trustedOrigins: [env.BETTER_AUTH_URL],
+    trustedOrigins: [
+      env.BETTER_AUTH_URL,
+      ...(env.FRONTEND_URL ? [env.FRONTEND_URL] : []),
+    ],
+    emailAndPassword: {
+      enabled: true,
+    },
     plugins: [
-      dash({
-        apiKey: env.BETTER_AUTH_API_KEY,
-      }),
       magicLink({
         sendMagicLink: async ({ email, url }) => {
           await resend.emails.send({

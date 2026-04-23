@@ -2,7 +2,7 @@ import { OpenAPIHono } from "@hono/zod-openapi";
 import { Scalar } from "@scalar/hono-api-reference";
 import { cors } from "hono/cors";
 
-import { type Env } from "./lib/auth";
+import { createAuth, type Env } from "./lib/auth";
 import { cardsRouter } from "./routes/cards";
 import { dashboardRouter } from "./routes/dashboard";
 import { examsRouter } from "./routes/exams";
@@ -31,8 +31,9 @@ app.route("/api/exams", examsRouter);
 app.route("/api/dashboard", dashboardRouter);
 app.route("/api/sessions", sessionsRouter);
 
-app.get("/api/auth", async (c) => {
-  return c.json({ message: "Hello World!" });
+app.on(["GET", "POST"], "/api/auth/**", async (c) => {
+  const auth = createAuth(c.env);
+  return auth.handler(c.req.raw);
 });
 
 app.doc("/api/doc", {
@@ -50,7 +51,6 @@ app.get("/api/debug/env", (c) => {
     databaseUrlLength: c.env.DATABASE_URL?.length ?? 0,
     hasBetterAuthSecret: Boolean(c.env.BETTER_AUTH_SECRET),
     hasBetterAuthUrl: Boolean(c.env.BETTER_AUTH_URL),
-    hasBetterAuthApiKey: Boolean(c.env.BETTER_AUTH_API_KEY),
     hasResendApiKey: Boolean(c.env.RESEND_API_KEY),
   });
 });
