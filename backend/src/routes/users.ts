@@ -97,95 +97,115 @@ export const usersRouter = new OpenAPIHono<HonoEnv>();
 usersRouter.use(requireAuth);
 
 usersRouter.openapi(getMeRoute, async (c) => {
-  const db = createDb(c.env);
-  const userId = c.get("userId");
+  try {
+    const db = createDb(c.env);
+    const userId = c.get("userId");
 
-  const [me] = await db.select().from(user).where(eq(user.id, userId));
-  const availability = await db
-    .select()
-    .from(userAvailability)
-    .where(eq(userAvailability.userId, userId));
+    const [me] = await db.select().from(user).where(eq(user.id, userId));
+    const availability = await db
+      .select()
+      .from(userAvailability)
+      .where(eq(userAvailability.userId, userId));
 
-  return c.json(
-    {
-      ...me,
-      availability,
-    },
-    200,
-  );
+    return c.json(
+      {
+        ...me,
+        availability,
+      },
+      200,
+    );
+  } catch (err) {
+    console.error("GET /users/me failed", err);
+    throw err;
+  }
 });
 
 usersRouter.openapi(patchMeRoute, async (c) => {
-  const db = createDb(c.env);
-  const userId = c.get("userId");
-  const body = c.req.valid("json");
+  try {
+    const db = createDb(c.env);
+    const userId = c.get("userId");
+    const body = c.req.valid("json");
 
-  const [updated] = await db
-    .update(user)
-    .set({
-      name: body.name,
-      grade: body.grade,
-      image: body.image,
-      updatedAt: new Date(),
-    })
-    .where(eq(user.id, userId))
-    .returning();
+    const [updated] = await db
+      .update(user)
+      .set({
+        name: body.name,
+        grade: body.grade,
+        image: body.image,
+        updatedAt: new Date(),
+      })
+      .where(eq(user.id, userId))
+      .returning();
 
-  return c.json(updated, 200);
+    return c.json(updated, 200);
+  } catch (err) {
+    console.error("PATCH /users/me failed", err);
+    throw err;
+  }
 });
 
 usersRouter.openapi(exportDataRoute, async (c) => {
-  const db = createDb(c.env);
-  const userId = c.get("userId");
+  try {
+    const db = createDb(c.env);
+    const userId = c.get("userId");
 
-  const [
-    me,
-    mySubjects,
-    myAvailability,
-    myExams,
-    myTopics,
-    mySessions,
-    myCards,
-    history,
-  ] = await Promise.all([
-    db
-      .select()
-      .from(user)
-      .where(eq(user.id, userId))
-      .then((rows) => rows[0]),
-    db.select().from(subjects).where(eq(subjects.userId, userId)),
-    db
-      .select()
-      .from(userAvailability)
-      .where(eq(userAvailability.userId, userId)),
-    db.select().from(exams).where(eq(exams.userId, userId)),
-    db.select().from(topics).where(eq(topics.userId, userId)),
-    db.select().from(studySessions).where(eq(studySessions.userId, userId)),
-    db.select().from(cards).where(eq(cards.userId, userId)),
-    db.select().from(reviewHistory).where(eq(reviewHistory.userId, userId)),
-  ]);
+    const [
+      me,
+      mySubjects,
+      myAvailability,
+      myExams,
+      myTopics,
+      mySessions,
+      myCards,
+      history,
+    ] = await Promise.all([
+      db
+        .select()
+        .from(user)
+        .where(eq(user.id, userId))
+        .then((rows) => rows[0]),
+      db.select().from(subjects).where(eq(subjects.userId, userId)),
+      db
+        .select()
+        .from(userAvailability)
+        .where(eq(userAvailability.userId, userId)),
+      db.select().from(exams).where(eq(exams.userId, userId)),
+      db.select().from(topics).where(eq(topics.userId, userId)),
+      db.select().from(studySessions).where(eq(studySessions.userId, userId)),
+      db.select().from(cards).where(eq(cards.userId, userId)),
+      db.select().from(reviewHistory).where(eq(reviewHistory.userId, userId)),
+    ]);
 
-  return c.json(
-    {
-      user: me,
-      subjects: mySubjects,
-      availability: myAvailability,
-      exams: myExams,
-      topics: myTopics,
-      sessions: mySessions,
-      cards: myCards,
-      reviewHistory: history,
-      exportedAt: new Date().toISOString(),
-    },
-    200,
-  );
+    return c.json(
+      {
+        user: me,
+        subjects: mySubjects,
+        availability: myAvailability,
+        exams: myExams,
+        topics: myTopics,
+        sessions: mySessions,
+        cards: myCards,
+        reviewHistory: history,
+        exportedAt: new Date().toISOString(),
+      },
+      200,
+    );
+  } catch (err) {
+    console.error("GET /users/me/export failed", err);
+    throw err;
+  }
 });
 
 usersRouter.openapi(deleteMeRoute, async (c) => {
-  const db = createDb(c.env);
-  const userId = c.get("userId");
+  try {
+    const db = createDb(c.env);
+    const userId = c.get("userId");
 
-  await db.delete(user).where(eq(user.id, userId));
+    await db.delete(user).where(eq(user.id, userId));
 
-  return c.json({ ok: true }, 200);
+    return c.json({ ok: true }, 200);
+  } catch (err) {
+    console.error("DELETE /users/me failed", err);
+    throw err;
+  }
 });

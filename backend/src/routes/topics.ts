@@ -68,59 +68,79 @@ export const topicsRouter = new OpenAPIHono<HonoEnv>();
 topicsRouter.use(requireAuth);
 
 topicsRouter.openapi(listTopicsRoute, async (c) => {
-  const db = createDb(c.env);
-  const rows = await db
-    .select()
-    .from(topics)
-    .where(
-      and(
-        eq(topics.examId, c.req.valid("param").examId),
-        eq(topics.userId, c.get("userId")),
-      ),
-    );
-  return c.json(rows, 200);
+  try {
+    const db = createDb(c.env);
+    const rows = await db
+      .select()
+      .from(topics)
+      .where(
+        and(
+          eq(topics.examId, c.req.valid("param").examId),
+          eq(topics.userId, c.get("userId")),
+        ),
+      );
+    return c.json(rows, 200);
+  } catch (err) {
+    console.error("GET /exams/:examId/topics failed", err);
+    throw err;
+  }
 });
 
 topicsRouter.openapi(createTopicRoute, async (c) => {
-  const db = createDb(c.env);
-  const userId = c.get("userId");
-  const examId = c.req.valid("param").examId;
-  const body = c.req.valid("json");
+  try {
+    const db = createDb(c.env);
+    const userId = c.get("userId");
+    const examId = c.req.valid("param").examId;
+    const body = c.req.valid("json");
 
-  const [row] = await db
-    .insert(topics)
-    .values({ ...body, userId, examId })
-    .returning();
-  return c.json(row, 201);
+    const [row] = await db
+      .insert(topics)
+      .values({ ...body, userId, examId })
+      .returning();
+    return c.json(row, 201);
+  } catch (err) {
+    console.error("POST /exams/:examId/topics failed", err);
+    throw err;
+  }
 });
 
 topicsRouter.openapi(patchTopicRoute, async (c) => {
-  const db = createDb(c.env);
-  const [row] = await db
-    .update(topics)
-    .set(c.req.valid("json"))
-    .where(
-      and(
-        eq(topics.id, c.req.valid("param").id),
-        eq(topics.userId, c.get("userId")),
-      ),
-    )
-    .returning();
-  if (!row) return c.json({ error: "Not found" }, 404);
-  return c.json(row, 200);
+  try {
+    const db = createDb(c.env);
+    const [row] = await db
+      .update(topics)
+      .set(c.req.valid("json"))
+      .where(
+        and(
+          eq(topics.id, c.req.valid("param").id),
+          eq(topics.userId, c.get("userId")),
+        ),
+      )
+      .returning();
+    if (!row) return c.json({ error: "Not found" }, 404);
+    return c.json(row, 200);
+  } catch (err) {
+    console.error("PATCH /topics/:id failed", err);
+    throw err;
+  }
 });
 
 topicsRouter.openapi(deleteTopicRoute, async (c) => {
-  const db = createDb(c.env);
-  const [row] = await db
-    .delete(topics)
-    .where(
-      and(
-        eq(topics.id, c.req.valid("param").id),
-        eq(topics.userId, c.get("userId")),
-      ),
-    )
-    .returning();
-  if (!row) return c.json({ error: "Not found" }, 404);
-  return c.json({ ok: true }, 200);
+  try {
+    const db = createDb(c.env);
+    const [row] = await db
+      .delete(topics)
+      .where(
+        and(
+          eq(topics.id, c.req.valid("param").id),
+          eq(topics.userId, c.get("userId")),
+        ),
+      )
+      .returning();
+    if (!row) return c.json({ error: "Not found" }, 404);
+    return c.json({ ok: true }, 200);
+  } catch (err) {
+    console.error("DELETE /topics/:id failed", err);
+    throw err;
+  }
 });

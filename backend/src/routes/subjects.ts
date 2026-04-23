@@ -65,50 +65,70 @@ export const subjectsRouter = new OpenAPIHono<HonoEnv>();
 subjectsRouter.use(requireAuth);
 
 subjectsRouter.openapi(listRoute, async (c) => {
-  const db = createDb(c.env);
-  const rows = await db
-    .select()
-    .from(subjects)
-    .where(eq(subjects.userId, c.get("userId")));
-  return c.json(rows, 200);
+  try {
+    const db = createDb(c.env);
+    const rows = await db
+      .select()
+      .from(subjects)
+      .where(eq(subjects.userId, c.get("userId")));
+    return c.json(rows, 200);
+  } catch (err) {
+    console.error("GET /subjects failed", err);
+    throw err;
+  }
 });
 
 subjectsRouter.openapi(createSubjectRoute, async (c) => {
-  const db = createDb(c.env);
-  const [row] = await db
-    .insert(subjects)
-    .values({ ...c.req.valid("json"), userId: c.get("userId") })
-    .returning();
-  return c.json(row, 201);
+  try {
+    const db = createDb(c.env);
+    const [row] = await db
+      .insert(subjects)
+      .values({ ...c.req.valid("json"), userId: c.get("userId") })
+      .returning();
+    return c.json(row, 201);
+  } catch (err) {
+    console.error("POST /subjects failed", err);
+    throw err;
+  }
 });
 
 subjectsRouter.openapi(patchSubjectRoute, async (c) => {
-  const db = createDb(c.env);
-  const [row] = await db
-    .update(subjects)
-    .set(c.req.valid("json"))
-    .where(
-      and(
-        eq(subjects.id, c.req.valid("param").id),
-        eq(subjects.userId, c.get("userId")),
-      ),
-    )
-    .returning();
-  if (!row) return c.json({ error: "Not found" }, 404);
-  return c.json(row, 200);
+  try {
+    const db = createDb(c.env);
+    const [row] = await db
+      .update(subjects)
+      .set(c.req.valid("json"))
+      .where(
+        and(
+          eq(subjects.id, c.req.valid("param").id),
+          eq(subjects.userId, c.get("userId")),
+        ),
+      )
+      .returning();
+    if (!row) return c.json({ error: "Not found" }, 404);
+    return c.json(row, 200);
+  } catch (err) {
+    console.error("PATCH /subjects/:id failed", err);
+    throw err;
+  }
 });
 
 subjectsRouter.openapi(deleteSubjectRoute, async (c) => {
-  const db = createDb(c.env);
-  const [row] = await db
-    .delete(subjects)
-    .where(
-      and(
-        eq(subjects.id, c.req.valid("param").id),
-        eq(subjects.userId, c.get("userId")),
-      ),
-    )
-    .returning();
-  if (!row) return c.json({ error: "Not found" }, 404);
-  return c.json({ ok: true }, 200);
+  try {
+    const db = createDb(c.env);
+    const [row] = await db
+      .delete(subjects)
+      .where(
+        and(
+          eq(subjects.id, c.req.valid("param").id),
+          eq(subjects.userId, c.get("userId")),
+        ),
+      )
+      .returning();
+    if (!row) return c.json({ error: "Not found" }, 404);
+    return c.json({ ok: true }, 200);
+  } catch (err) {
+    console.error("DELETE /subjects/:id failed", err);
+    throw err;
+  }
 });

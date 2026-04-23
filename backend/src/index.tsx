@@ -14,14 +14,13 @@ import { usersRouter } from "./routes/users";
 
 const app = new OpenAPIHono<{ Bindings: Env }>();
 
-app.use(
-  "/api/*",
+app.use("/api/*", (c, next) =>
   cors({
-    origin: (origin) => origin,
+    origin: c.env.FRONTEND_URL ?? "",
     allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     credentials: true,
-  }),
+  })(c, next),
 );
 
 app.route("/api/onboarding", onboardingRouter);
@@ -45,16 +44,6 @@ app.get("/", (c) => {
   return c.text("Działa");
 });
 
-app.get("/api/debug/env", (c) => {
-  return c.json({
-    hasDatabaseUrl: Boolean(c.env.DATABASE_URL),
-    databaseUrlLength: c.env.DATABASE_URL?.length ?? 0,
-    hasBetterAuthSecret: Boolean(c.env.BETTER_AUTH_SECRET),
-    hasBetterAuthUrl: Boolean(c.env.BETTER_AUTH_URL),
-    hasResendApiKey: Boolean(c.env.RESEND_API_KEY),
-  });
-});
-
 app.get("/api/reference", Scalar({ url: "/api/doc" }));
 
 app.route("/api", topicsRouter);
@@ -69,7 +58,5 @@ app.onError((err, c) => {
   });
   return c.json({ error: "Internal server error" }, 500);
 });
-
-export type AppType = typeof app;
 
 export default app;

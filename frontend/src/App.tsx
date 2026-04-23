@@ -9,6 +9,9 @@ import { Shell } from "./components/layout/Shell";
 import { CARDS, SESSIONS, TODAY } from "./data/mock";
 import { useTheme } from "./hooks/useTheme";
 import { BrowsePage } from "./pages/BrowsePage";
+const LandingPage = lazy(() =>
+  import("./pages/LandingPage").then((m) => ({ default: m.LandingPage })),
+);
 import { LoginPage } from "./pages/LoginPage";
 import { NotePage } from "./pages/NotePage";
 import { ProfilePage } from "./pages/ProfilePage";
@@ -45,6 +48,14 @@ function App() {
   return (
     <>
       <Routes>
+        <Route
+          path="/site"
+          element={
+            <Suspense fallback={<PageSkeleton />}>
+              <LandingPage theme={theme} onToggleTheme={toggleTheme} />
+            </Suspense>
+          }
+        />
         <Route
           path="/login"
           element={<LoginPage theme={theme} onToggleTheme={toggleTheme} />}

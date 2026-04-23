@@ -23,75 +23,80 @@ export const dashboardRouter = new OpenAPIHono<HonoEnv>();
 dashboardRouter.use(requireAuth);
 
 dashboardRouter.openapi(dashboardRoute, async (c) => {
-  const db = createDb(c.env);
-  const userId = c.get("userId");
-  const today = isoDate(new Date());
+  try {
+    const db = createDb(c.env);
+    const userId = c.get("userId");
+    const today = isoDate(new Date());
 
-  const weekStart = new Date();
-  weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-  const weekEnd = new Date(weekStart);
-  weekEnd.setDate(weekStart.getDate() + 6);
+    const weekStart = new Date();
+    weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
 
-  const [todaySessions, overdueSessions, upcomingExams, weekSessions] =
-    await Promise.all([
-      db
-        .select()
-        .from(studySessions)
-        .where(
-          and(
-            eq(studySessions.userId, userId),
-            eq(studySessions.scheduledDate, today),
+    const [todaySessions, overdueSessions, upcomingExams, weekSessions] =
+      await Promise.all([
+        db
+          .select()
+          .from(studySessions)
+          .where(
+            and(
+              eq(studySessions.userId, userId),
+              eq(studySessions.scheduledDate, today),
+            ),
           ),
-        ),
 
-      db
-        .select()
-        .from(studySessions)
-        .where(
-          and(
-            eq(studySessions.userId, userId),
-            lt(studySessions.scheduledDate, today),
-            eq(studySessions.status, "planned"),
+        db
+          .select()
+          .from(studySessions)
+          .where(
+            and(
+              eq(studySessions.userId, userId),
+              lt(studySessions.scheduledDate, today),
+              eq(studySessions.status, "planned"),
+            ),
           ),
-        ),
 
-      db
-        .select()
-        .from(exams)
-        .where(and(eq(exams.userId, userId), gte(exams.examDate, today)))
-        .orderBy(exams.examDate)
-        .limit(5),
+        db
+          .select()
+          .from(exams)
+          .where(and(eq(exams.userId, userId), gte(exams.examDate, today)))
+          .orderBy(exams.examDate)
+          .limit(5),
 
-      db
-        .select()
-        .from(studySessions)
-        .where(
-          and(
-            eq(studySessions.userId, userId),
-            gte(studySessions.scheduledDate, isoDate(weekStart)),
-            lte(studySessions.scheduledDate, isoDate(weekEnd)),
+        db
+          .select()
+          .from(studySessions)
+          .where(
+            and(
+              eq(studySessions.userId, userId),
+              gte(studySessions.scheduledDate, isoDate(weekStart)),
+              lte(studySessions.scheduledDate, isoDate(weekEnd)),
+            ),
           ),
-        ),
-    ]);
+      ]);
 
-  const weekCompleted = weekSessions.filter(
-    (s) => s.status === "completed",
-  ).length;
+    const weekCompleted = weekSessions.filter(
+      (s) => s.status === "completed",
+    ).length;
 
-  return c.json(
-    {
-      today: todaySessions,
-      overdue: overdueSessions,
-      upcomingExams,
-      week: {
-        total: weekSessions.length,
-        completed: weekCompleted,
-        progressPercent:
-          weekSessions.length > 0
-            ? Math.round((weekCompleted / weekSessions.length) * 100)
-            : 0,
+    return c.json(
+      {
+        today: todaySessions,
+        overdue: overdueSessions,
+        upcomingExams,
+        week: {
+          total: weekSessions.length,
+          completed: weekCompleted,
+          progressPercent:
+            weekSessions.length > 0
+              ? Math.round((weekCompleted / weekSessions.length) * 100)
+              : 0,
+        },
       },
-    },
-    200,
-  );
+      200,
+    );
+  } catch (err) {
+    console.error("GET /dashboard failed", err);
+    throw err;
+  }
 });

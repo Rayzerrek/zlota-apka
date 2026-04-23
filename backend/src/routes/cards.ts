@@ -76,103 +76,128 @@ export const cardsRouter = new OpenAPIHono<HonoEnv>();
 cardsRouter.use(requireAuth);
 
 cardsRouter.openapi(dueCardsRoute, async (c) => {
-  const db = createDb(c.env);
-  const now = new Date();
-  const rows = await db
-    .select()
-    .from(cards)
-    .where(and(eq(cards.userId, c.get("userId")), lte(cards.due, now)))
-    .limit(50);
-  return c.json(rows, 200);
+  try {
+    const db = createDb(c.env);
+    const now = new Date();
+    const rows = await db
+      .select()
+      .from(cards)
+      .where(and(eq(cards.userId, c.get("userId")), lte(cards.due, now)))
+      .limit(50);
+    return c.json(rows, 200);
+  } catch (err) {
+    console.error("GET /cards/due failed", err);
+    throw err;
+  }
 });
 
 cardsRouter.openapi(listCardsRoute, async (c) => {
-  const db = createDb(c.env);
-  const rows = await db
-    .select()
-    .from(cards)
-    .where(
-      and(
-        eq(cards.topicId, c.req.valid("param").topicId),
-        eq(cards.userId, c.get("userId")),
-      ),
-    );
-  return c.json(rows, 200);
+  try {
+    const db = createDb(c.env);
+    const rows = await db
+      .select()
+      .from(cards)
+      .where(
+        and(
+          eq(cards.topicId, c.req.valid("param").topicId),
+          eq(cards.userId, c.get("userId")),
+        ),
+      );
+    return c.json(rows, 200);
+  } catch (err) {
+    console.error("GET /topics/:topicId/cards failed", err);
+    throw err;
+  }
 });
 
 cardsRouter.openapi(createCardRoute, async (c) => {
-  const db = createDb(c.env);
-  const [row] = await db
-    .insert(cards)
-    .values({
-      ...c.req.valid("json"),
-      userId: c.get("userId"),
-      topicId: c.req.valid("param").topicId,
-    })
-    .returning();
-  return c.json(row, 201);
+  try {
+    const db = createDb(c.env);
+    const [row] = await db
+      .insert(cards)
+      .values({
+        ...c.req.valid("json"),
+        userId: c.get("userId"),
+        topicId: c.req.valid("param").topicId,
+      })
+      .returning();
+    return c.json(row, 201);
+  } catch (err) {
+    console.error("POST /topics/:topicId/cards failed", err);
+    throw err;
+  }
 });
 
 cardsRouter.openapi(deleteCardRoute, async (c) => {
-  const db = createDb(c.env);
-  const [row] = await db
-    .delete(cards)
-    .where(
-      and(
-        eq(cards.id, c.req.valid("param").id),
-        eq(cards.userId, c.get("userId")),
-      ),
-    )
-    .returning();
-  if (!row) return c.json({ error: "Not found" }, 404);
-  return c.json({ ok: true }, 200);
+  try {
+    const db = createDb(c.env);
+    const [row] = await db
+      .delete(cards)
+      .where(
+        and(
+          eq(cards.id, c.req.valid("param").id),
+          eq(cards.userId, c.get("userId")),
+        ),
+      )
+      .returning();
+    if (!row) return c.json({ error: "Not found" }, 404);
+    return c.json({ ok: true }, 200);
+  } catch (err) {
+    console.error("DELETE /cards/:id failed", err);
+    throw err;
+  }
 });
 
 cardsRouter.openapi(reviewCardRoute, async (c) => {
-  const db = createDb(c.env);
-  const userId = c.get("userId");
-  const body = c.req.valid("json");
-  const now = new Date();
+  try {
+    const db = createDb(c.env);
+    const userId = c.get("userId");
+    const body = c.req.valid("json");
+    const now = new Date();
 
-  const [card] = await db
-    .select()
-    .from(cards)
-    .where(
-      and(eq(cards.id, c.req.valid("param").id), eq(cards.userId, userId)),
-    );
+    const [card] = await db
+      .select()
+      .from(cards)
+      .where(
+        and(eq(cards.id, c.req.valid("param").id), eq(cards.userId, userId)),
+      );
 
-  if (!card) return c.json({ error: "Not found" }, 404);
+    if (!card) return c.json({ error: "Not found" }, 404);
 
-  const next = scheduleReview(card, body.rating as Rating, now);
+    const next = scheduleReview(card, body.rating as Rating, now);
 
-  const [updated] = await db
-    .update(cards)
-    .set({
-      stability: next.stability,
-      difficulty: next.difficulty,
-      elapsedDays: next.elapsedDays,
+    const [updated] = await db
+      .update(cards)
+      .set({
+        stability: next.stability,
+        difficulty: next.difficulty,
+        elapsedDays: next.elapsedDays,
+        scheduledDays: next.scheduledDays,
+        reps: next.reps,
+        lapses: next.lapses,
+        state: next.state,
+        lastReview: next.lastReview,
+        due: next.due,
+        updatedAt: now,
+      })
+      .where(eq(cards.id, card.id))
+      .returning();
+
+    await db.insert(reviewHistory).values({
+      userId,
+      cardId: card.id,
+      sessionId: body.sessionId,
+      rating: body.rating,
+      stateBefore: card.state,
+      stabilityBefore: card.stability,
+      difficultyBefore: card.difficulty,
       scheduledDays: next.scheduledDays,
-      reps: next.reps,
-      lapses: next.lapses,
-      state: next.state,
-      lastReview: next.lastReview,
-      due: next.due,
-      updatedAt: now,
-    })
-    .where(eq(cards.id, card.id))
-    .returning();
+      elapsedDays: next.elapsedDays,
+    });
 
-  await db.insert(reviewHistory).values({
-    userId,
-    cardId: card.id,
-    sessionId: body.sessionId,
-    rating: body.rating,
-    stateBefore: card.state,
-    stabilityBefore: card.stability,
-    difficultyBefore: card.difficulty,
-    scheduledDays: next.scheduledDays,
-    elapsedDays: next.elapsedDays,
-  });
-
-  return c.json(updated, 200);
+    return c.json(updated, 200);
+  } catch (err) {
+    console.error("POST /cards/:id/review failed", err);
+    throw err;
+  }
 });
