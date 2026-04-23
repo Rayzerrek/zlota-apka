@@ -50,14 +50,14 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
 
   const handleLogout = () => {
     if (confirm("Wylogować się?")) {
-      navigate("/today");
+      navigate("/login");
     }
   };
 
   return (
     <SidebarProvider collapsible="none" style={{ display: "contents" }}>
       <div className="grid grid-cols-1 h-dvh w-screen overflow-hidden lg:grid-cols-[240px_1fr]">
-        <Sidebar className="hidden flex-col relative overflow-hidden px-5 pt-7 pb-6 border-r border-rule bg-gradient-to-b from-paper-2 to-paper lg:flex">
+        <Sidebar className="hidden flex-col relative overflow-hidden px-5 pt-7 pb-6 border-r border-rule bg-linear-to-b from-paper-2 to-paper lg:flex">
           <span
             aria-hidden
             className="absolute right-0 top-0 bottom-0 w-px opacity-30 bg-[linear-gradient(180deg,transparent,var(--color-amber-dim)_20%,var(--color-amber-dim)_80%,transparent)]"
@@ -90,7 +90,7 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
                             className={cn(
                               "relative flex items-center gap-3.5 p-2.5 bg-transparent text-[18px] font-medium text-left rounded-sm transition-colors duration-200",
                               isActive
-                                ? "text-ink before:content-[''] before:absolute before:left-[-20px] before:top-1/2 before:-translate-y-1/2 before:w-[3px] before:h-[22px] before:bg-amber"
+                                ? "text-ink before:content-[''] before:absolute before:-left-5 before:top-1/2 before:-translate-y-1/2 before:w-0.75 before:h-5.5 before:bg-amber"
                                 : "text-ink-muted hover:text-ink",
                             )}
                           >
@@ -118,7 +118,7 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
                     />
                   }
                 >
-                  <div className="w-[34px] h-[34px] rounded-sm bg-amber text-paper grid place-items-center display italic font-bold text-base shrink-0">
+                  <div className="w-8.5 h-8.5 rounded-sm bg-amber text-paper grid place-items-center display italic font-bold text-base shrink-0">
                     {STUDENT_INITIAL}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -136,7 +136,7 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Portal>
                   <DropdownMenu.Content
-                    className="menu-shadow min-w-[200px] p-1.5 bg-paper-2 border border-rule-strong rounded-[3px] outline-none z-[60]"
+                    className="menu-shadow min-w-50 p-1.5 bg-paper-2 border border-rule-strong rounded-[3px] outline-none z-60"
                     sideOffset={8}
                     align="start"
                   >
@@ -181,15 +181,15 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
           </SidebarFooter>
         </Sidebar>
 
-        <main className="overflow-y-auto relative pb-[90px] lg:pb-0">
-          <div className="max-w-[1100px] px-5 pt-6 pb-16 mx-auto md:px-12 md:pt-12 md:pb-20">
+        <main className="overflow-y-auto relative pb-22.5 lg:pb-0">
+          <div className="max-w-275 px-5 pt-6 pb-16 mx-auto md:px-12 md:pt-12 md:pb-20">
             {children}
           </div>
         </main>
 
         <nav
           aria-label="Nawigacja"
-          className="dock-frost fixed left-3 right-3 bottom-[calc(12px+env(safe-area-inset-bottom))] flex justify-stretch p-1.5 border border-rule rounded-[4px] z-40 lg:hidden"
+          className="dock-frost fixed left-3 right-3 bottom-[calc(12px+env(safe-area-inset-bottom))] flex justify-stretch p-1.5 border border-rule rounded-sm z-40 lg:hidden"
         >
           {NAV.map((item) => (
             <NavLink
@@ -198,7 +198,7 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
               aria-label={item.label}
               className={({ isActive }) =>
                 cn(
-                  "flex-1 flex flex-col items-center justify-center gap-0.5 px-1 py-2 bg-transparent border-0 rounded-sm mono text-[13px] tracking-[0.1em] uppercase cursor-pointer transition-colors duration-200",
+                  "flex-1 flex flex-col items-center justify-center gap-0.5 px-1 py-2 bg-transparent border-0 rounded-sm mono text-[13px] tracking-widest uppercase cursor-pointer transition-colors duration-200",
                   isActive ? "text-amber" : "text-ink-faint hover:text-ink",
                 )
               }
@@ -216,7 +216,7 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
             aria-label="Profil"
             className={({ isActive }) =>
               cn(
-                "flex-1 flex flex-col items-center justify-center gap-0.5 px-1 py-2 bg-transparent border-0 rounded-sm mono text-[13px] tracking-[0.1em] uppercase cursor-pointer transition-colors duration-200",
+                "flex-1 flex flex-col items-center justify-center gap-0.5 px-1 py-2 bg-transparent border-0 rounded-sm mono text-[13px] tracking-widest uppercase cursor-pointer transition-colors duration-200",
                 isActive ? "text-amber" : "text-ink-faint hover:text-ink",
               )
             }

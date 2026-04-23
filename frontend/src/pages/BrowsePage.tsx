@@ -51,8 +51,8 @@ export function BrowsePage() {
       />
 
       <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-3.5">
-        {visible.map((card, idx) => (
-          <BrowseCard key={card.id} card={card} idx={idx} />
+        {visible.map((card) => (
+          <BrowseCard key={card.id} card={card} />
         ))}
       </div>
 

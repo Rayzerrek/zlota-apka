@@ -67,14 +67,13 @@ export function SessionList({ sessions, onOpenSession }: Props) {
         </span>
       </div>
 
-      {sessions.map((s, idx) => {
+      {sessions.map((s) => {
         const subj = SUBJECTS[s.subject];
         return (
           <button
             key={s.id}
             type="button"
-            className="enter group grid grid-cols-[52px_1fr_auto] gap-5 items-center py-[18px] px-1 w-full text-left border-b border-rule cursor-pointer transition-[background] duration-200 hover:bg-white/[0.015]"
-            style={{ animationDelay: `${0.3 + idx * 0.05}s` }}
+            className="group grid grid-cols-[52px_1fr_auto] gap-5 items-center py-[18px] px-1 w-full text-left border-b border-rule cursor-pointer transition-[background] duration-200 hover:bg-white/[0.015]"
             onClick={() => !s.done && onOpenSession(s.id)}
           >
             <span

@@ -1,7 +1,10 @@
 import { Suspense, lazy, useMemo, useState } from "react";
-import { Navigate, Route, Routes } from "react-router";
+// import { useTranslation } from "react-i18next";
 
 import "./App.css";
+import { Navigate, Route, Routes } from "react-router";
+
+import { PageSkeleton } from "./components/layout/PageSkeleton";
 import { Shell } from "./components/layout/Shell";
 import { CARDS, SESSIONS, TODAY } from "./data/mock";
 import { useTheme } from "./hooks/useTheme";
@@ -24,6 +27,8 @@ const StatsPage = lazy(() =>
 function App() {
   const [reviewSessionId, setReviewSessionId] = useState<string | null>(null);
   const { theme, setTheme, toggleTheme } = useTheme();
+
+  // const t = useTranslation();
 
   const reviewCards = useMemo(() => {
     if (!reviewSessionId) return [];
@@ -65,7 +70,7 @@ function App() {
                 <Route
                   path="/calendar"
                   element={
-                    <Suspense>
+                    <Suspense fallback={<PageSkeleton />}>
                       <CalendarPage />
                     </Suspense>
                   }
@@ -74,7 +79,7 @@ function App() {
                 <Route
                   path="/stats"
                   element={
-                    <Suspense>
+                    <Suspense fallback={<PageSkeleton />}>
                       <StatsPage />
                     </Suspense>
                   }

@@ -14,7 +14,7 @@ export function ReviewDoneScreen({ ratings, total, onExit }: Props) {
   const wrong = ratings.length - correct;
 
   return (
-    <div className="fixed inset-0 bg-kumo-base light:bg-kumo-base z-50 flex flex-col animate-[fadeIn_0.3s_var(--ease-out)]">
+    <div className="fixed inset-0 bg-kumo-base light:bg-kumo-base z-50 flex flex-col">
       <div className="flex items-center justify-between px-6 py-5 border-b border-rule relative">
         <Button
           variant="ghost"
@@ -31,7 +31,7 @@ export function ReviewDoneScreen({ ratings, total, onExit }: Props) {
         <div className="absolute bottom-0 left-0 h-0.5 w-full bg-amber transition-[width] duration-[0.4s] [transition-timing-function:var(--ease-out)]" />
       </div>
       <div className="flex-1 grid place-items-center p-6 [perspective:1800px]">
-        <div className="text-center flex flex-col items-center gap-5 px-10 py-10 animate-[fadeIn_0.5s_var(--ease-out)]">
+        <div className="text-center flex flex-col items-center gap-5 px-10 py-10">
           <div className="display italic text-[123px] text-amber leading-[0.9] font-light">
             ✓
           </div>

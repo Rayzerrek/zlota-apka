@@ -7,7 +7,7 @@ type Props = {
 
 export function TodayHero({ onStart }: Props) {
   return (
-    <div className="enter enter-d1 flex flex-col gap-[18px] relative">
+    <div className="flex flex-col gap-[18px] relative">
       <p className="text-base text-ink-muted max-w-[38ch] leading-[1.5]">
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Est, aliquam!
         Doloremque ducimus corporis nulla impedit facilis illum veniam? Alias at

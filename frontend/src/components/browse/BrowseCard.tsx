@@ -21,10 +21,9 @@ const STAGE_COLORS: Record<CardStage, string> = {
 
 type Props = {
   card: Card;
-  idx: number;
 };
 
-export function BrowseCard({ card, idx }: Props) {
+export function BrowseCard({ card }: Props) {
   const subj = SUBJECTS[card.subject];
   const dueDays = daysBetween(TODAY, card.dueISO);
   const dueText =
@@ -35,10 +34,7 @@ export function BrowseCard({ card, idx }: Props) {
         : `za ${dueDays} d`;
 
   return (
-    <div
-      className="enter relative overflow-hidden flex flex-col gap-3.5 p-[20px_20px_18px] border border-rule bg-paper-2 rounded-[3px] cursor-pointer transition-all duration-[0.25s] hover:border-rule-strong hover:-translate-y-0.5"
-      style={{ animationDelay: `${0.04 * (idx % 20)}s` }}
-    >
+    <div className="relative overflow-hidden flex flex-col gap-3.5 p-[20px_20px_18px] border border-rule bg-paper-2 rounded-[3px] cursor-pointer transition-all duration-[0.25s] hover:border-rule-strong hover:-translate-y-0.5">
       <span
         aria-hidden
         className={cn(

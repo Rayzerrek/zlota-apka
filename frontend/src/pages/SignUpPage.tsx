@@ -69,8 +69,8 @@ export function SignUpPage({ theme, onToggleTheme }: Props) {
       </header>
 
       <main className="flex-1 flex items-center justify-center md:px-5 md:py-10">
-        <div className="w-full md:max-w-[420px] enter">
-          <div className="bg-transparent md:border md:border-rule md:rounded-[4px] p-8 md:p-10">
+        <div className="w-full md:max-w-105 enter">
+          <div className="bg-transparent md:border md:border-rule md:rounded-sm p-8 md:p-10">
             <h1 className="text-[22px] mb-5 font-semibold text-ink">
               Utwórz konto
             </h1>

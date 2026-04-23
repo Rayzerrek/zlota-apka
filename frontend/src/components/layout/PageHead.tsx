@@ -8,7 +8,7 @@ type Props = {
 
 export function PageHead({ eyebrow, title, date }: Props) {
   return (
-    <div className="enter flex items-end justify-between gap-4 mb-9 pb-4 border-b border-rule">
+    <div className="flex items-end justify-between gap-4 mb-9 pb-4 border-b border-rule">
       <div className="flex flex-col gap-2">
         {eyebrow && (
           <span className="mono text-xs text-ink-muted tracking-[0.12em] uppercase">

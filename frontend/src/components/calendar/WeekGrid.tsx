@@ -12,7 +12,7 @@ type Props = {
 export function WeekGrid({ days, selected, onSelect }: Props) {
   return (
     <div className="grid grid-cols-7 gap-2 mb-10">
-      {days.map((iso, idx) => {
+      {days.map((iso) => {
         const sessionsOfDay = SESSIONS.filter((s) => s.dateISO === iso);
         const examOnDay = EXAMS.find((e) => e.dateISO === iso);
         const uniqSubjects = Array.from(
@@ -24,10 +24,9 @@ export function WeekGrid({ days, selected, onSelect }: Props) {
           <button
             key={iso}
             type="button"
-            style={{ animationDelay: `${0.04 * idx}s` }}
             onClick={() => onSelect(iso)}
             className={cn(
-              "enter relative overflow-hidden flex flex-col items-center gap-2.5 px-2.5 pt-3.5 pb-4 border rounded-[2px] cursor-pointer transition-all duration-200",
+              "relative overflow-hidden flex flex-col items-center gap-2.5 px-2.5 pt-3.5 pb-4 border rounded-[2px] cursor-pointer transition-all duration-200",
               isSelected
                 ? "border-ink bg-paper-3"
                 : isToday
