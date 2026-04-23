@@ -8,6 +8,8 @@ import {
 import { useState } from "react";
 import { useNavigate } from "react-router";
 
+import { authClient, authErrorMessage } from "../lib/auth";
+
 type Props = {
   theme: "dark" | "light";
   onToggleTheme: () => void;
@@ -16,7 +18,34 @@ type Props = {
 export function SignUpPage({ theme, onToggleTheme }: Props) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (password !== confirm) {
+      setError("Hasła nie są identyczne.");
+      return;
+    }
+    setError("");
+    setLoading(true);
+    const { error: authError } = await authClient.signUp.email({
+      name,
+      email,
+      password,
+    });
+    setLoading(false);
+    if (authError) {
+      setError(authErrorMessage(authError, "signup"));
+      return;
+    }
+    navigate("/today");
+  }
 
   return (
     <div className="min-h-dvh flex flex-col bg-kumo-base">
@@ -46,10 +75,24 @@ export function SignUpPage({ theme, onToggleTheme }: Props) {
               Utwórz konto
             </h1>
 
-            <form
-              onSubmit={(e) => e.preventDefault()}
-              className="flex flex-col gap-5"
-            >
+            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="name" className="text-[14px]">
+                  Nazwa użytkownika
+                </label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="Jan"
+                  aria-label="username"
+                  autoComplete="given-name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full border-rule text-ink placeholder:text-ink-faint"
+                  required
+                />
+              </div>
+
               <div className="flex flex-col gap-1.5">
                 <label htmlFor="email" className="text-[14px]">
                   Adres e-mail
@@ -59,7 +102,11 @@ export function SignUpPage({ theme, onToggleTheme }: Props) {
                   type="email"
                   placeholder="jan@kowalski.pl"
                   autoComplete="email"
+                  aria-label="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full border-rule text-ink placeholder:text-ink-faint"
+                  required
                 />
               </div>
 
@@ -72,8 +119,12 @@ export function SignUpPage({ theme, onToggleTheme }: Props) {
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
+                    aria-label="password"
                     autoComplete="new-password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     className="w-full border-rule text-ink placeholder:text-ink-faint pr-10"
+                    required
                   />
                   <button
                     type="button"
@@ -99,8 +150,12 @@ export function SignUpPage({ theme, onToggleTheme }: Props) {
                     id="confirm-password"
                     type={showConfirm ? "text" : "password"}
                     placeholder="••••••••"
+                    aria-label="Confirm Password"
                     autoComplete="new-password"
+                    value={confirm}
+                    onChange={(e) => setConfirm(e.target.value)}
                     className="w-full border-rule text-ink placeholder:text-ink-faint pr-10"
+                    required
                   />
                   <button
                     type="button"
@@ -117,12 +172,17 @@ export function SignUpPage({ theme, onToggleTheme }: Props) {
                 </div>
               </div>
 
+              {error && (
+                <p className="text-[13px] text-red-400 -mt-1">{error}</p>
+              )}
+
               <Button
                 type="submit"
                 variant="primary"
-                className="w-full mt-1 justify-center bg-amber border-amber text-paper hover:bg-amber/90 hover:border-amber/90"
+                disabled={loading}
+                className="w-full mt-1 justify-center bg-amber border-amber text-paper hover:bg-amber/90 hover:border-amber/90 disabled:opacity-60"
               >
-                Zarejestruj się
+                {loading ? "Tworzenie konta…" : "Zarejestruj się"}
               </Button>
             </form>
 

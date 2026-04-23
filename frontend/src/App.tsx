@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { Suspense, lazy, useMemo, useState } from "react";
 import { Navigate, Route, Routes } from "react-router";
 
 import "./App.css";
@@ -6,15 +6,20 @@ import { Shell } from "./components/layout/Shell";
 import { CARDS, SESSIONS, TODAY } from "./data/mock";
 import { useTheme } from "./hooks/useTheme";
 import { BrowsePage } from "./pages/BrowsePage";
-import { CalendarPage } from "./pages/CalendarPage";
 import { LoginPage } from "./pages/LoginPage";
 import { NotePage } from "./pages/NotePage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { ReviewPage } from "./pages/ReviewPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { SignUpPage } from "./pages/SignUpPage";
-import { StatsPage } from "./pages/StatsPage";
 import { TodayPage } from "./pages/TodayPage";
+
+const CalendarPage = lazy(() =>
+  import("./pages/CalendarPage").then((m) => ({ default: m.CalendarPage })),
+);
+const StatsPage = lazy(() =>
+  import("./pages/StatsPage").then((m) => ({ default: m.StatsPage })),
+);
 
 function App() {
   const [reviewSessionId, setReviewSessionId] = useState<string | null>(null);
@@ -57,9 +62,23 @@ function App() {
                     />
                   }
                 />
-                <Route path="/calendar" element={<CalendarPage />} />
+                <Route
+                  path="/calendar"
+                  element={
+                    <Suspense>
+                      <CalendarPage />
+                    </Suspense>
+                  }
+                />
                 <Route path="/browse" element={<BrowsePage />} />
-                <Route path="/stats" element={<StatsPage />} />
+                <Route
+                  path="/stats"
+                  element={
+                    <Suspense>
+                      <StatsPage />
+                    </Suspense>
+                  }
+                />
                 <Route
                   path="/profile"
                   element={
