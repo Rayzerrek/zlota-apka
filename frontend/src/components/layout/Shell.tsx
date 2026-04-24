@@ -26,6 +26,7 @@ import {
 import { NavLink, useNavigate } from "react-router";
 
 import { STUDENT_CLASS, STUDENT_INITIAL, STUDENT_NAME } from "../../data/mock";
+import { authClient } from "../../lib/auth";
 import { cn } from "../../utils/cn";
 
 import type { ReactNode } from "react";
@@ -48,8 +49,9 @@ type Props = {
 export function Shell({ children, theme, onToggleTheme }: Props) {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     if (confirm("Wylogować się?")) {
+      await authClient.signOut();
       navigate("/login");
     }
   };

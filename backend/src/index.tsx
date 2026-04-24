@@ -3,6 +3,7 @@ import { Scalar } from "@scalar/hono-api-reference";
 import { cors } from "hono/cors";
 
 import { createAuth, type Env } from "./lib/auth";
+import { checkAuthRateLimit } from "./lib/utils";
 import { cardsRouter } from "./routes/cards";
 import { dashboardRouter } from "./routes/dashboard";
 import { examsRouter } from "./routes/exams";
@@ -14,14 +15,18 @@ import { usersRouter } from "./routes/users";
 
 const app = new OpenAPIHono<{ Bindings: Env }>();
 
-app.use("/api/*", (c, next) =>
-  cors({
+app.use("/api/*", (c, next) => {
+  const origin = c.env.FRONTEND_URL;
+  if (!origin) {
+    throw new Error("FRONTEND_URL is not configured");
+  }
+  return cors({
     origin: c.env.FRONTEND_URL ?? "",
     allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     credentials: true,
-  })(c, next),
-);
+  })(c, next);
+});
 
 app.route("/api/onboarding", onboardingRouter);
 app.route("/api/users", usersRouter);
@@ -31,6 +36,7 @@ app.route("/api/dashboard", dashboardRouter);
 app.route("/api/sessions", sessionsRouter);
 
 app.on(["GET", "POST"], "/api/auth/**", async (c) => {
+  checkAuthRateLimit(c.req.header("cf-connecting-ip") ?? "unknown");
   const auth = createAuth(c.env);
   return auth.handler(c.req.raw);
 });
