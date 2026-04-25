@@ -21,7 +21,7 @@ app.use("/api/*", (c, next) => {
     .map((s) => s.trim())
     .filter(Boolean);
   if (origins.length === 0) {
-    return c.json({ error: "FRONTEND_URL is not configured" }, 500);
+    throw new Error("FRONTEND_URL is not configured");
   }
   return cors({
     origin: origins.length === 1 ? origins[0] : origins,

@@ -47,7 +47,7 @@ export function createAuth(env: Env): AuthInstance {
       magicLink({
         sendMagicLink: async ({ email, url }) => {
           await resend.emails.send({
-            from: "Powtórki <noreply@twoja-domena.pl>",
+            from: "Powtórki <onboarding@resend.dev>",
             to: email,
             subject: "Zaloguj się do Powtórek",
             html: `<p>Kliknij link żeby się zalogować:</p><a href="${url}">${url}</a><p>Link wygasa za 10 minut.</p>`,
