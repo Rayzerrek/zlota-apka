@@ -15,6 +15,8 @@ export type Env = {
   BETTER_AUTH_URL: string;
   RESEND_API_KEY: string;
   FRONTEND_URL?: string;
+  GOOGLE_CLIENT_ID: string;
+  GOOGLE_CLIENT_SECRET: string;
 };
 
 type AuthInstance = ReturnType<typeof betterAuth>;
@@ -43,6 +45,12 @@ export function createAuth(env: Env): AuthInstance {
     emailAndPassword: {
       enabled: false,
     },
+    socialProviders: {
+      google: {
+        clientId: env.GOOGLE_CLIENT_ID,
+        clientSecret: env.GOOGLE_CLIENT_SECRET,
+      },
+    },
     plugins: [
       magicLink({
         sendMagicLink: async ({ email, url }) => {
@@ -59,7 +67,7 @@ export function createAuth(env: Env): AuthInstance {
       useSecureCookies: true,
       cookies: {
         session_token: {
-          options: {
+          attributes: {
             sameSite: "none",
             secure: true,
           },
