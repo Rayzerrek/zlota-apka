@@ -26,7 +26,7 @@ export function SignUpPage({ theme, onToggleTheme }: Props) {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (password !== confirm) {
       setError("Hasła nie są identyczne.");

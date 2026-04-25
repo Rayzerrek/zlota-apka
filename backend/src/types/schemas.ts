@@ -94,6 +94,7 @@ export const userPatchSchema = z.object({
   name: z.string().min(1).max(128).optional(),
   grade: z.string().min(1).max(32).nullable().optional(),
   image: z.string().url().nullable().optional(),
+  onboardingDone: z.boolean().optional(),
 });
 
 export const userAvailabilityResponseSchema = z.object({

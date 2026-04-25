@@ -132,6 +132,7 @@ usersRouter.openapi(patchMeRoute, async (c) => {
         name: body.name,
         grade: body.grade,
         image: body.image,
+        onboardingDone: body.onboardingDone,
         updatedAt: new Date(),
       })
       .where(eq(user.id, userId))

@@ -44,7 +44,7 @@ export function LoginPage({ theme, onToggleTheme }: Props) {
     setLoading(true);
     const { error: authError } = await authClient.signIn.social({
       provider: "google",
-      callbackURL: `${window.location.origin}/today`,
+      callbackURL: `${window.location.origin}/onboarding`,
     });
     if (authError) {
       setError("Nie udało się zalogować przez Google. Spróbuj ponownie.");

@@ -11,6 +11,7 @@ import { DoneStep } from "../components/onboarding/DoneStep";
 import { StepPanel } from "../components/onboarding/StepPanel";
 import { SubjectsStep } from "../components/onboarding/SubjectsStep";
 import { WelcomeStep } from "../components/onboarding/WelcomeStep";
+import { apiPatch } from "../lib/api";
 import { cn } from "../utils/cn";
 
 import type { SubjectKey } from "../types";
@@ -22,6 +23,7 @@ export function OnboardingPage() {
   const [step, setStep] = useState(1);
   const [selected, setSelected] = useState<Set<SubjectKey>>(new Set());
   const [dir, setDir] = useState<1 | -1>(1);
+  const [saving, setSaving] = useState(false);
 
   const toggleSubject = (key: SubjectKey) => {
     setSelected((prev) => {
@@ -32,12 +34,14 @@ export function OnboardingPage() {
     });
   };
 
-  const goNext = () => {
+  const goNext = async () => {
     if (step < STEPS) {
       setDir(1);
       setStep((s) => s + 1);
     } else {
-      localStorage.setItem("onboarding_done", "1");
+      setSaving(true);
+      await apiPatch("/api/users/me", { onboardingDone: true });
+      setSaving(false);
       navigate("/today", { replace: true });
     }
   };
@@ -111,7 +115,7 @@ export function OnboardingPage() {
             type="button"
             variant="primary"
             onClick={goNext}
-            disabled={step === 2 && selected.size === 0}
+            disabled={saving || (step === 2 && selected.size === 0)}
             className="bg-amber border-amber text-paper hover:bg-amber/90 hover:border-amber/90 font-semibold disabled:opacity-50"
           >
             {step === STEPS ? (

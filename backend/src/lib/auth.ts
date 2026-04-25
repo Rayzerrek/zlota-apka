@@ -43,7 +43,9 @@ export function createAuth(env: Env): AuthInstance {
         : []),
     ],
     emailAndPassword: {
-      enabled: false,
+      enabled: true,
+      autoSignIn: true,
+      requireEmailVerification: false,
     },
     socialProviders: {
       google: {

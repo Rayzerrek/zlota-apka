@@ -2,7 +2,7 @@ import { Suspense, lazy, useMemo, useState } from "react";
 // import { useTranslation } from "react-i18next";
 
 import "./App.css";
-import { Navigate, Route, Routes } from "react-router";
+import { Navigate, Route, Routes, useLocation } from "react-router";
 
 import { PageSkeleton } from "./components/layout/PageSkeleton";
 import { Shell } from "./components/layout/Shell";
@@ -34,6 +34,22 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (isPending) return <PageSkeleton />;
   if (!session) return <Navigate to="/login" replace />;
+
+  return <>{children}</>;
+}
+
+function OnboardingGuard({ children }: { children: React.ReactNode }) {
+  const { data: session } = authClient.useSession();
+  const location = useLocation();
+
+  if (!session) return <>{children}</>;
+
+  const user = session.user as Record<string, unknown> | undefined;
+  const onboardingDone = user?.onboardingDone;
+
+  if (onboardingDone === false && location.pathname !== "/onboarding") {
+    return <Navigate to="/onboarding" replace />;
+  }
 
   return <>{children}</>;
 }
@@ -87,45 +103,50 @@ function App() {
           path="/*"
           element={
             <ProtectedRoute>
-              <Shell theme={theme} onToggleTheme={toggleTheme}>
-                <Routes>
-                  <Route
-                    path="/today"
-                    element={
-                      <TodayPage
-                        onStart={() => setReviewSessionId("__all_today__")}
-                        onOpenSession={(id) => setReviewSessionId(id)}
-                      />
-                    }
-                  />
-                  <Route
-                    path="/calendar"
-                    element={
-                      <Suspense fallback={<PageSkeleton />}>
-                        <CalendarPage />
-                      </Suspense>
-                    }
-                  />
-                  <Route path="/browse" element={<BrowsePage />} />
-                  <Route
-                    path="/stats"
-                    element={
-                      <Suspense fallback={<PageSkeleton />}>
-                        <StatsPage />
-                      </Suspense>
-                    }
-                  />
-                  <Route
-                    path="/profile"
-                    element={
-                      <ProfilePage theme={theme} onThemeChange={setTheme} />
-                    }
-                  />
-                  <Route path="/settings" element={<SettingsPage />} />
-                  <Route path="/notes/:examId" element={<NotePage />} />
-                  <Route path="*" element={<Navigate to="/today" replace />} />
-                </Routes>
-              </Shell>
+              <OnboardingGuard>
+                <Shell theme={theme} onToggleTheme={toggleTheme}>
+                  <Routes>
+                    <Route
+                      path="/today"
+                      element={
+                        <TodayPage
+                          onStart={() => setReviewSessionId("__all_today__")}
+                          onOpenSession={(id) => setReviewSessionId(id)}
+                        />
+                      }
+                    />
+                    <Route
+                      path="/calendar"
+                      element={
+                        <Suspense fallback={<PageSkeleton />}>
+                          <CalendarPage />
+                        </Suspense>
+                      }
+                    />
+                    <Route path="/browse" element={<BrowsePage />} />
+                    <Route
+                      path="/stats"
+                      element={
+                        <Suspense fallback={<PageSkeleton />}>
+                          <StatsPage />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="/profile"
+                      element={
+                        <ProfilePage theme={theme} onThemeChange={setTheme} />
+                      }
+                    />
+                    <Route path="/settings" element={<SettingsPage />} />
+                    <Route path="/notes/:examId" element={<NotePage />} />
+                    <Route
+                      path="*"
+                      element={<Navigate to="/today" replace />}
+                    />
+                  </Routes>
+                </Shell>
+              </OnboardingGuard>
             </ProtectedRoute>
           }
         />

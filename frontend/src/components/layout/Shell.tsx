@@ -23,13 +23,14 @@ import {
   SunIcon,
   UserCircleIcon,
 } from "@phosphor-icons/react";
-import { NavLink, useNavigate } from "react-router";
+import { useEffect, useState } from "react";
+import { NavLink, useLocation, useNavigate } from "react-router";
 
 import { STUDENT_CLASS, STUDENT_INITIAL, STUDENT_NAME } from "../../data/mock";
 import { authClient } from "../../lib/auth";
 import { cn } from "../../utils/cn";
 
-import type { ReactNode } from "react";
+import type { MouseEvent, ReactNode } from "react";
 
 type PagePath = "/today" | "/calendar" | "/browse" | "/stats";
 
@@ -48,12 +49,35 @@ type Props = {
 
 export function Shell({ children, theme, onToggleTheme }: Props) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [isMobileProfileMenuOpen, setIsMobileProfileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setIsMobileProfileMenuOpen(false);
+  }, [location.pathname]);
 
   const handleLogout = async () => {
     if (confirm("Wylogować się?")) {
+      setIsMobileProfileMenuOpen(false);
       await authClient.signOut();
       navigate("/login");
     }
+  };
+
+  const handleMobileProfileClick = (event: MouseEvent<HTMLButtonElement>) => {
+    if (location.pathname === "/profile") {
+      event.preventDefault();
+      setIsMobileProfileMenuOpen((open) => !open);
+      return;
+    }
+
+    setIsMobileProfileMenuOpen(false);
+    navigate("/profile");
+  };
+
+  const openSettingsFromMobileMenu = () => {
+    setIsMobileProfileMenuOpen(false);
+    navigate("/settings");
   };
 
   return (
@@ -213,26 +237,47 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
               )}
             </NavLink>
           ))}
-          <NavLink
-            to="/profile"
-            aria-label="Profil"
-            className={({ isActive }) =>
-              cn(
-                "flex-1 flex flex-col items-center justify-center gap-0.5 px-1 py-2 bg-transparent border-0 rounded-sm mono text-[13px] tracking-widest uppercase cursor-pointer transition-colors duration-200",
-                isActive ? "text-amber" : "text-ink-faint hover:text-ink",
-              )
-            }
-          >
-            {({ isActive }) => (
-              <>
-                <UserCircleIcon
-                  size={22}
-                  weight={isActive ? "fill" : "regular"}
-                />
-                <span>Profil</span>
-              </>
+          <div className="relative flex-1">
+            {isMobileProfileMenuOpen && (
+              <div className="menu-shadow absolute right-0 bottom-[calc(100%+10px)] min-w-42 p-1.5 bg-paper-2 border border-rule-strong rounded-[3px] z-50">
+                <button
+                  type="button"
+                  className="flex items-center gap-2.5 w-full px-2.5 py-2 bg-transparent border-0 rounded-sm text-ink-muted text-sm text-left cursor-pointer transition-all duration-150 hover:bg-paper-3 hover:text-ink"
+                  onClick={openSettingsFromMobileMenu}
+                >
+                  <GearSixIcon size={16} />
+                  Ustawienia
+                </button>
+                <div className="h-px bg-rule my-1" />
+                <button
+                  type="button"
+                  className="flex items-center gap-2.5 w-full px-2.5 py-2 bg-transparent border-0 rounded-sm text-rating-1 text-sm text-left cursor-pointer transition-all duration-150 hover:bg-rating-1/8 hover:text-rating-1"
+                  onClick={handleLogout}
+                >
+                  <SignOutIcon size={16} />
+                  Wyloguj
+                </button>
+              </div>
             )}
-          </NavLink>
+            <button
+              type="button"
+              aria-label="Profil"
+              aria-expanded={isMobileProfileMenuOpen}
+              onClick={handleMobileProfileClick}
+              className={cn(
+                "w-full flex flex-col items-center justify-center gap-0.5 px-1 py-2 bg-transparent border-0 rounded-sm mono text-[13px] tracking-widest uppercase cursor-pointer transition-colors duration-200",
+                location.pathname === "/profile"
+                  ? "text-amber"
+                  : "text-ink-faint hover:text-ink",
+              )}
+            >
+              <UserCircleIcon
+                size={22}
+                weight={location.pathname === "/profile" ? "fill" : "regular"}
+              />
+              <span>Profil</span>
+            </button>
+          </div>
         </nav>
       </div>
     </SidebarProvider>
