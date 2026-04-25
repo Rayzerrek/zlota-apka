@@ -55,6 +55,17 @@ export function createAuth(env: Env): AuthInstance {
         },
       }),
     ],
+    advanced: {
+      useSecureCookies: true,
+      cookies: {
+        session_token: {
+          options: {
+            sameSite: "none",
+            secure: true,
+          },
+        },
+      },
+    },
     user: {
       additionalFields: {
         grade: { type: "string", required: false },
