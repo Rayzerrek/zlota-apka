@@ -33,10 +33,6 @@ app.use("/api/*", async (c, next) => {
     .map((s) => s.trim())
     .filter(Boolean);
 
-  if (c.req.path.startsWith("/api/auth")) {
-    return next();
-  }
-
   return createCorsMiddleware(origins)(c, next);
 });
 
