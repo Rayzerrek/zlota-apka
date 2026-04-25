@@ -23,7 +23,7 @@ export function LoginPage({ theme, onToggleTheme }: Props) {
     setLoading(true);
     const { error: authError } = await authClient.signIn.magicLink({
       email,
-      callbackURL: "/today",
+      callbackURL: `${window.location.origin}/today`,
     });
     setLoading(false);
     if (authError) {
