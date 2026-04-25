@@ -61,7 +61,7 @@ export function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-dvh flex flex-col items-center justify-center px-5 py-10 relative overflow-hidden">
+    <div className="min-h-dvh flex flex-col items-center justify-center px-5 py-10 relative">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"

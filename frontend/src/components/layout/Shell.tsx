@@ -82,8 +82,8 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
 
   return (
     <SidebarProvider collapsible="none" style={{ display: "contents" }}>
-      <div className="grid grid-cols-1 h-dvh w-screen overflow-hidden lg:grid-cols-[240px_1fr]">
-        <Sidebar className="hidden flex-col relative overflow-hidden px-5 pt-7 pb-6 border-r border-rule bg-linear-to-b from-paper-2 to-paper lg:flex">
+      <div className="grid grid-cols-1 h-dvh w-full overflow-hidden lg:grid-cols-[240px_1fr]">
+        <Sidebar className="hidden flex-col relative overflow-hidden w-[240px] min-w-[240px] px-5 pt-7 pb-6 border-r border-rule bg-linear-to-b from-paper-2 to-paper lg:flex">
           <span
             aria-hidden
             className="absolute right-0 top-0 bottom-0 w-px opacity-30 bg-[linear-gradient(180deg,transparent,var(--color-amber-dim)_20%,var(--color-amber-dim)_80%,transparent)]"
@@ -207,7 +207,7 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
           </SidebarFooter>
         </Sidebar>
 
-        <main className="overflow-y-auto relative pb-22.5 lg:pb-0">
+        <main className="overflow-y-auto relative min-w-0 pb-22.5 lg:pb-0">
           <div className="max-w-275 px-5 pt-6 pb-16 mx-auto md:px-12 md:pt-12 md:pb-20">
             {children}
           </div>

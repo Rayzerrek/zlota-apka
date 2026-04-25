@@ -99,7 +99,6 @@
       ),
       var(--color-paper);
     background-attachment: fixed;
-    overflow: hidden;
   }
 
   button,
