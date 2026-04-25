@@ -1,3 +1,4 @@
+import { Input, Label } from "@cloudflare/kumo";
 import { Switch } from "@cloudflare/kumo/components/switch";
 import { CheckIcon } from "@phosphor-icons/react";
 import { useState } from "react";
@@ -67,7 +68,7 @@ export function SettingsPage() {
             )}
           </div>
 
-          <label className="flex items-center justify-between gap-6 py-4 border-b border-dashed border-rule cursor-pointer">
+          <Label className="flex items-center justify-between gap-6 py-4 border-b border-dashed border-rule cursor-pointer">
             <div className="flex flex-col gap-1">
               <span className="text-[18px] text-ink">Powiadomienia</span>
               <span className="text-[15px] text-ink-faint">
@@ -78,9 +79,9 @@ export function SettingsPage() {
               checked={notifications}
               onCheckedChange={handleNotificationsChange}
             />
-          </label>
+          </Label>
 
-          <label className="flex items-center justify-between gap-6 py-4 border-b border-dashed border-rule cursor-pointer">
+          <Label className="flex items-center justify-between gap-6 py-4 border-b border-dashed border-rule cursor-pointer">
             <div className="flex flex-col gap-1">
               <span className="text-[18px] text-ink">Dźwięki</span>
               <span className="text-[15px] text-ink-faint">
@@ -88,9 +89,9 @@ export function SettingsPage() {
               </span>
             </div>
             <Switch checked={sound} onCheckedChange={handleSoundChange} />
-          </label>
+          </Label>
 
-          <label className="flex items-center justify-between gap-6 py-4 border-b border-dashed border-rule">
+          <Label className="flex items-center justify-between gap-6 py-4 border-b border-dashed border-rule">
             <div className="flex flex-col gap-1">
               <span className="text-[18px] text-ink">Dzienny limit kart</span>
               <span className="text-[15px] text-ink-faint">
@@ -98,7 +99,7 @@ export function SettingsPage() {
               </span>
             </div>
             <div className="flex items-center gap-3">
-              <input
+              <Input
                 type="range"
                 min={5}
                 max={100}
@@ -113,7 +114,7 @@ export function SettingsPage() {
                 {dailyTarget}
               </span>
             </div>
-          </label>
+          </Label>
         </section>
 
         <section className="enter enter-d2 flex flex-col gap-4">

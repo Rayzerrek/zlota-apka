@@ -22,6 +22,8 @@ export function authErrorMessage(
     return "Konto z tym adresem już istnieje.";
   if (error.code === "INVALID_EMAIL_OR_PASSWORD")
     return "Nieprawidłowy e-mail lub hasło.";
+  if (error.code === "PASSWORD_TOO_SHORT")
+    return "Hasło jest za krótkie. Użyj co najmniej 8 znaków.";
   if (context === "login") return "Nie udało się zalogować. Spróbuj ponownie.";
   return "Nie udało się utworzyć konta. Spróbuj ponownie.";
 }

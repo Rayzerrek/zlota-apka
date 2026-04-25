@@ -1,13 +1,9 @@
-import { Button, Input } from "@cloudflare/kumo";
-import {
-  EyeIcon,
-  EyeSlashIcon,
-  MoonIcon,
-  SunIcon,
-} from "@phosphor-icons/react";
+import { Button, Input, Label } from "@cloudflare/kumo";
+import { EyeIcon, EyeSlashIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 
+import { LoginHeader } from "../components/ui/LoginHeader";
 import { authClient, authErrorMessage } from "../lib/auth";
 
 type Props = {
@@ -28,6 +24,10 @@ export function SignUpPage({ theme, onToggleTheme }: Props) {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (password.length < 8) {
+      setError("Hasło musi mieć co najmniej 8 znaków.");
+      return;
+    }
     if (password !== confirm) {
       setError("Hasła nie są identyczne.");
       return;
@@ -49,24 +49,12 @@ export function SignUpPage({ theme, onToggleTheme }: Props) {
 
   return (
     <div className="min-h-dvh flex flex-col bg-kumo-base">
-      <header className="flex items-center justify-between px-5 py-4 md:px-10">
-        <span className="display italic font-semibold text-[26px] text-amber leading-none">
-          Nazwa
-        </span>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            icon={
-              theme === "dark" ? <SunIcon size={16} /> : <MoonIcon size={16} />
-            }
-            aria-label="Zmień motyw"
-            onClick={onToggleTheme}
-          />
-          <Button variant="outline" onClick={() => navigate("/login")}>
-            Zaloguj się
-          </Button>
-        </div>
-      </header>
+      <LoginHeader
+        theme={theme}
+        onToggleTheme={onToggleTheme}
+        actionTo="/login"
+        actionLabel="Zaloguj się"
+      />
 
       <main className="flex-1 flex items-center justify-center md:px-5 md:py-10">
         <div className="w-full md:max-w-105 enter">
@@ -77,9 +65,9 @@ export function SignUpPage({ theme, onToggleTheme }: Props) {
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="name" className="text-[14px]">
+                <Label htmlFor="name" className="text-[14px]">
                   Nazwa użytkownika
-                </label>
+                </Label>
                 <Input
                   id="name"
                   type="text"
@@ -94,9 +82,9 @@ export function SignUpPage({ theme, onToggleTheme }: Props) {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="email" className="text-[14px]">
+                <Label htmlFor="email" className="text-[14px]">
                   Adres e-mail
-                </label>
+                </Label>
                 <Input
                   id="email"
                   type="email"
@@ -111,9 +99,9 @@ export function SignUpPage({ theme, onToggleTheme }: Props) {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="password" className="text-[14px]">
+                <Label htmlFor="password" className="text-[14px]">
                   Hasło
-                </label>
+                </Label>
                 <div className="relative">
                   <Input
                     id="password"
@@ -126,25 +114,27 @@ export function SignUpPage({ theme, onToggleTheme }: Props) {
                     className="w-full border-rule text-ink placeholder:text-ink-faint pr-10"
                     required
                   />
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
+                    shape="square"
                     onClick={() => setShowPassword((v) => !v)}
                     aria-label={showPassword ? "Ukryj hasło" : "Pokaż hasło"}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-faint hover:text-ink transition-colors bg-transparent border-0 cursor-pointer p-0 flex items-center"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-faint hover:text-ink transition-colors p-0"
                   >
                     {showPassword ? (
                       <EyeSlashIcon size={15} />
                     ) : (
                       <EyeIcon size={15} />
                     )}
-                  </button>
+                  </Button>
                 </div>
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="confirm-password" className="text-[14px]">
+                <Label htmlFor="confirm-password" className="text-[14px]">
                   Powtórz hasło
-                </label>
+                </Label>
                 <div className="relative">
                   <Input
                     id="confirm-password"
@@ -157,18 +147,20 @@ export function SignUpPage({ theme, onToggleTheme }: Props) {
                     className="w-full border-rule text-ink placeholder:text-ink-faint pr-10"
                     required
                   />
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
+                    shape="square"
                     onClick={() => setShowConfirm((v) => !v)}
                     aria-label={showConfirm ? "Ukryj hasło" : "Pokaż hasło"}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-faint hover:text-ink transition-colors bg-transparent border-0 cursor-pointer p-0 flex items-center"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-faint hover:text-ink transition-colors p-0"
                   >
                     {showConfirm ? (
                       <EyeSlashIcon size={15} />
                     ) : (
                       <EyeIcon size={15} />
                     )}
-                  </button>
+                  </Button>
                 </div>
               </div>
 

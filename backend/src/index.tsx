@@ -15,20 +15,29 @@ import { usersRouter } from "./routes/users";
 
 const app = new OpenAPIHono<{ Bindings: Env }>();
 
-app.use("/api/*", (c, next) => {
+function createCorsMiddleware(origins: string[]) {
+  return cors({
+    origin: (origin) => {
+      if (origins.includes(origin)) return origin;
+      return null;
+    },
+    allowHeaders: ["Content-Type", "Authorization"],
+    allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    credentials: true,
+  });
+}
+
+app.use("/api/*", async (c, next) => {
   const origins = (c.env.FRONTEND_URL ?? "")
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
-  if (origins.length === 0) {
-    throw new Error("FRONTEND_URL is not configured");
+
+  if (c.req.path.startsWith("/api/auth")) {
+    return next();
   }
-  return cors({
-    origin: origins.length === 1 ? origins[0] : origins,
-    allowHeaders: ["Content-Type", "Authorization"],
-    allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    credentials: true,
-  })(c, next);
+
+  return createCorsMiddleware(origins)(c, next);
 });
 
 app.route("/api/onboarding", onboardingRouter);
@@ -38,7 +47,7 @@ app.route("/api/exams", examsRouter);
 app.route("/api/dashboard", dashboardRouter);
 app.route("/api/sessions", sessionsRouter);
 
-app.on(["GET", "POST"], "/api/auth/**", async (c) => {
+app.all("/api/auth/**", async (c) => {
   checkAuthRateLimit(c.req.header("cf-connecting-ip") ?? "unknown");
   const auth = createAuth(c.env);
   return auth.handler(c.req.raw);

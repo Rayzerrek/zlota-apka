@@ -1,3 +1,5 @@
+import { Button } from "@cloudflare/kumo";
+
 import { cn } from "../../utils/cn";
 
 import type { Rating } from "../../types";
@@ -34,13 +36,14 @@ export function ReviewRatings({ flipped, onRate }: Props) {
   return (
     <div className="grid grid-cols-4 gap-2.5 px-6 pb-6 pt-5 max-w-[720px] w-full mx-auto">
       {RATINGS.map((r) => (
-        <button
+        <Button
           key={r}
           type="button"
+          variant="ghost"
           disabled={!flipped}
           onClick={() => onRate(r)}
           className={cn(
-            "flex flex-col items-center gap-1.5 px-2 pt-4 pb-3.5 bg-transparent border border-rule rounded-[2px] text-ink cursor-pointer transition-all duration-200 hover:-translate-y-0.5 max-[520px]:px-1 max-[520px]:pt-3 max-[520px]:pb-2.5",
+            "flex flex-col items-center gap-1.5 px-2 pt-4 pb-3.5 border border-rule rounded-[2px] text-ink transition-all duration-200 hover:-translate-y-0.5 max-[520px]:px-1 max-[520px]:pt-3 max-[520px]:pb-2.5",
             RATING_HOVER[r],
             !flipped && "opacity-[0.35] cursor-not-allowed",
           )}
@@ -62,7 +65,7 @@ export function ReviewRatings({ flipped, onRate }: Props) {
           <span className="mono text-[11px] text-ink-faint max-[520px]:hidden">
             Klawisz {r}
           </span>
-        </button>
+        </Button>
       ))}
     </div>
   );

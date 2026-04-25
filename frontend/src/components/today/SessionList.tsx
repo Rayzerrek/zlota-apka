@@ -79,10 +79,11 @@ export function SessionList({ sessions, onOpenSession }: Props) {
         const isDone = s.status === "completed";
         const subjKey = toSubjectKey(s.subjectKey);
         return (
-          <button
+          <Button
             key={s.id}
             type="button"
-            className="group grid grid-cols-[1fr_auto] gap-5 items-center py-[18px] px-1 w-full text-left border-b border-rule cursor-pointer transition-[background] duration-200 hover:bg-white/[0.015]"
+            variant="ghost"
+            className="group grid grid-cols-[1fr_auto] gap-5 items-center py-[18px] px-1 w-full text-left border-b border-rule transition-[background] duration-200 hover:bg-white/[0.015] justify-start"
             onClick={() => !isDone && onOpenSession(s.id)}
           >
             <span className="flex flex-col gap-1 min-w-0">
@@ -115,7 +116,7 @@ export function SessionList({ sessions, onOpenSession }: Props) {
                 className="text-ink-faint transition-all duration-[0.25s] group-hover:text-amber group-hover:translate-x-1"
               />
             </span>
-          </button>
+          </Button>
         );
       })}
     </section>

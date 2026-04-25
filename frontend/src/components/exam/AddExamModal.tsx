@@ -1,4 +1,4 @@
-import { Button } from "@cloudflare/kumo";
+import { Button, Input, Label, Select } from "@cloudflare/kumo";
 import { CheckIcon, PlusIcon, XIcon } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -150,14 +150,16 @@ export function AddExamModal({ open, onClose }: Props) {
               {planResult ? "Plan nauki" : "Dodaj sprawdzian"}
             </h2>
           </div>
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            shape="square"
             onClick={onClose}
             aria-label="Zamknij"
-            className="flex items-center justify-center w-8 h-8 rounded-sm text-ink-faint hover:text-ink hover:bg-paper-3 transition-colors bg-transparent border-0 cursor-pointer"
+            className="flex items-center justify-center w-8 h-8 rounded-sm text-ink-faint hover:text-ink hover:bg-paper-3 transition-colors"
           >
             <XIcon size={16} weight="bold" />
-          </button>
+          </Button>
         </div>
 
         {planResult ? (
@@ -244,7 +246,7 @@ export function AddExamModal({ open, onClose }: Props) {
             <div className="px-6 py-6 overflow-y-auto flex-1 flex flex-col gap-5">
               {/* Subject */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-[13px] text-ink-muted">Przedmiot</label>
+                <Label className="text-[13px] text-ink-muted">Przedmiot</Label>
                 {subjectsLoading ? (
                   <div className="h-10 bg-paper-3 border border-rule rounded-[3px] animate-pulse" />
                 ) : subjectsError ? (
@@ -254,27 +256,26 @@ export function AddExamModal({ open, onClose }: Props) {
                     Brak przedmiotów — uzupełnij profil, żeby dodać sprawdzian.
                   </p>
                 ) : (
-                  <select
+                  <Select
                     value={subjectId}
-                    onChange={(e) => setSubjectId(e.target.value)}
+                    onValueChange={(v) => setSubjectId(v ?? "")}
                     required
-                    className={cn(FIELD, "select-chevron")}
                   >
                     {subjects.map((s) => (
-                      <option key={s.id} value={s.id}>
+                      <Select.Option key={s.id} value={s.id}>
                         {s.name}
-                      </option>
+                      </Select.Option>
                     ))}
-                  </select>
+                  </Select>
                 )}
               </div>
 
               {/* Name */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-[13px] text-ink-muted">
+                <Label className="text-[13px] text-ink-muted">
                   Nazwa sprawdzianu
-                </label>
-                <input
+                </Label>
+                <Input
                   type="text"
                   placeholder="np. Kartkówka z logarytmów"
                   value={name}
@@ -286,10 +287,10 @@ export function AddExamModal({ open, onClose }: Props) {
 
               {/* Date */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-[13px] text-ink-muted">
+                <Label className="text-[13px] text-ink-muted">
                   Data sprawdzianu
-                </label>
-                <input
+                </Label>
+                <Input
                   type="date"
                   value={examDate}
                   onChange={(e) => setExamDate(e.target.value)}
@@ -302,14 +303,14 @@ export function AddExamModal({ open, onClose }: Props) {
               {/* Difficulty */}
               <div className="flex flex-col gap-2">
                 <div className="flex items-baseline justify-between">
-                  <label className="text-[13px] text-ink-muted">
+                  <Label className="text-[13px] text-ink-muted">
                     Poziom trudności materiału
-                  </label>
+                  </Label>
                   <span className="text-[13px] text-amber font-medium">
                     {DIFFICULTY_LABELS[difficulty]}
                   </span>
                 </div>
-                <input
+                <Input
                   type="range"
                   min={1}
                   max={5}
@@ -335,25 +336,26 @@ export function AddExamModal({ open, onClose }: Props) {
 
               {/* Material size */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-[13px] text-ink-muted">
+                <Label className="text-[13px] text-ink-muted">
                   Ilość materiału
-                </label>
+                </Label>
                 <div className="flex gap-2">
                   {(["small", "medium", "large"] as MaterialSize[]).map(
                     (size) => (
-                      <button
+                      <Button
                         key={size}
                         type="button"
+                        variant="ghost"
                         onClick={() => setMaterialSize(size)}
                         className={cn(
-                          "flex-1 py-2.5 text-[13px] font-medium border rounded-[3px] transition-colors cursor-pointer bg-transparent",
+                          "flex-1 py-2.5 text-[13px] font-medium border rounded-[3px] transition-colors bg-transparent",
                           materialSize === size
                             ? "border-amber text-amber bg-amber-wash"
                             : "border-rule text-ink-muted hover:border-rule-strong hover:text-ink",
                         )}
                       >
                         {MATERIAL_LABELS[size]}
-                      </button>
+                      </Button>
                     ),
                   )}
                 </div>
@@ -361,11 +363,11 @@ export function AddExamModal({ open, onClose }: Props) {
 
               {/* Topics */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-[13px] text-ink-muted">
+                <Label className="text-[13px] text-ink-muted">
                   Tematy <span className="text-ink-faint">(opcjonalnie)</span>
-                </label>
+                </Label>
                 <div className="flex gap-2">
-                  <input
+                  <Input
                     ref={topicInputRef}
                     type="text"
                     placeholder="np. Ciągi arytmetyczne"
@@ -396,16 +398,18 @@ export function AddExamModal({ open, onClose }: Props) {
                         className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-wash border border-amber/25 text-amber text-[13px] rounded-[3px]"
                       >
                         {t}
-                        <button
+                        <Button
                           type="button"
+                          variant="ghost"
+                          shape="square"
                           onClick={() =>
                             setTopics((p) => p.filter((_, j) => j !== i))
                           }
                           aria-label={`Usuń temat ${t}`}
-                          className="text-amber/50 hover:text-amber transition-colors bg-transparent border-0 p-0 cursor-pointer flex items-center"
+                          className="text-amber/50 hover:text-amber transition-colors p-0"
                         >
                           <XIcon size={11} weight="bold" />
-                        </button>
+                        </Button>
                       </span>
                     ))}
                   </div>

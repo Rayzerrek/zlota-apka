@@ -240,32 +240,35 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
           <div className="relative flex-1">
             {isMobileProfileMenuOpen && (
               <div className="menu-shadow absolute right-0 bottom-[calc(100%+10px)] min-w-42 p-1.5 bg-paper-2 border border-rule-strong rounded-[3px] z-50">
-                <button
+                <Button
                   type="button"
-                  className="flex items-center gap-2.5 w-full px-2.5 py-2 bg-transparent border-0 rounded-sm text-ink-muted text-sm text-left cursor-pointer transition-all duration-150 hover:bg-paper-3 hover:text-ink"
+                  variant="ghost"
+                  className="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-sm text-ink-muted text-sm text-left transition-all duration-150 hover:bg-paper-3 hover:text-ink justify-start"
                   onClick={openSettingsFromMobileMenu}
                 >
                   <GearSixIcon size={16} />
                   Ustawienia
-                </button>
+                </Button>
                 <div className="h-px bg-rule my-1" />
-                <button
+                <Button
                   type="button"
-                  className="flex items-center gap-2.5 w-full px-2.5 py-2 bg-transparent border-0 rounded-sm text-rating-1 text-sm text-left cursor-pointer transition-all duration-150 hover:bg-rating-1/8 hover:text-rating-1"
+                  variant="ghost"
+                  className="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-sm text-rating-1 text-sm text-left transition-all duration-150 hover:bg-rating-1/8 hover:text-rating-1 justify-start"
                   onClick={handleLogout}
                 >
                   <SignOutIcon size={16} />
                   Wyloguj
-                </button>
+                </Button>
               </div>
             )}
-            <button
+            <Button
               type="button"
+              variant="ghost"
               aria-label="Profil"
               aria-expanded={isMobileProfileMenuOpen}
               onClick={handleMobileProfileClick}
               className={cn(
-                "w-full flex flex-col items-center justify-center gap-0.5 px-1 py-2 bg-transparent border-0 rounded-sm mono text-[13px] tracking-widest uppercase cursor-pointer transition-colors duration-200",
+                "w-full flex flex-col items-center justify-center gap-0.5 px-1 py-2 rounded-sm mono text-[13px] tracking-widest uppercase transition-colors duration-200",
                 location.pathname === "/profile"
                   ? "text-amber"
                   : "text-ink-faint hover:text-ink",
@@ -276,7 +279,7 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
                 weight={location.pathname === "/profile" ? "fill" : "regular"}
               />
               <span>Profil</span>
-            </button>
+            </Button>
           </div>
         </nav>
       </div>

@@ -12,6 +12,7 @@ import { StepPanel } from "../components/onboarding/StepPanel";
 import { SubjectsStep } from "../components/onboarding/SubjectsStep";
 import { WelcomeStep } from "../components/onboarding/WelcomeStep";
 import { apiPatch } from "../lib/api";
+import { authClient } from "../lib/auth";
 import { cn } from "../utils/cn";
 
 import type { SubjectKey } from "../types";
@@ -20,6 +21,7 @@ const STEPS = 3;
 
 export function OnboardingPage() {
   const navigate = useNavigate();
+  const { refetch } = authClient.useSession();
   const [step, setStep] = useState(1);
   const [selected, setSelected] = useState<Set<SubjectKey>>(new Set());
   const [dir, setDir] = useState<1 | -1>(1);
@@ -40,7 +42,12 @@ export function OnboardingPage() {
       setStep((s) => s + 1);
     } else {
       setSaving(true);
-      await apiPatch("/api/users/me", { onboardingDone: true });
+      const result = await apiPatch("/api/users/me", { onboardingDone: true });
+      if (!result.ok) {
+        setSaving(false);
+        return;
+      }
+      await refetch();
       setSaving(false);
       navigate("/today", { replace: true });
     }
