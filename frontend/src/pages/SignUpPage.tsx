@@ -44,7 +44,7 @@ export function SignUpPage({ theme, onToggleTheme }: Props) {
       setError(authErrorMessage(authError, "signup"));
       return;
     }
-    navigate("/today");
+    navigate("/onboarding");
   }
 
   return (

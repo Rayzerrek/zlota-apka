@@ -36,7 +36,7 @@ export function LoginPage({ theme, onToggleTheme }: Props) {
       setError(authErrorMessage(authError, "login"));
       return;
     }
-    navigate("/today");
+    navigate("/onboarding");
   }
 
   async function handleGoogle() {

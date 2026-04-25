@@ -9,7 +9,7 @@ import { TodayStats } from "../components/today/TodayStats";
 import { apiGet } from "../lib/api";
 import { dayLong, longDate } from "../utils/date";
 
-import type { ApiDashboard } from "../lib/types";
+import type { ApiDashboard } from "../types/api";
 
 type Props = {
   onStart: () => void;

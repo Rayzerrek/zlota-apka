@@ -12,6 +12,7 @@ import { authClient } from "./lib/auth";
 import { BrowsePage } from "./pages/BrowsePage";
 import { LoginPage } from "./pages/LoginPage";
 import { NotePage } from "./pages/NotePage";
+import { OnboardingPage } from "./pages/OnboardingPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { ReviewPage } from "./pages/ReviewPage";
 import { SettingsPage } from "./pages/SettingsPage";
@@ -73,6 +74,14 @@ function App() {
         <Route
           path="/sign-up"
           element={<SignUpPage theme={theme} onToggleTheme={toggleTheme} />}
+        />
+        <Route
+          path="/onboarding"
+          element={
+            <ProtectedRoute>
+              <OnboardingPage />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/*"

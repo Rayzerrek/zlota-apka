@@ -22,7 +22,6 @@ const inputCls =
 
 type Props = {
   email: string;
-  setEmail: (v: string) => void;
   language: string;
   setLanguage: (v: string) => void;
   timezone: string;
@@ -31,7 +30,6 @@ type Props = {
 
 export function ProfileAccountSection({
   email,
-  setEmail,
   language,
   setLanguage,
   timezone,
@@ -53,8 +51,9 @@ export function ProfileAccountSection({
         <input
           type="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className={inputCls}
+          readOnly
+          disabled
+          className={cn(inputCls, "opacity-60 cursor-not-allowed")}
           autoComplete="email"
         />
       </ProfileField>

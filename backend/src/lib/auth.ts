@@ -65,6 +65,9 @@ export function createAuth(env: Env): AuthInstance {
     ],
     advanced: {
       useSecureCookies: true,
+      defaultCookieAttributes: {
+        sameSite: "none",
+      },
       cookies: {
         session_token: {
           attributes: {

@@ -1,6 +1,6 @@
-import type { ApiResult } from "./types";
+import type { ApiResult } from "../types/api";
 
-export type { ApiResult } from "./types";
+export type { ApiResult } from "../types/api";
 export type {
   ApiDashboard,
   ApiDashboardExam,
@@ -10,7 +10,7 @@ export type {
   ApiSubject,
   ApiTopic,
   ExamCreateResponse,
-} from "./types";
+} from "../types/api";
 
 const BASE = import.meta.env.VITE_API_URL ?? "";
 

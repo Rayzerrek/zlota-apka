@@ -5,7 +5,7 @@ import { useNavigate } from "react-router";
 import { daysBetween, longDate } from "../../utils/date";
 import { ExamMenu } from "../exam/ExamMenu";
 
-import type { ApiDashboardExam } from "../../lib/types";
+import type { ApiDashboardExam } from "../../types/api";
 
 type Props = {
   exam: ApiDashboardExam;
