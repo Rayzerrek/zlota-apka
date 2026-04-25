@@ -2,19 +2,18 @@ import { Button } from "@cloudflare/kumo";
 import { NotePencilIcon } from "@phosphor-icons/react";
 import { useNavigate } from "react-router";
 
-import { TODAY } from "../../data/mock";
-import { longDate, daysBetween } from "../../utils/date";
-import { subjectName } from "../../utils/subjects";
+import { daysBetween, longDate } from "../../utils/date";
 import { ExamMenu } from "../exam/ExamMenu";
 
-import type { Exam } from "../../types";
+import type { ApiDashboardExam } from "../../lib/types";
 
 type Props = {
-  exam: Exam;
+  exam: ApiDashboardExam;
 };
 
 export function ExamWidget({ exam }: Props) {
-  const examDays = daysBetween(TODAY, exam.dateISO);
+  const today = new Date().toISOString().slice(0, 10);
+  const examDays = daysBetween(today, exam.examDate);
   const navigate = useNavigate();
 
   return (
@@ -37,7 +36,8 @@ export function ExamWidget({ exam }: Props) {
       </div>
       <div className="relative mono text-xs text-ink-muted mt-1.5 flex justify-between items-center pt-3 border-t border-dashed border-rule-strong">
         <span>
-          {subjectName(exam.subject)} · {longDate(exam.dateISO)}
+          {exam.subjectName ?? exam.subjectKey ?? ""} ·{" "}
+          {longDate(exam.examDate)}
         </span>
         <div className="flex items-center gap-1">
           <Button

@@ -1,5 +1,5 @@
 import { Button, Dialog } from "@cloudflare/kumo";
-import { XIcon, CopySimpleIcon, CheckIcon } from "@phosphor-icons/react";
+import { CheckIcon, CopySimpleIcon, XIcon } from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
 
 import { CARDS } from "../../data/mock";
@@ -69,8 +69,8 @@ export function NoteModal({ exam, onClose }: Props) {
                   {section.topic}
                 </p>
                 <div className="flex flex-col gap-4">
-                  {section.pairs.map(({ q, a }, i) => (
-                    <div key={i} className="grid grid-cols-[1fr_1fr] gap-3">
+                  {section.pairs.map(({ q, a }) => (
+                    <div key={q} className="grid grid-cols-[1fr_1fr] gap-3">
                       <div className="text-[14px] text-ink-muted leading-[1.5]">
                         {q}
                       </div>

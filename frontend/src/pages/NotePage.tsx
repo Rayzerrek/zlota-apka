@@ -1,8 +1,8 @@
 import { Button } from "@cloudflare/kumo";
 import {
   ArrowLeftIcon,
-  CopySimpleIcon,
   CheckIcon,
+  CopySimpleIcon,
 } from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
@@ -92,9 +92,9 @@ export function NotePage() {
                 {section.topic}
               </p>
               <div className="flex flex-col gap-5">
-                {section.pairs.map(({ q, a }, i) => (
+                {section.pairs.map(({ q, a }) => (
                   <div
-                    key={i}
+                    key={q}
                     className="grid grid-cols-1 sm:grid-cols-[1fr_1fr] gap-2 sm:gap-5"
                   >
                     <div className="text-[15px] text-ink-muted leading-[1.6]">

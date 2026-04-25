@@ -1,6 +1,6 @@
 import { cn } from "../../utils/cn";
 import { dayLong } from "../../utils/date";
-import { SUBJECT_BG, SUBJECTS } from "../../utils/subjects";
+import { SUBJECTS, SUBJECT_BG } from "../../utils/subjects";
 
 import type { StudySession } from "../../types";
 

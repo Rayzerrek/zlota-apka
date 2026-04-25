@@ -7,14 +7,21 @@ import {
 import { useNavigate } from "react-router";
 
 import { cn } from "../../utils/cn";
-import { SUBJECT_BG, SUBJECTS } from "../../utils/subjects";
+import { SUBJECT_BG } from "../../utils/subjects";
 
-import type { StudySession } from "../../types";
+import type { ApiDashboardSession } from "../../lib/types";
+import type { SubjectKey } from "../../types";
 
 type Props = {
-  sessions: StudySession[];
+  sessions: ApiDashboardSession[];
   onOpenSession: (id: string) => void;
 };
+
+function toSubjectKey(k: string | null): SubjectKey | null {
+  if (k === null) return null;
+  if (k in SUBJECT_BG) return k as SubjectKey;
+  return null;
+}
 
 export function SessionList({ sessions, onOpenSession }: Props) {
   const navigate = useNavigate();
@@ -63,50 +70,46 @@ export function SessionList({ sessions, onOpenSession }: Props) {
           Plan dnia
         </h2>
         <span className="mono text-[14px] tracking-[0.14em] uppercase text-ink-faint">
-          {sessions.filter((s) => s.done).length} / {sessions.length} ukończone
+          {sessions.filter((s) => s.status === "completed").length} /{" "}
+          {sessions.length} ukończone
         </span>
       </div>
 
       {sessions.map((s) => {
-        const subj = SUBJECTS[s.subject];
+        const isDone = s.status === "completed";
+        const subjKey = toSubjectKey(s.subjectKey);
         return (
           <button
             key={s.id}
             type="button"
-            className="group grid grid-cols-[52px_1fr_auto] gap-5 items-center py-[18px] px-1 w-full text-left border-b border-rule cursor-pointer transition-[background] duration-200 hover:bg-white/[0.015]"
-            onClick={() => !s.done && onOpenSession(s.id)}
+            className="group grid grid-cols-[1fr_auto] gap-5 items-center py-[18px] px-1 w-full text-left border-b border-rule cursor-pointer transition-[background] duration-200 hover:bg-white/[0.015]"
+            onClick={() => !isDone && onOpenSession(s.id)}
           >
-            <span
-              className={cn(
-                "mono text-[16px] tracking-[0.04em]",
-                s.done ? "text-ink-faint" : "text-ink-muted",
-              )}
-            >
-              {s.timeOfDay}
-            </span>
             <span className="flex flex-col gap-1 min-w-0">
               <span className="flex items-center gap-2 mono text-[13px] tracking-[0.2em] uppercase text-ink-muted">
-                <span
-                  className={cn(
-                    "w-2 h-2 rounded-full shrink-0",
-                    SUBJECT_BG[s.subject],
-                  )}
-                />
-                {subj.name}
+                {subjKey && (
+                  <span
+                    className={cn(
+                      "w-2 h-2 rounded-full shrink-0",
+                      SUBJECT_BG[subjKey],
+                    )}
+                  />
+                )}
+                {s.subjectName ?? s.subjectKey ?? ""}
               </span>
               <span
                 className={cn(
                   "display font-normal text-[21px] leading-[1.2] tracking-[-0.005em]",
-                  s.done
+                  isDone
                     ? "line-through decoration-rule-strong decoration-[1px] text-ink-faint"
                     : "text-ink",
                 )}
               >
-                {s.topic}
+                {s.topicName ?? "—"}
               </span>
             </span>
             <span className="mono text-sm text-ink flex items-center gap-2.5">
-              <span className="text-ink-faint">{s.cardIds.length} kart</span>
+              <span className="text-ink-faint">{s.plannedMinutes} min</span>
               <ArrowRightIcon
                 size={16}
                 className="text-ink-faint transition-all duration-[0.25s] group-hover:text-amber group-hover:translate-x-1"

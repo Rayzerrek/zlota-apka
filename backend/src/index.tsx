@@ -2,7 +2,7 @@ import { OpenAPIHono } from "@hono/zod-openapi";
 import { Scalar } from "@scalar/hono-api-reference";
 import { cors } from "hono/cors";
 
-import { createAuth, type Env } from "./lib/auth";
+import { type Env, createAuth } from "./lib/auth";
 import { checkAuthRateLimit } from "./lib/utils";
 import { cardsRouter } from "./routes/cards";
 import { dashboardRouter } from "./routes/dashboard";
@@ -16,12 +16,15 @@ import { usersRouter } from "./routes/users";
 const app = new OpenAPIHono<{ Bindings: Env }>();
 
 app.use("/api/*", (c, next) => {
-  const origin = c.env.FRONTEND_URL;
-  if (!origin) {
+  const origins = (c.env.FRONTEND_URL ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (origins.length === 0) {
     throw new Error("FRONTEND_URL is not configured");
   }
   return cors({
-    origin: c.env.FRONTEND_URL ?? "",
+    origin: origins.length === 1 ? origins[0] : origins,
     allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     credentials: true,

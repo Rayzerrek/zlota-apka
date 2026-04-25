@@ -3,13 +3,18 @@
   "categories": {
     "correctness": "error"
   },
-
+  "plugins": ["react", "import"],
   "rules": {
+    "sort-imports": ["error", { "ignoreDeclarationSort": true }],
+    "import/namespace": "error",
     "no-explicit-any": "error",
     "no-unused-expressions": "off",
     "typescript/no-deprecated": "warn",
     "no-this-alias": "off",
     "react-hooks/exhaustive-deps": "warn",
+    "no-non-null-assertion": "error",
+    "no-non-null-asserted-nullish-coalescing": "error",
+    "no-array-index-key": "error",
     "no-unused-vars": [
       "error",
       {

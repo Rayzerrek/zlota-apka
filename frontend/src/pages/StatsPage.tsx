@@ -7,7 +7,7 @@ import { CanvasRenderer } from "echarts/renderers";
 import { PageHead } from "../components/layout/PageHead";
 import { CARDS, STUDY_STATS, SUBJECT_RETENTION } from "../data/mock";
 import { cn } from "../utils/cn";
-import { SUBJECT_BG, SUBJECT_TEXT, SUBJECTS } from "../utils/subjects";
+import { SUBJECTS, SUBJECT_BG, SUBJECT_TEXT } from "../utils/subjects";
 
 echarts.use([EChartsPieChart, TooltipComponent, CanvasRenderer]);
 

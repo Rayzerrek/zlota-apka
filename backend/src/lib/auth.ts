@@ -7,6 +7,8 @@ import { Resend } from "resend";
 
 import * as schema from "../db/schema";
 
+import type { BetterAuthOptions } from "better-auth";
+
 export type Env = {
   DATABASE_URL: string;
   BETTER_AUTH_SECRET: string;
@@ -15,18 +17,28 @@ export type Env = {
   FRONTEND_URL?: string;
 };
 
-export function createAuth(env: Env) {
+type AuthInstance = ReturnType<typeof betterAuth>;
+const authCache = new WeakMap<object, AuthInstance>();
+
+export function createAuth(env: Env): AuthInstance {
+  const cached = authCache.get(env);
+  if (cached) return cached;
+
   const sql = neon(env.DATABASE_URL);
   const db = drizzle(sql, { schema });
   const resend = new Resend(env.RESEND_API_KEY);
 
-  return betterAuth({
+  const opts: BetterAuthOptions = {
     database: drizzleAdapter(db, { provider: "pg", schema }),
     secret: env.BETTER_AUTH_SECRET,
     baseURL: env.BETTER_AUTH_URL,
     trustedOrigins: [
       env.BETTER_AUTH_URL,
-      ...(env.FRONTEND_URL ? [env.FRONTEND_URL] : []),
+      ...(env.FRONTEND_URL
+        ? env.FRONTEND_URL.split(",")
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : []),
     ],
     emailAndPassword: {
       enabled: true,
@@ -53,7 +65,11 @@ export function createAuth(env: Env) {
         },
       },
     },
-  });
+  };
+  const auth = betterAuth(opts);
+
+  authCache.set(env, auth);
+  return auth;
 }
 
 export type Auth = ReturnType<typeof createAuth>;

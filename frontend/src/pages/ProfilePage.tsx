@@ -10,6 +10,8 @@ import { ProfileDataExport } from "../components/profile/ProfileDataExport";
 import { ProfileHeader } from "../components/profile/ProfileHeader";
 import { STUDENT_CLASS, STUDENT_INITIAL, STUDENT_NAME } from "../data/mock";
 import { useSavedFeedback } from "../hooks/useSavedFeedback";
+import { apiDelete } from "../lib/api";
+import { authClient } from "../lib/auth";
 
 type Props = {
   theme: "dark" | "light";
@@ -33,9 +35,14 @@ export function ProfilePage({ theme, onThemeChange }: Props) {
     markSaved();
   };
 
-  const handleDelete = () => {
-    localStorage.clear();
-    window.location.reload();
+  const handleDelete = async () => {
+    const res = await apiDelete("/api/users/me");
+    if (!res.ok) {
+      alert("Nie udało się usunąć konta.");
+      return;
+    }
+    await authClient.signOut();
+    window.location.href = "/login";
   };
 
   return (

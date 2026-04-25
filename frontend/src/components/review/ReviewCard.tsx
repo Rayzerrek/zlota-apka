@@ -1,5 +1,5 @@
 import { cn } from "../../utils/cn";
-import { SUBJECT_BG, SUBJECTS } from "../../utils/subjects";
+import { SUBJECTS, SUBJECT_BG } from "../../utils/subjects";
 
 import type { Card } from "../../types";
 

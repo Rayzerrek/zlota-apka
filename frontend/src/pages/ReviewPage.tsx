@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { ReviewCard } from "../components/review/ReviewCard";
 import { ReviewDoneScreen } from "../components/review/ReviewDoneScreen";
@@ -19,6 +19,7 @@ export function ReviewPage({ cards, onExit }: Props) {
   const [flipped, setFlipped] = useState(false);
   const [ratings, setRatings] = useState<Rating[]>([]);
   const [done, setDone] = useState(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const current = cards[idx];
   const progress = done ? 1 : idx / cards.length;
@@ -30,11 +31,17 @@ export function ReviewPage({ cards, onExit }: Props) {
         setDone(true);
       } else {
         setFlipped(false);
-        setTimeout(() => setIdx(idx + 1), 100);
+        timeoutRef.current = setTimeout(() => setIdx((i) => i + 1), 100);
       }
     },
     [idx, cards.length],
   );
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
 
   if (!current) return null;
 

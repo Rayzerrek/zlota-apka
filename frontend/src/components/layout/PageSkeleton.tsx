@@ -23,20 +23,22 @@ export function PageSkeleton() {
       </div>
 
       <div className="mt-8 grid grid-cols-7 gap-2">
-        {Array.from({ length: 7 }).map((_, i) => (
-          <SkeletonLine
-            key={i}
-            minWidth={100}
-            maxWidth={100}
-            blockHeight="6rem"
-          />
-        ))}
+        {["sk-d0", "sk-d1", "sk-d2", "sk-d3", "sk-d4", "sk-d5", "sk-d6"].map(
+          (id) => (
+            <SkeletonLine
+              key={id}
+              minWidth={100}
+              maxWidth={100}
+              blockHeight="6rem"
+            />
+          ),
+        )}
       </div>
 
       <div className="mt-6 flex flex-col gap-3">
-        {Array.from({ length: 4 }).map((_, i) => (
+        {["sk-s0", "sk-s1", "sk-s2", "sk-s3"].map((id) => (
           <SkeletonLine
-            key={i}
+            key={id}
             minWidth={60}
             maxWidth={100}
             blockHeight="3.5rem"

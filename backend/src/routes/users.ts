@@ -1,15 +1,15 @@
-import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
+import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import { eq } from "drizzle-orm";
 
 import {
   cards,
   exams,
   reviewHistory,
+  studySessions,
   subjects,
   topics,
   user,
   userAvailability,
-  studySessions,
 } from "../db/schema";
 import { createDb } from "../lib/db";
 import { requireAuth } from "../middleware/auth";

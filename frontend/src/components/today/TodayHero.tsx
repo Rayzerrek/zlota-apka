@@ -1,11 +1,12 @@
 import { Button } from "@cloudflare/kumo";
-import { ArrowRightIcon } from "@phosphor-icons/react";
+import { ArrowRightIcon, PlusIcon } from "@phosphor-icons/react";
 
 type Props = {
   onStart: () => void;
+  onAddExam: () => void;
 };
 
-export function TodayHero({ onStart }: Props) {
+export function TodayHero({ onStart, onAddExam }: Props) {
   return (
     <div className="flex flex-col gap-[18px] relative">
       <p className="text-base text-ink-muted max-w-[38ch] leading-[1.5]">
@@ -22,6 +23,15 @@ export function TodayHero({ onStart }: Props) {
         >
           Zacznij powtórkę
           <ArrowRightIcon size={18} weight="bold" className="ml-1" />
+        </Button>
+        <Button
+          size="lg"
+          variant="outline"
+          onClick={onAddExam}
+          icon={<PlusIcon size={16} weight="bold" />}
+          className="rounded-sm"
+        >
+          Dodaj sprawdzian
         </Button>
       </div>
     </div>

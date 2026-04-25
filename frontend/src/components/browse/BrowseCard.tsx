@@ -1,7 +1,7 @@
 import { TODAY } from "../../data/mock";
 import { cn } from "../../utils/cn";
 import { daysBetween } from "../../utils/date";
-import { SUBJECT_BG, SUBJECTS } from "../../utils/subjects";
+import { SUBJECTS, SUBJECT_BG } from "../../utils/subjects";
 
 import type { Card, CardStage } from "../../types";
 

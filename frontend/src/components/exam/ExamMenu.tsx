@@ -1,8 +1,8 @@
 import { DropdownMenu } from "@cloudflare/kumo";
 import {
+  CardsIcon,
   DotsThreeIcon,
   NotePencilIcon,
-  CardsIcon,
 } from "@phosphor-icons/react";
 import { useNavigate } from "react-router";
 

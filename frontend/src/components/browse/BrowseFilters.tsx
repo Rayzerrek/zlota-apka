@@ -1,7 +1,7 @@
 import { Button } from "@cloudflare/kumo";
 
 import { cn } from "../../utils/cn";
-import { SUBJECT_BG, SUBJECTS } from "../../utils/subjects";
+import { SUBJECTS, SUBJECT_BG } from "../../utils/subjects";
 
 import type { SubjectKey } from "../../types";
 

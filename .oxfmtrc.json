@@ -9,7 +9,7 @@
   "bracketSpacing": true,
   "arrowParens": "always",
   "endOfLine": "lf",
-  "experimentalSortImports": {
+  "sortImports": {
     "order": "asc",
     "ignoreCase": true,
     "newlinesBetween": true,

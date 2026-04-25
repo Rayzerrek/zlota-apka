@@ -1,11 +1,11 @@
-import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
+import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import { and, eq } from "drizzle-orm";
 
 import {
   exams,
-  topics,
-  studySessions,
   schedulerRuns,
+  studySessions,
+  topics,
   userAvailability,
 } from "../db/schema";
 import { createDb } from "../lib/db";
