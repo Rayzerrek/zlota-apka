@@ -48,7 +48,7 @@ export function SignUpPage({ theme, onToggleTheme }: Props) {
   }
 
   return (
-    <div className="min-h-dvh flex flex-col bg-kumo-base">
+    <div className="min-h-dvh flex flex-col bg-kumo-base overflow-y-auto">
       <LoginHeader
         theme={theme}
         onToggleTheme={onToggleTheme}
