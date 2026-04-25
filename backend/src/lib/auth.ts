@@ -41,7 +41,7 @@ export function createAuth(env: Env): AuthInstance {
         : []),
     ],
     emailAndPassword: {
-      enabled: true,
+      enabled: false,
     },
     plugins: [
       magicLink({
