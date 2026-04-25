@@ -1,5 +1,3 @@
-import { Button } from "@cloudflare/kumo";
-
 import { EXAMS, SESSIONS, TODAY } from "../../data/mock";
 import { cn } from "../../utils/cn";
 import { dayNum, dayShort } from "../../utils/date";
@@ -23,13 +21,12 @@ export function WeekGrid({ days, selected, onSelect }: Props) {
         const isToday = iso === TODAY;
         const isSelected = iso === selected;
         return (
-          <Button
+          <button
             key={iso}
             type="button"
-            variant="ghost"
             onClick={() => onSelect(iso)}
             className={cn(
-              "relative overflow-hidden flex flex-col items-center gap-2.5 px-2.5 pt-3.5 pb-4 border rounded-[2px] transition-all duration-200",
+              "relative overflow-hidden flex flex-col items-center gap-2.5 px-2.5 pt-3.5 pb-4 border rounded-[2px] cursor-pointer transition-all duration-200",
               isSelected
                 ? "border-ink bg-paper-3"
                 : isToday
@@ -62,7 +59,7 @@ export function WeekGrid({ days, selected, onSelect }: Props) {
                 <span className="w-[6px] h-[6px] rounded-full opacity-85 bg-amber shadow-[0_0_6px_var(--color-amber)]" />
               )}
             </span>
-          </Button>
+          </button>
         );
       })}
     </div>

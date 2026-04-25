@@ -1,5 +1,4 @@
-import { Input, Select } from "@cloudflare/kumo";
-
+import { cn } from "../../utils/cn";
 import { ProfileField } from "./ProfileField";
 
 const LANGUAGES: { value: string; label: string }[] = [
@@ -17,6 +16,9 @@ const TIMEZONES: { value: string; label: string }[] = [
   { value: "Asia/Tokyo", label: "Azja / Tokio (UTC+9)" },
   { value: "UTC", label: "UTC" },
 ];
+
+const inputCls =
+  "w-full px-3.5 py-3 bg-kumo-base border border-rule rounded-[2px] text-ink text-[18px] outline-none transition-colors duration-200 hover:border-rule-strong focus:border-amber";
 
 type Props = {
   email: string;
@@ -46,40 +48,42 @@ export function ProfileAccountSection({
         label="Adres email"
         hint="Używany do logowania i powiadomień."
       >
-        <Input
+        <input
           type="email"
           value={email}
           readOnly
           disabled
-          className="opacity-60 cursor-not-allowed"
+          className={cn(inputCls, "opacity-60 cursor-not-allowed")}
           autoComplete="email"
         />
       </ProfileField>
 
       <ProfileField label="Język interfejsu">
-        <Select
+        <select
           value={language}
-          onValueChange={(v) => setLanguage(v ?? language)}
+          onChange={(e) => setLanguage(e.target.value)}
+          className={cn(inputCls, "select-chevron")}
         >
           {LANGUAGES.map((l) => (
-            <Select.Option key={l.value} value={l.value}>
+            <option key={l.value} value={l.value}>
               {l.label}
-            </Select.Option>
+            </option>
           ))}
-        </Select>
+        </select>
       </ProfileField>
 
       <ProfileField label="Strefa czasowa">
-        <Select
+        <select
           value={timezone}
-          onValueChange={(v) => setTimezone(v ?? timezone)}
+          onChange={(e) => setTimezone(e.target.value)}
+          className={cn(inputCls, "select-chevron")}
         >
           {TIMEZONES.map((t) => (
-            <Select.Option key={t.value} value={t.value}>
+            <option key={t.value} value={t.value}>
               {t.label}
-            </Select.Option>
+            </option>
           ))}
-        </Select>
+        </select>
       </ProfileField>
     </section>
   );

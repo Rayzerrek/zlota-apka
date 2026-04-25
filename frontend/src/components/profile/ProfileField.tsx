@@ -1,5 +1,3 @@
-import { Label } from "@cloudflare/kumo";
-
 type Props = {
   label: string;
   hint?: string;
@@ -8,7 +6,7 @@ type Props = {
 
 export function ProfileField({ label, hint, children }: Props) {
   return (
-    <Label className="flex flex-col gap-2">
+    <label className="flex flex-col gap-2">
       <span className="mono text-[14px] text-ink-muted tracking-[0.14em] uppercase">
         {label}
       </span>
@@ -16,6 +14,6 @@ export function ProfileField({ label, hint, children }: Props) {
       {hint && (
         <span className="text-[15px] text-ink-faint leading-[1.5]">{hint}</span>
       )}
-    </Label>
+    </label>
   );
 }

@@ -1,4 +1,3 @@
-import { Button } from "@cloudflare/kumo";
 import {
   AtomIcon,
   BookOpenTextIcon,
@@ -58,13 +57,12 @@ export function SubjectsStep({ selected, onToggle }: Props) {
           const Icon = SUBJECT_ICONS[key];
           const isActive = selected.has(key);
           return (
-            <Button
+            <button
               key={key}
               type="button"
-              variant="ghost"
               onClick={() => onToggle(key)}
               className={cn(
-                "relative flex flex-col items-center gap-2.5 p-4 rounded-[4px] border text-left transition-all duration-200 bg-transparent",
+                "relative flex flex-col items-center gap-2.5 p-4 rounded-[4px] border text-left transition-all duration-200 cursor-pointer bg-transparent",
                 isActive
                   ? "border-amber bg-amber-wash shadow-[0_0_0_1px_var(--color-amber)_inset]"
                   : "border-rule hover:border-rule-strong hover:-translate-y-0.5",
@@ -91,7 +89,7 @@ export function SubjectsStep({ selected, onToggle }: Props) {
               >
                 {SUBJECTS[key].name}
               </span>
-            </Button>
+            </button>
           );
         })}
       </div>
