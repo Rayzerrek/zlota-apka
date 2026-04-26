@@ -26,7 +26,6 @@ import {
 import { useEffect, useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router";
 
-import { STUDENT_CLASS, STUDENT_INITIAL, STUDENT_NAME } from "../../data/mock";
 import { authClient } from "../../lib/auth";
 import { cn } from "../../utils/cn";
 
@@ -50,18 +49,23 @@ type Props = {
 export function Shell({ children, theme, onToggleTheme }: Props) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { data: session } = authClient.useSession();
   const [isMobileProfileMenuOpen, setIsMobileProfileMenuOpen] = useState(false);
+
+  const user = session?.user as Record<string, unknown> | undefined;
+  const name = typeof user?.name === "string" ? user.name : "Użytkownik";
+  const email = typeof user?.email === "string" ? user.email : "";
+  const initial = (name[0] || email[0] || "?").toUpperCase();
+  const grade = typeof user?.grade === "string" ? user.grade : "—";
 
   useEffect(() => {
     setIsMobileProfileMenuOpen(false);
   }, [location.pathname]);
 
   const handleLogout = async () => {
-    if (confirm("Wylogować się?")) {
-      setIsMobileProfileMenuOpen(false);
-      await authClient.signOut();
-      navigate("/login");
-    }
+    setIsMobileProfileMenuOpen(false);
+    await authClient.signOut();
+    navigate("/login");
   };
 
   const handleMobileProfileClick = (event: MouseEvent<HTMLButtonElement>) => {
@@ -142,14 +146,14 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
                     }
                   >
                     <div className="w-8.5 h-8.5 rounded-sm bg-amber text-paper grid place-items-center display italic font-bold text-base shrink-0">
-                      {STUDENT_INITIAL}
+                      {initial}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="text-[16px] font-medium text-ink">
-                        {STUDENT_NAME}
+                        {name}
                       </div>
                       <div className="mono text-[13px] text-ink-faint tracking-[0.08em]">
-                        {STUDENT_CLASS}
+                        {grade}
                       </div>
                     </div>
                     <CaretUpDownIcon
