@@ -1,11 +1,10 @@
 type Props = {
   name: string;
   initial: string;
-  classLabel: string;
   email: string;
 };
 
-export function ProfileHeader({ name, initial, classLabel, email }: Props) {
+export function ProfileHeader({ name, initial, email }: Props) {
   return (
     <section className="enter flex items-center gap-5">
       <div className="w-[72px] h-[72px] rounded-sm bg-amber text-paper grid place-items-center display italic font-bold text-[35px] shrink-0">
@@ -16,7 +15,7 @@ export function ProfileHeader({ name, initial, classLabel, email }: Props) {
           {name}
         </div>
         <div className="mono text-[14px] text-ink-muted tracking-[0.14em] uppercase">
-          {classLabel} · {email}
+          {email}
         </div>
       </div>
     </section>

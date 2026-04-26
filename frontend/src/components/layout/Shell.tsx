@@ -194,6 +194,7 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
                   }
                   aria-label="Zmień motyw"
                   onClick={onToggleTheme}
+                  className="px-2.5 py-2.5 rounded-sm hover:bg-paper-3 transition-colors duration-200"
                 />
               </div>
             </SidebarFooter>

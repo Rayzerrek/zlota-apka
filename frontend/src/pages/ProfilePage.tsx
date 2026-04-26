@@ -17,12 +17,6 @@ type Props = {
   onThemeChange: (t: "dark" | "light") => void;
 };
 
-function getUserGrade(user: unknown): string | undefined {
-  if (typeof user !== "object" || user === null) return undefined;
-  const record = user as Record<string, unknown>;
-  return typeof record.grade === "string" ? record.grade : undefined;
-}
-
 export function ProfilePage({ theme, onThemeChange }: Props) {
   const { data: session } = authClient.useSession();
   const user = session?.user;
@@ -30,8 +24,6 @@ export function ProfilePage({ theme, onThemeChange }: Props) {
   const name = user?.name ?? "Użytkownik";
   const email = user?.email ?? "";
   const initial = (name[0] || email[0] || "?").toUpperCase();
-  const grade = getUserGrade(user);
-  const classLabel = grade ?? "—";
 
   const [language, setLanguage] = useState(
     () => localStorage.getItem("profile.language") ?? "pl",
@@ -70,12 +62,7 @@ export function ProfilePage({ theme, onThemeChange }: Props) {
       />
 
       <div className="flex flex-col gap-10 max-w-[600px]">
-        <ProfileHeader
-          name={name}
-          initial={initial}
-          classLabel={classLabel}
-          email={email}
-        />
+        <ProfileHeader name={name} initial={initial} email={email} />
 
         <ProfileAccountSection
           email={email}
