@@ -5,7 +5,7 @@ import {
   CheckCircleIcon,
 } from "@phosphor-icons/react";
 import { useState } from "react";
-import { Navigate, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 
 import { DoneStep } from "../components/onboarding/DoneStep";
 import { StepPanel } from "../components/onboarding/StepPanel";
@@ -21,18 +21,11 @@ const STEPS = 3;
 
 export function OnboardingPage() {
   const navigate = useNavigate();
-  const { data: session, refetch } = authClient.useSession();
-
-  const user = session?.user as Record<string, unknown> | undefined;
-  if (user?.onboardingDone === true) {
-    return <Navigate to="/today" replace />;
-  }
-
+  const { refetch } = authClient.useSession();
   const [step, setStep] = useState(1);
   const [selected, setSelected] = useState<Set<SubjectKey>>(new Set());
   const [dir, setDir] = useState<1 | -1>(1);
   const [saving, setSaving] = useState(false);
-  const [grade, setGrade] = useState("");
 
   const toggleSubject = (key: SubjectKey) => {
     setSelected((prev) => {
@@ -49,10 +42,7 @@ export function OnboardingPage() {
       setStep((s) => s + 1);
     } else {
       setSaving(true);
-      const result = await apiPatch("/api/users/me", {
-        onboardingDone: true,
-        grade: grade.trim(),
-      });
+      const result = await apiPatch("/api/users/me", { onboardingDone: true });
       if (!result.ok) {
         setSaving(false);
         return;
@@ -109,13 +99,7 @@ export function OnboardingPage() {
             {step === 2 && (
               <SubjectsStep selected={selected} onToggle={toggleSubject} />
             )}
-            {step === 3 && (
-              <DoneStep
-                selectedCount={selected.size}
-                grade={grade}
-                onGradeChange={setGrade}
-              />
-            )}
+            {step === 3 && <DoneStep selectedCount={selected.size} />}
           </StepPanel>
         </div>
 
@@ -138,11 +122,7 @@ export function OnboardingPage() {
             type="button"
             variant="primary"
             onClick={goNext}
-            disabled={
-              saving ||
-              (step === 2 && selected.size === 0) ||
-              (step === STEPS && !grade.trim())
-            }
+            disabled={saving || (step === 2 && selected.size === 0)}
             className="bg-amber border-amber text-paper hover:bg-amber/90 hover:border-amber/90 font-semibold disabled:opacity-50"
           >
             {step === STEPS ? (

@@ -52,11 +52,10 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
   const { data: session } = authClient.useSession();
   const [isMobileProfileMenuOpen, setIsMobileProfileMenuOpen] = useState(false);
 
-  const user = session?.user as Record<string, unknown> | undefined;
-  const name = typeof user?.name === "string" ? user.name : "Użytkownik";
-  const email = typeof user?.email === "string" ? user.email : "";
+  const user = session?.user;
+  const name = user?.name ?? "Użytkownik";
+  const email = user?.email ?? "";
   const initial = (name[0] || email[0] || "?").toUpperCase();
-  const grade = typeof user?.grade === "string" ? user.grade : "—";
 
   useEffect(() => {
     setIsMobileProfileMenuOpen(false);
@@ -77,11 +76,6 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
 
     setIsMobileProfileMenuOpen(false);
     navigate("/profile");
-  };
-
-  const openSettingsFromMobileMenu = () => {
-    setIsMobileProfileMenuOpen(false);
-    navigate("/settings");
   };
 
   return (
@@ -151,9 +145,6 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
                     <div className="flex-1 min-w-0">
                       <div className="text-[16px] font-medium text-ink">
                         {name}
-                      </div>
-                      <div className="mono text-[13px] text-ink-faint tracking-[0.08em]">
-                        {grade}
                       </div>
                     </div>
                     <CaretUpDownIcon
@@ -250,7 +241,10 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
                   type="button"
                   variant="ghost"
                   className="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-sm text-ink-muted text-sm text-left transition-all duration-150 hover:bg-paper-3 hover:text-ink justify-start"
-                  onClick={openSettingsFromMobileMenu}
+                  onClick={() => {
+                    setIsMobileProfileMenuOpen(false);
+                    navigate("/settings");
+                  }}
                 >
                   <GearSixIcon size={16} />
                   Ustawienia
