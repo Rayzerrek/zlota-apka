@@ -12,7 +12,7 @@ export type {
   ExamCreateResponse,
 } from "../types/api";
 
-const BASE = import.meta.env.VITE_API_URL ?? "";
+const BASE = import.meta.env.DEV ? "" : (import.meta.env.VITE_API_URL ?? "");
 
 async function request<T>(
   path: string,

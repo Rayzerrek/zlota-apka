@@ -29,6 +29,7 @@ export function createAuth(env: Env): AuthInstance {
   const sql = neon(env.DATABASE_URL);
   const db = drizzle(sql, { schema });
   const resend = new Resend(env.RESEND_API_KEY);
+  const isSecureAuth = env.BETTER_AUTH_URL.startsWith("https://");
 
   const opts: BetterAuthOptions = {
     database: drizzleAdapter(db, { provider: "pg", schema }),
@@ -66,15 +67,15 @@ export function createAuth(env: Env): AuthInstance {
       }),
     ],
     advanced: {
-      useSecureCookies: true,
+      useSecureCookies: isSecureAuth,
       defaultCookieAttributes: {
-        sameSite: "none",
+        sameSite: isSecureAuth ? "none" : "lax",
       },
       cookies: {
         session_token: {
           attributes: {
-            sameSite: "none",
-            secure: true,
+            sameSite: isSecureAuth ? "none" : "lax",
+            secure: isSecureAuth,
           },
         },
       },

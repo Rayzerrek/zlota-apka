@@ -15,7 +15,16 @@ export function ExamMenu({ examId }: Props) {
 
   return (
     <DropdownMenu>
-      <DropdownMenu.Trigger>
+      <DropdownMenu.Trigger
+        render={
+          <button
+            type="button"
+            aria-label="Opcje egzaminu"
+            title="Opcje egzaminu"
+            className="grid h-8 w-8 place-items-center rounded-[4px] text-ink-faint transition-colors hover:bg-white/[0.04] hover:text-ink focus:outline-none"
+          />
+        }
+      >
         <DotsThreeIcon size={18} weight="bold" />
       </DropdownMenu.Trigger>
 

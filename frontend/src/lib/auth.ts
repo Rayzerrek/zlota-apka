@@ -1,8 +1,12 @@
 import { magicLinkClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
+const authBaseURL = import.meta.env.DEV
+  ? window.location.origin
+  : (import.meta.env.VITE_API_URL ?? window.location.origin);
+
 export const authClient = createAuthClient({
-  baseURL: import.meta.env.VITE_API_URL ?? window.location.origin,
+  baseURL: authBaseURL,
   plugins: [magicLinkClient()],
 });
 
