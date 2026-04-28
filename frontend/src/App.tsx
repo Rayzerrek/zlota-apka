@@ -2,21 +2,21 @@ import { Suspense, lazy, useMemo, useState } from "react";
 // import { useTranslation } from "react-i18next";
 
 import "./App.css";
-import { Navigate, Route, Routes, useLocation } from "react-router";
+import { Navigate, Route, Routes } from "react-router";
 
 import { PageSkeleton } from "./components/layout/PageSkeleton";
 import { Shell } from "./components/layout/Shell";
 import { CARDS, SESSIONS, TODAY } from "./data/mock";
 import { useTheme } from "./hooks/useTheme";
-import { authClient } from "./lib/auth";
+// import { authClient } from "./lib/auth";
 import { BrowsePage } from "./pages/BrowsePage";
-import { LoginPage } from "./pages/LoginPage";
+// import { LoginPage } from "./pages/LoginPage";
 import { NotePage } from "./pages/NotePage";
 import { OnboardingPage } from "./pages/OnboardingPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { ReviewPage } from "./pages/ReviewPage";
 import { SettingsPage } from "./pages/SettingsPage";
-import { SignUpPage } from "./pages/SignUpPage";
+// import { SignUpPage } from "./pages/SignUpPage";
 import { TodayPage } from "./pages/TodayPage";
 
 const CalendarPage = lazy(() =>
@@ -30,27 +30,23 @@ const LandingPage = lazy(() =>
 );
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { data: session, isPending } = authClient.useSession();
-
-  if (isPending) return <PageSkeleton />;
-  if (!session) return <Navigate to="/login" replace />;
-
+  // Auth disabled temporarily
+  // const { data: session, isPending } = authClient.useSession();
+  // if (isPending) return <PageSkeleton />;
+  // if (!session) return <Navigate to="/login" replace />;
   return <>{children}</>;
 }
 
 function OnboardingGuard({ children }: { children: React.ReactNode }) {
-  const { data: session } = authClient.useSession();
-  const location = useLocation();
-
-  if (!session) return <>{children}</>;
-
-  const user = session.user as Record<string, unknown> | undefined;
-  const onboardingDone = user?.onboardingDone;
-
-  if (onboardingDone === false && location.pathname !== "/onboarding") {
-    return <Navigate to="/onboarding" replace />;
-  }
-
+  // Auth disabled temporarily
+  // const { data: session } = authClient.useSession();
+  // const location = useLocation();
+  // if (!session) return <>{children}</>;
+  // const user = session.user as Record<string, unknown> | undefined;
+  // const onboardingDone = user?.onboardingDone;
+  // if (onboardingDone === false && location.pathname !== "/onboarding") {
+  //   return <Navigate to="/onboarding" replace />;
+  // }
   return <>{children}</>;
 }
 
@@ -83,6 +79,7 @@ function App() {
             </Suspense>
           }
         />
+        {/* Auth disabled temporarily
         <Route
           path="/login"
           element={<LoginPage theme={theme} onToggleTheme={toggleTheme} />}
@@ -91,6 +88,7 @@ function App() {
           path="/sign-up"
           element={<SignUpPage theme={theme} onToggleTheme={toggleTheme} />}
         />
+        */}
         <Route
           path="/onboarding"
           element={

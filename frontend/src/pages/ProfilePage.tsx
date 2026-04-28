@@ -10,7 +10,7 @@ import { ProfileDataExport } from "../components/profile/ProfileDataExport";
 import { ProfileHeader } from "../components/profile/ProfileHeader";
 import { useSavedFeedback } from "../hooks/useSavedFeedback";
 import { apiDelete } from "../lib/api";
-import { authClient } from "../lib/auth";
+// import { authClient } from "../lib/auth";
 
 type Props = {
   theme: "dark" | "light";
@@ -18,11 +18,12 @@ type Props = {
 };
 
 export function ProfilePage({ theme, onThemeChange }: Props) {
-  const { data: session } = authClient.useSession();
-  const user = session?.user;
+  // Auth disabled temporarily
+  // const { data: session } = authClient.useSession();
+  // const user = session?.user;
 
-  const name = user?.name ?? "Użytkownik";
-  const email = user?.email ?? "";
+  const name = "Użytkownik";
+  const email = "";
   const initial = (name[0] || email[0] || "?").toUpperCase();
 
   const [language, setLanguage] = useState(
@@ -46,8 +47,9 @@ export function ProfilePage({ theme, onThemeChange }: Props) {
       alert("Nie udało się usunąć konta.");
       return;
     }
-    await authClient.signOut();
-    window.location.href = "/login";
+    // Auth disabled temporarily
+    // await authClient.signOut();
+    window.location.href = "/today";
   };
 
   return (

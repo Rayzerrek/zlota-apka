@@ -31,12 +31,14 @@ export function LandingPage({ theme, onToggleTheme }: Props) {
               aria-label="Zmień motyw"
               onClick={onToggleTheme}
             />
+            {/* Auth disabled temporarily
             <Button variant="outline" onClick={() => navigate("/login")}>
               Zaloguj się
             </Button>
             <Button variant="outline" onClick={() => navigate("/sign-up")}>
               Zarejestruj się
             </Button>
+            */}
           </nav>
         </header>
 
@@ -60,7 +62,7 @@ export function LandingPage({ theme, onToggleTheme }: Props) {
 
             <Button
               variant="primary"
-              onClick={() => navigate("/sign-up")}
+              onClick={() => navigate("/today")}
               className="bg-amber border-amber text-paper hover:bg-amber/90 hover:border-amber/90 px-6"
             >
               Rozpocznij

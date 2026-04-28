@@ -2,8 +2,9 @@ import { OpenAPIHono } from "@hono/zod-openapi";
 import { Scalar } from "@scalar/hono-api-reference";
 import { cors } from "hono/cors";
 
-import { type Env, createAuth } from "./lib/auth";
-import { checkAuthRateLimit } from "./lib/utils";
+import { type Env } from "./lib/auth";
+// import { createAuth } from "./lib/auth";
+// import { checkAuthRateLimit } from "./lib/utils";
 import { cardsRouter } from "./routes/cards";
 import { dashboardRouter } from "./routes/dashboard";
 import { examsRouter } from "./routes/exams";
@@ -43,11 +44,12 @@ app.route("/api/exams", examsRouter);
 app.route("/api/dashboard", dashboardRouter);
 app.route("/api/sessions", sessionsRouter);
 
-app.all("/api/auth/**", async (c) => {
-  checkAuthRateLimit(c.req.header("cf-connecting-ip") ?? "unknown");
-  const auth = createAuth(c.env);
-  return auth.handler(c.req.raw);
-});
+// Auth disabled temporarily
+// app.all("/api/auth/**", async (c) => {
+//   checkAuthRateLimit(c.req.header("cf-connecting-ip") ?? "unknown");
+//   const auth = createAuth(c.env);
+//   return auth.handler(c.req.raw);
+// });
 
 app.doc("/api/doc", {
   openapi: "3.0.0",

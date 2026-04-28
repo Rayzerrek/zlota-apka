@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 
 import { LoginHeader } from "../components/ui/LoginHeader";
-import { authClient, authErrorMessage } from "../lib/auth";
+// import { authClient, authErrorMessage } from "../lib/auth";
 
 type Props = {
   theme: "dark" | "light";
@@ -34,17 +34,18 @@ export function SignUpPage({ theme, onToggleTheme }: Props) {
     }
     setError("");
     setLoading(true);
-    const { error: authError } = await authClient.signUp.email({
-      name,
-      email,
-      password,
-    });
+    // Auth disabled temporarily
+    // const { error: authError } = await authClient.signUp.email({
+    //   name,
+    //   email,
+    //   password,
+    // });
     setLoading(false);
-    if (authError) {
-      setError(authErrorMessage(authError, "signup"));
-      return;
-    }
-    navigate("/onboarding");
+    // if (authError) {
+    //   setError(authErrorMessage(authError, "signup"));
+    //   return;
+    // }
+    navigate("/today");
   }
 
   return (

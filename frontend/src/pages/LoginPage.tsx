@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 
 import { LoginHeader } from "../components/ui/LoginHeader";
-import { authClient, authErrorMessage } from "../lib/auth";
+// import { authClient, authErrorMessage } from "../lib/auth";
 
 type Props = {
   theme: "dark" | "light";
@@ -23,29 +23,33 @@ export function LoginPage({ theme, onToggleTheme }: Props) {
     e.preventDefault();
     setError("");
     setLoading(true);
-    const { error: authError } = await authClient.signIn.email({
-      email,
-      password,
-    });
+    // Auth disabled temporarily
+    // const { error: authError } = await authClient.signIn.email({
+    //   email,
+    //   password,
+    // });
     setLoading(false);
-    if (authError) {
-      setError(authErrorMessage(authError, "login"));
-      return;
-    }
-    navigate("/onboarding");
+    // if (authError) {
+    //   setError(authErrorMessage(authError, "login"));
+    //   return;
+    // }
+    navigate("/today");
   }
 
   async function handleGoogle() {
     setError("");
     setLoading(true);
-    const { error: authError } = await authClient.signIn.social({
-      provider: "google",
-      callbackURL: `${window.location.origin}/onboarding`,
-    });
-    if (authError) {
-      setError("Nie udało się zalogować przez Google. Spróbuj ponownie.");
-      setLoading(false);
-    }
+    // Auth disabled temporarily
+    // const { error: authError } = await authClient.signIn.social({
+    //   provider: "google",
+    //   callbackURL: `${window.location.origin}/onboarding`,
+    // });
+    // if (authError) {
+    //   setError("Nie udało się zalogować przez Google. Spróbuj ponownie.");
+    //   setLoading(false);
+    // }
+    setLoading(false);
+    navigate("/today");
   }
 
   return (
