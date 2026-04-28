@@ -1,60 +1,13 @@
-import { Suspense, lazy, useMemo, useState } from "react";
-// import { useTranslation } from "react-i18next";
+import { Outlet } from "@tanstack/react-router";
+import { useMemo } from "react";
 
 import "./App.css";
-import { Navigate, Route, Routes } from "react-router";
-
-import { PageSkeleton } from "./components/layout/PageSkeleton";
-import { Shell } from "./components/layout/Shell";
+import { useReview } from "./contexts/ReviewContext";
 import { CARDS, SESSIONS, TODAY } from "./data/mock";
-import { useTheme } from "./hooks/useTheme";
-// import { authClient } from "./lib/auth";
-import { BrowsePage } from "./pages/BrowsePage";
-// import { LoginPage } from "./pages/LoginPage";
-import { NotePage } from "./pages/NotePage";
-import { OnboardingPage } from "./pages/OnboardingPage";
-import { ProfilePage } from "./pages/ProfilePage";
 import { ReviewPage } from "./pages/ReviewPage";
-import { SettingsPage } from "./pages/SettingsPage";
-// import { SignUpPage } from "./pages/SignUpPage";
-import { TodayPage } from "./pages/TodayPage";
 
-const CalendarPage = lazy(() =>
-  import("./pages/CalendarPage").then((m) => ({ default: m.CalendarPage })),
-);
-const StatsPage = lazy(() =>
-  import("./pages/StatsPage").then((m) => ({ default: m.StatsPage })),
-);
-const LandingPage = lazy(() =>
-  import("./pages/LandingPage").then((m) => ({ default: m.LandingPage })),
-);
-
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  // Auth disabled temporarily
-  // const { data: session, isPending } = authClient.useSession();
-  // if (isPending) return <PageSkeleton />;
-  // if (!session) return <Navigate to="/login" replace />;
-  return <>{children}</>;
-}
-
-function OnboardingGuard({ children }: { children: React.ReactNode }) {
-  // Auth disabled temporarily
-  // const { data: session } = authClient.useSession();
-  // const location = useLocation();
-  // if (!session) return <>{children}</>;
-  // const user = session.user as Record<string, unknown> | undefined;
-  // const onboardingDone = user?.onboardingDone;
-  // if (onboardingDone === false && location.pathname !== "/onboarding") {
-  //   return <Navigate to="/onboarding" replace />;
-  // }
-  return <>{children}</>;
-}
-
-function App() {
-  const [reviewSessionId, setReviewSessionId] = useState<string | null>(null);
-  const { theme, setTheme, toggleTheme } = useTheme();
-
-  // const t = useTranslation();
+export default function App() {
+  const { reviewSessionId, setReviewSessionId } = useReview();
 
   const reviewCards = useMemo(() => {
     if (!reviewSessionId) return [];
@@ -70,86 +23,7 @@ function App() {
 
   return (
     <>
-      <Routes>
-        <Route
-          path="/site"
-          element={
-            <Suspense fallback={<PageSkeleton />}>
-              <LandingPage theme={theme} onToggleTheme={toggleTheme} />
-            </Suspense>
-          }
-        />
-        {/* Auth disabled temporarily
-        <Route
-          path="/login"
-          element={<LoginPage theme={theme} onToggleTheme={toggleTheme} />}
-        />
-        <Route
-          path="/sign-up"
-          element={<SignUpPage theme={theme} onToggleTheme={toggleTheme} />}
-        />
-        */}
-        <Route
-          path="/onboarding"
-          element={
-            <ProtectedRoute>
-              <OnboardingPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/*"
-          element={
-            <ProtectedRoute>
-              <OnboardingGuard>
-                <Shell theme={theme} onToggleTheme={toggleTheme}>
-                  <Routes>
-                    <Route
-                      path="/today"
-                      element={
-                        <TodayPage
-                          onStart={() => setReviewSessionId("__all_today__")}
-                          onOpenSession={(id) => setReviewSessionId(id)}
-                        />
-                      }
-                    />
-                    <Route
-                      path="/calendar"
-                      element={
-                        <Suspense fallback={<PageSkeleton />}>
-                          <CalendarPage />
-                        </Suspense>
-                      }
-                    />
-                    <Route path="/browse" element={<BrowsePage />} />
-                    <Route
-                      path="/stats"
-                      element={
-                        <Suspense fallback={<PageSkeleton />}>
-                          <StatsPage />
-                        </Suspense>
-                      }
-                    />
-                    <Route
-                      path="/profile"
-                      element={
-                        <ProfilePage theme={theme} onThemeChange={setTheme} />
-                      }
-                    />
-                    <Route path="/settings" element={<SettingsPage />} />
-                    <Route path="/notes/:examId" element={<NotePage />} />
-                    <Route
-                      path="*"
-                      element={<Navigate to="/today" replace />}
-                    />
-                  </Routes>
-                </Shell>
-              </OnboardingGuard>
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
-
+      <Outlet />
       {reviewSessionId && reviewCards.length > 0 && (
         <ReviewPage
           cards={reviewCards}
@@ -159,5 +33,3 @@ function App() {
     </>
   );
 }
-
-export default App;

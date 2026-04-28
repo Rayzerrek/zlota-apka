@@ -1,6 +1,6 @@
 import { Button } from "@cloudflare/kumo";
 import { ArrowRightIcon, MoonIcon, SunIcon } from "@phosphor-icons/react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "@tanstack/react-router";
 
 type Props = {
   theme: "dark" | "light";
@@ -32,10 +32,10 @@ export function LandingPage({ theme, onToggleTheme }: Props) {
               onClick={onToggleTheme}
             />
             {/* Auth disabled temporarily
-            <Button variant="outline" onClick={() => navigate("/login")}>
+            <Button variant="outline" onClick={() => navigate({ to: "/login" })}>
               Zaloguj się
             </Button>
-            <Button variant="outline" onClick={() => navigate("/sign-up")}>
+            <Button variant="outline" onClick={() => navigate({ to: "/sign-up" })}>
               Zarejestruj się
             </Button>
             */}
@@ -62,7 +62,7 @@ export function LandingPage({ theme, onToggleTheme }: Props) {
 
             <Button
               variant="primary"
-              onClick={() => navigate("/today")}
+              onClick={() => navigate({ to: "/today" })}
               className="bg-amber border-amber text-paper hover:bg-amber/90 hover:border-amber/90 px-6"
             >
               Rozpocznij

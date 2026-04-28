@@ -23,10 +23,9 @@ import {
   SunIcon,
   UserCircleIcon,
 } from "@phosphor-icons/react";
+import { useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { NavLink, useLocation, useNavigate } from "react-router";
 
-// import { authClient } from "../../lib/auth";
 import { cn } from "../../utils/cn";
 
 import type { MouseEvent, ReactNode } from "react";
@@ -66,7 +65,7 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
   // const handleLogout = async () => {
   //   setIsMobileProfileMenuOpen(false);
   //   await authClient.signOut();
-  //   navigate("/login");
+  //   navigate({ to: "/login" });
   // };
 
   const handleMobileProfileClick = (event: MouseEvent<HTMLButtonElement>) => {
@@ -77,7 +76,7 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
     }
 
     setIsMobileProfileMenuOpen(false);
-    navigate("/profile");
+    navigate({ to: "/profile" });
   };
 
   return (
@@ -97,32 +96,31 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
               <SidebarGroup>
                 <SidebarGroupContent>
                   <SidebarMenu>
-                    {NAV.map((item) => (
-                      <NavLink key={item.path} to={item.path}>
-                        {({ isActive }) => (
-                          <SidebarMenuItem>
-                            <SidebarMenuButton
-                              onClick={() => navigate(item.path)}
-                              active={isActive}
-                              icon={
-                                <item.icon
-                                  size={18}
-                                  weight={isActive ? "fill" : "regular"}
-                                />
-                              }
-                              className={cn(
-                                "relative flex items-center gap-3.5 p-2.5 bg-transparent text-[18px] font-medium text-left rounded-sm transition-colors duration-200",
-                                isActive
-                                  ? "text-ink before:content-[''] before:absolute before:-left-5 before:top-1/2 before:-translate-y-1/2 before:w-0.75 before:h-5.5 before:bg-amber"
-                                  : "text-ink-muted hover:text-ink",
-                              )}
-                            >
-                              {item.label}
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                        )}
-                      </NavLink>
-                    ))}
+                    {NAV.map((item) => {
+                      const isActive = location.pathname === item.path;
+                      return (
+                        <SidebarMenuItem key={item.path}>
+                          <SidebarMenuButton
+                            onClick={() => navigate({ to: item.path })}
+                            active={isActive}
+                            icon={
+                              <item.icon
+                                size={18}
+                                weight={isActive ? "fill" : "regular"}
+                              />
+                            }
+                            className={cn(
+                              "relative flex items-center gap-3.5 p-2.5 bg-transparent text-[18px] font-medium text-left rounded-sm transition-colors duration-200",
+                              isActive
+                                ? "text-ink before:content-[''] before:absolute before:-left-5 before:top-1/2 before:-translate-y-1/2 before:w-0.75 before:h-5.5 before:bg-amber"
+                                : "text-ink-muted hover:text-ink",
+                            )}
+                          >
+                            {item.label}
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      );
+                    })}
                   </SidebarMenu>
                 </SidebarGroupContent>
               </SidebarGroup>
@@ -162,14 +160,14 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
                     >
                       <DropdownMenu.Item
                         className="flex items-center gap-2.5 w-full px-2.5 py-2 bg-transparent border-0 rounded-sm text-ink-muted text-sm text-left cursor-pointer transition-all duration-150 hover:bg-paper-3 hover:text-ink focus-visible:bg-paper-3 focus-visible:text-ink focus-visible:outline-none"
-                        onClick={() => navigate("/profile")}
+                        onClick={() => navigate({ to: "/profile" })}
                       >
                         <UserCircleIcon size={16} />
                         Pokaż profil
                       </DropdownMenu.Item>
                       <DropdownMenu.Item
                         className="flex items-center gap-2.5 w-full px-2.5 py-2 bg-transparent border-0 rounded-sm text-ink-muted text-sm text-left cursor-pointer transition-all duration-150 hover:bg-paper-3 hover:text-ink focus-visible:bg-paper-3 focus-visible:text-ink focus-visible:outline-none"
-                        onClick={() => navigate("/settings")}
+                        onClick={() => navigate({ to: "/settings" })}
                       >
                         <GearSixIcon size={16} />
                         Ustawienia
@@ -219,26 +217,24 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
           aria-label="Nawigacja"
           className="dock-frost fixed left-3 right-3 bottom-[calc(12px+env(safe-area-inset-bottom))] flex justify-stretch p-1.5 border border-rule rounded-sm z-40 lg:hidden"
         >
-          {NAV.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              aria-label={item.label}
-              className={({ isActive }) =>
-                cn(
+          {NAV.map((item) => {
+            const isActive = location.pathname === item.path;
+            return (
+              <button
+                key={item.path}
+                type="button"
+                onClick={() => navigate({ to: item.path })}
+                aria-label={item.label}
+                className={cn(
                   "flex-1 flex flex-col items-center justify-center gap-0.5 px-1 py-2 bg-transparent border-0 rounded-sm mono text-[13px] uppercase cursor-pointer transition-colors duration-200",
                   isActive ? "text-amber" : "text-ink-faint hover:text-ink",
-                )
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  <item.icon size={22} weight={isActive ? "fill" : "regular"} />
-                  <span>{item.label}</span>
-                </>
-              )}
-            </NavLink>
-          ))}
+                )}
+              >
+                <item.icon size={22} weight={isActive ? "fill" : "regular"} />
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
           <div className="relative flex-1">
             {isMobileProfileMenuOpen && (
               <div className="menu-shadow absolute right-0 bottom-[calc(100%+10px)] min-w-42 p-1.5 bg-paper-2 border border-rule-strong rounded-[3px] z-50">
@@ -248,7 +244,7 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
                   className="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-sm text-ink-muted text-sm text-left transition-all duration-150 hover:bg-paper-3 hover:text-ink justify-start"
                   onClick={() => {
                     setIsMobileProfileMenuOpen(false);
-                    navigate("/settings");
+                    navigate({ to: "/settings" });
                   }}
                 >
                   <GearSixIcon size={16} />

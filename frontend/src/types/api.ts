@@ -66,6 +66,57 @@ export type ApiDashboard = {
   week: { total: number; completed: number; progressPercent: number };
 };
 
+export type ApiCard = {
+  id: string;
+  topicId: string;
+  front: string;
+  back: string;
+  source: "manual" | "ai";
+  stability: number;
+  difficulty: number;
+  elapsedDays: number;
+  scheduledDays: number;
+  reps: number;
+  lapses: number;
+  state: number;
+  lastReview: string | null;
+  due: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ApiReviewHistory = {
+  id: string;
+  cardId: string;
+  sessionId: string | null;
+  rating: number;
+  stateBefore: number;
+  stabilityBefore: number;
+  difficultyBefore: number;
+  scheduledDays: number;
+  elapsedDays: number;
+  reviewedAt: string;
+};
+
+export type ApiUserAvailability = {
+  id: string;
+  dayOfWeek: number;
+  availableMinutes: number;
+};
+
+export type ApiUser = {
+  id: string;
+  name: string;
+  email: string;
+  emailVerified: boolean;
+  image: string | null;
+  grade: string | null;
+  onboardingDone: boolean;
+  availability: ApiUserAvailability[];
+  createdAt: string;
+  updatedAt: string;
+};
+
 type ApiOk<T> = { ok: true; data: T };
 type ApiErr = { ok: false; status: number; message: string };
 export type ApiResult<T> = ApiOk<T> | ApiErr;

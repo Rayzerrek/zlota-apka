@@ -1,6 +1,6 @@
 import { Button } from "@cloudflare/kumo";
 import { NotePencilIcon } from "@phosphor-icons/react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "@tanstack/react-router";
 
 import { daysBetween, longDate } from "../../utils/date";
 import { ExamMenu } from "../exam/ExamMenu";
@@ -47,7 +47,7 @@ export function ExamWidget({ exam }: Props) {
             aria-label="Wygeneruj notatkę"
             title="Wygeneruj notatkę"
             icon={NotePencilIcon}
-            onClick={() => navigate(`/notes/${exam.id}`)}
+            onClick={() => navigate({ to: `/notes/${exam.id}` })}
             className="text-ink-faint hover:text-amber hover:!bg-amber-wash"
           />
           <ExamMenu examId={exam.id} />

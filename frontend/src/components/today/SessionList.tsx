@@ -4,7 +4,7 @@ import {
   CalendarPlusIcon,
   CoffeeIcon,
 } from "@phosphor-icons/react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "@tanstack/react-router";
 
 import { cn } from "../../utils/cn";
 import { SUBJECT_BG } from "../../utils/subjects";
@@ -43,11 +43,14 @@ export function SessionList({ sessions, onOpenSession }: Props) {
               <Button
                 variant="primary"
                 icon={CalendarPlusIcon}
-                onClick={() => navigate("/calendar")}
+                onClick={() => navigate({ to: "/calendar" })}
               >
                 Zaplanuj sprawdzian
               </Button>
-              <Button variant="secondary" onClick={() => navigate("/browse")}>
+              <Button
+                variant="secondary"
+                onClick={() => navigate({ to: "/browse" })}
+              >
                 Przejrzyj karty
               </Button>
             </div>

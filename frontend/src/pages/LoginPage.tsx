@@ -1,7 +1,7 @@
 import { Button, Input, Label } from "@cloudflare/kumo";
 import { EyeIcon, EyeSlashIcon } from "@phosphor-icons/react";
+import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { useNavigate } from "react-router";
 
 import { LoginHeader } from "../components/ui/LoginHeader";
 // import { authClient, authErrorMessage } from "../lib/auth";
@@ -33,7 +33,7 @@ export function LoginPage({ theme, onToggleTheme }: Props) {
     //   setError(authErrorMessage(authError, "login"));
     //   return;
     // }
-    navigate("/today");
+    navigate({ to: "/today" });
   }
 
   async function handleGoogle() {
@@ -49,7 +49,7 @@ export function LoginPage({ theme, onToggleTheme }: Props) {
     //   setLoading(false);
     // }
     setLoading(false);
-    navigate("/today");
+    navigate({ to: "/today" });
   }
 
   return (
@@ -164,7 +164,7 @@ export function LoginPage({ theme, onToggleTheme }: Props) {
               <Button
                 type="button"
                 variant="ghost"
-                onClick={() => navigate("/sign-up")}
+                onClick={() => navigate({ to: "/sign-up" })}
                 className="text-amber bg-transparent hover:text-black transition-colors"
               >
                 Zarejestruj się

@@ -4,7 +4,7 @@ import {
   DotsThreeIcon,
   NotePencilIcon,
 } from "@phosphor-icons/react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "@tanstack/react-router";
 
 type Props = {
   examId: string;
@@ -35,7 +35,7 @@ export function ExamMenu({ examId }: Props) {
           className="enter min-w-[196px] rounded-[4px] overflow-hidden py-1 z-[100] outline-none bg-paper-3 border border-rule-strong shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
         >
           <DropdownMenu.Item
-            onSelect={() => navigate(`/notes/${examId}`)}
+            onSelect={() => navigate({ to: `/notes/${examId}` })}
             className="flex items-center gap-2.5 w-full px-3.5 py-2.5 text-left text-[13px] text-ink-muted hover:text-ink hover:bg-white/[0.04] transition-colors outline-none cursor-pointer"
           >
             <span className="text-ink-faint">
@@ -44,7 +44,7 @@ export function ExamMenu({ examId }: Props) {
             Wygeneruj notatkę
           </DropdownMenu.Item>
           <DropdownMenu.Item
-            onSelect={() => navigate("/browse")}
+            onSelect={() => navigate({ to: "/browse" })}
             className="flex items-center gap-2.5 w-full px-3.5 py-2.5 text-left text-[13px] text-ink-muted hover:text-ink hover:bg-white/[0.04] transition-colors outline-none cursor-pointer"
           >
             <span className="text-ink-faint">

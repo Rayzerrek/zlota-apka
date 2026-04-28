@@ -1,7 +1,7 @@
 import { Button, Input, Label } from "@cloudflare/kumo";
 import { EyeIcon, EyeSlashIcon } from "@phosphor-icons/react";
+import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { useNavigate } from "react-router";
 
 import { LoginHeader } from "../components/ui/LoginHeader";
 // import { authClient, authErrorMessage } from "../lib/auth";
@@ -45,7 +45,7 @@ export function SignUpPage({ theme, onToggleTheme }: Props) {
     //   setError(authErrorMessage(authError, "signup"));
     //   return;
     // }
-    navigate("/today");
+    navigate({ to: "/today" });
   }
 
   return (
@@ -184,7 +184,7 @@ export function SignUpPage({ theme, onToggleTheme }: Props) {
               <Button
                 type="button"
                 variant="ghost"
-                onClick={() => navigate("/login")}
+                onClick={() => navigate({ to: "/login" })}
                 className="text-amber bg-transparent hover:text-black transition-colors"
               >
                 Zaloguj się

@@ -1,6 +1,6 @@
 import { Button } from "@cloudflare/kumo";
 import { MoonIcon, SunIcon } from "@phosphor-icons/react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "@tanstack/react-router";
 
 type Props = {
   theme: "dark" | "light";
@@ -31,7 +31,7 @@ export function LoginHeader({
           aria-label="Zmień motyw"
           onClick={onToggleTheme}
         />
-        <Button variant="outline" onClick={() => navigate(actionTo)}>
+        <Button variant="outline" onClick={() => navigate({ to: actionTo })}>
           {actionLabel}
         </Button>
       </div>

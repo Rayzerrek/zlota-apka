@@ -4,8 +4,8 @@ import {
   CheckIcon,
   CopySimpleIcon,
 } from "@phosphor-icons/react";
+import { useParams, useRouter } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router";
 
 import { CARDS, EXAMS } from "../data/mock";
 import { cn } from "../utils/cn";
@@ -13,8 +13,9 @@ import { longDate } from "../utils/date";
 import { generateExamNote, noteToMarkdown } from "../utils/examNote";
 
 export function NotePage() {
-  const { examId } = useParams<{ examId: string }>();
-  const navigate = useNavigate();
+  const params = useParams({ strict: false });
+  const examId = params.examId as string;
+  const router = useRouter();
   const [copied, setCopied] = useState(false);
 
   const exam = useMemo(() => EXAMS.find((e) => e.id === examId), [examId]);
@@ -47,7 +48,7 @@ export function NotePage() {
             variant="ghost"
             size="xs"
             icon={ArrowLeftIcon}
-            onClick={() => navigate(-1)}
+            onClick={() => router.history.back()}
             className="mono uppercase text-ink-muted hover:text-ink hover:bg-transparent"
           >
             Wróć
