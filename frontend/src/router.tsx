@@ -15,6 +15,7 @@ import { useTheme } from "./hooks/useTheme";
 import { BrowsePage } from "./pages/BrowsePage";
 import { NotePage } from "./pages/NotePage";
 import { ProfilePage } from "./pages/ProfilePage";
+import { ScannerPage } from "./pages/ScannerPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { TodayPage } from "./pages/TodayPage";
 
@@ -102,6 +103,14 @@ function BrowsePageWrapper() {
   );
 }
 
+function ScannerPageWrapper() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <ScannerPage />
+    </Suspense>
+  );
+}
+
 function LoginPageWrapper() {
   const { theme, toggleTheme } = useTheme();
   const LoginPage = lazy(() =>
@@ -174,6 +183,12 @@ const statsRoute = new Route({
   component: StatsPageWrapper,
 });
 
+const scannerRoute = new Route({
+  getParentRoute: () => layoutRoute,
+  path: "scanner",
+  component: ScannerPageWrapper,
+});
+
 const profileRoute = new Route({
   getParentRoute: () => layoutRoute,
   path: "profile",
@@ -208,6 +223,7 @@ const routeTree = rootRoute.addChildren([
     calendarRoute,
     browseRoute,
     statsRoute,
+    scannerRoute,
     profileRoute,
     settingsRoute,
     notesRoute,

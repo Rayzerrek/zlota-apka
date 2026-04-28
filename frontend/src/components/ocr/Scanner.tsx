@@ -1,114 +1,111 @@
-import { useState } from 'react';
-import ReactMarkdown from 'react-markdown';
+import { Button } from "@cloudflare/kumo";
+import { CameraIcon, SpinnerIcon } from "@phosphor-icons/react";
+import { useCallback, useState } from "react";
 
-// 1. Wyciągamy funkcję kompresji NA ZEWNĄTRZ, żeby nie śmieciła w komponencie
-const compressImage = (file: File): Promise<string> => {
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = (event) => {
-      const img = new Image();
-      img.src = event.target?.result as string;
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const MAX_WIDTH = 1280;
-        let width = img.width;
-        let height = img.height;
-
-        if (width > MAX_WIDTH) {
-          height = (MAX_WIDTH / width) * height;
-          width = MAX_WIDTH;
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx?.drawImage(img, 0, 0, width, height);
-
-        // Kompresja do 70% jakości - kluczowe dla uniknięcia błędu 503
-        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
-        resolve(compressedBase64.split(',')[1]);
-      };
-    };
-  });
-};
+import { apiPost } from "../../lib/api";
+import { compressImage } from "../../utils/image";
+import { ScanDropZone } from "./ScanDropZone";
+import { ScanImagePreview } from "./ScanImagePreview";
+import { ScanResult } from "./ScanResult";
 
 export const Scanner = () => {
+  const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState("");
+  const [error, setError] = useState("");
 
-  const handleVision = async (files: File[]) => {
+  const addFiles = useCallback((newFiles: File[]) => {
+    setFiles((prev) => [...prev, ...newFiles]);
+    setResult("");
+    setError("");
+  }, []);
+
+  const removeFile = useCallback((index: number) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+  }, []);
+
+  const handleScan = async () => {
     if (files.length === 0) return;
 
     setLoading(true);
     setResult("");
+    setError("");
 
     try {
-      // 2. Przetwarzamy wszystkie pliki przez kompresję
-      // Używamy "files" (to co wpada do funkcji), a nie "selectedFiles"
-      const processedImages = await Promise.all(
-        files.map(async (file: File) => ({
-          data: await compressImage(file),
-          mimeType: "image/jpeg",
-        }))
+      const images = await Promise.all(
+        files.map((file) => compressImage(file)),
       );
 
-      // 3. Wysyłamy "lekkie" zdjęcia do backendu
-      const response = await fetch("http://127.0.0.1:8787/api/scan", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ images: processedImages }),
-      });
+      const res = await apiPost<{ text?: string }>("/api/scan", { images });
 
-      const data = await response.json() as { text?: string; error?: string };
-
-      if (!response.ok) {
-        throw new Error(data.error || "Błąd serwera (możliwe przeciążenie AI)");
+      if (!res.ok) {
+        throw new Error(res.message || "Błąd serwera");
       }
 
-      setResult(data.text || "");
+      setResult(res.data?.text || "");
     } catch (err: any) {
-      console.error("Szczegóły błędu:", err);
-      setResult("Błąd: " + err.message);
+      console.error("Błąd skanera:", err);
+      setError(err.message || "Wystąpił nieznany błąd");
     } finally {
       setLoading(false);
     }
   };
 
-  return (
-    <div className="bg-paper-2 border-2 border-amber rounded-2xl p-8 mt-10 shadow-2xl text-center">
-      <h2 className="font-display text-3xl text-amber mb-6 italic underline decoration-amber/30">Skaner AI</h2>
-      
-      <div className="flex flex-col items-center gap-4">
-        <input 
-          type="file" 
-          accept="image/*"
-          multiple 
-          onChange={(e) => {
-            if (e.target.files) {
-              handleVision(Array.from(e.target.files));
-            }
-          }}
-          className="block w-full max-w-xs text-sm text-ink-muted file:bg-amber file:text-paper file:px-6 file:py-3 file:rounded-full file:border-0 hover:file:opacity-80 cursor-pointer"
-        />
-        {loading && (
-          <div className="flex flex-col items-center gap-2">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber"></div>
-            <p className="text-amber font-bold">AI analizuje zdjęcia (może to potrwać chwilę)...</p>
-          </div>
-        )}
-      </div>
+  const hasFiles = files.length > 0;
 
-      {result && (
-        <div className="mt-8 bg-white/50 p-6 rounded-xl border border-amber shadow-inner text-left">
-          <p className="text-[10px] uppercase font-bold text-amber mb-4 tracking-widest">
-             Twoja Notatka:
-          </p>
-          <div className="text-ink text-lg leading-relaxed prose prose-amber max-w-none">
-            <ReactMarkdown>{result}</ReactMarkdown>
+  return (
+    <div className="flex flex-col gap-6">
+      <ScanDropZone onFiles={addFiles} disabled={loading} />
+
+      {hasFiles && (
+        <div className="flex flex-col gap-4">
+          <ScanImagePreview files={files} onRemove={removeFile} />
+
+          <div className="flex items-center gap-3">
+            <Button
+              type="button"
+              variant="primary"
+              icon={<CameraIcon size={18} />}
+              onClick={handleScan}
+              disabled={loading}
+              className="rounded-sm"
+            >
+              {loading ? "Analizowanie…" : "Skanuj"}
+            </Button>
+
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => {
+                setFiles([]);
+                setResult("");
+                setError("");
+              }}
+              disabled={loading}
+              className="rounded-sm"
+            >
+              Wyczyść
+            </Button>
           </div>
         </div>
       )}
+
+      {loading && (
+        <div className="flex items-center gap-3 text-ink-muted">
+          <SpinnerIcon size={18} className="animate-spin" />
+          <span className="text-[15px]">
+            AI analizuje zdjęcia (może to potrwać chwilę)…
+          </span>
+        </div>
+      )}
+
+      {error && !loading && (
+        <div className="bg-rating-1/8 border border-rating-1/20 rounded-sm p-4 text-rating-1 text-[15px]">
+          {error}
+        </div>
+      )}
+
+      {result && !loading && <ScanResult text={result} />}
     </div>
   );
 };
