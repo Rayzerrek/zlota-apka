@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@better-auth/infra": "^0.2.5",
+    "@google/generative-ai": "^0.24.1",
     "@hono/zod-openapi": "^1.3.0",
     "@neondatabase/serverless": "^1.1.0",
     "@scalar/hono-api-reference": "^0.10.9",

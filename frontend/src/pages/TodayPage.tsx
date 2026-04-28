@@ -8,7 +8,7 @@ import { TodayHero } from "../components/today/TodayHero";
 import { TodayStats } from "../components/today/TodayStats";
 import { apiGet } from "../lib/api";
 import { dayLong, longDate } from "../utils/date";
-
+import {Scanner} from "../components/ocr/Scanner"
 import type { ApiDashboard } from "../types/api";
 
 type Props = {
@@ -53,6 +53,10 @@ export function TodayPage({ onStart, onOpenSession }: Props) {
       <SessionList sessions={todaySessions} onOpenSession={onOpenSession} />
 
       <AddExamModal open={addExamOpen} onClose={() => setAddExamOpen(false)} />
+      <div className="mt-10 pb-10 border-t border-rule pt-10">
+        <h2 className="text-sm mono uppercase opacity-50 mb-6">Skaner AI</h2>
+        <Scanner />
+      </div>
     </>
   );
 }

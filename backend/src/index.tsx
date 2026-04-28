@@ -13,10 +13,12 @@ import { sessionsRouter } from "./routes/sessions";
 import { subjectsRouter } from "./routes/subjects";
 import { topicsRouter } from "./routes/topics";
 import { usersRouter } from "./routes/users";
-
+import scanRouter from './routes/scan';
 const app = new OpenAPIHono<{ Bindings: Env }>();
 
-function corsMiddleware(origins: string[]) {
+
+app.route('/api/scan',scanRouter);
+function createCorsMiddleware(origins: string[]) {
   return cors({
     origin: (origin) => {
       if (origins.includes(origin)) return origin;
@@ -34,7 +36,7 @@ app.use("/api/*", async (c, next) => {
     .map((s) => s.trim())
     .filter(Boolean);
 
-  return corsMiddleware(origins)(c, next);
+  return createCorsMiddleware(origins)(c, next);
 });
 
 app.route("/api/onboarding", onboardingRouter);
