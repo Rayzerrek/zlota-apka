@@ -15,7 +15,7 @@ export function ReviewHeader({ current, total, progress, onExit }: Props) {
         variant="ghost"
         icon={XIcon}
         onClick={onExit}
-        className="text-ink-muted hover:text-amber mono text-[14px] tracking-[0.16em] uppercase shrink-0"
+        className="text-ink-muted hover:text-amber mono text-[14px] uppercase shrink-0"
       >
         Zamknij
       </Button>

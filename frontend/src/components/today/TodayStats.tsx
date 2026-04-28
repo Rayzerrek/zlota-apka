@@ -7,7 +7,7 @@ export function TodayStats() {
         <div className="display font-normal text-[43px] leading-none text-ink">
           <em className="italic text-amber">{STUDY_STATS.streakDays}</em>
         </div>
-        <div className="mono text-[16px] tracking-[0.16em] uppercase text-ink-faint">
+        <div className="mono text-[16px] uppercase text-ink-faint">
           dni z rzędu
         </div>
       </div>
@@ -15,7 +15,7 @@ export function TodayStats() {
         <div className="display mono font-normal text-[43px] leading-none text-ink">
           {STUDY_STATS.weekMinutes}
         </div>
-        <div className="mono text-[16px] tracking-[0.16em] uppercase text-ink-faint">
+        <div className="mono text-[16px] uppercase text-ink-faint">
           min w tym tygodniu
         </div>
       </div>

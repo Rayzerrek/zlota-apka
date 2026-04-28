@@ -11,7 +11,7 @@ export function DoneStep({ selectedCount }: Props) {
         <CheckIcon size={28} weight="bold" />
       </div>
       <div className="flex flex-col gap-3">
-        <h2 className="display italic text-[clamp(32px,5vw,44px)] font-normal leading-[0.95] tracking-[-0.02em] text-ink">
+        <h2 className="display italic text-[clamp(32px,5vw,44px)] font-normal leading-[0.95] text-ink">
           Wszystko <em className="not-italic text-amber">gotowe</em>
         </h2>
         <p className="text-[16px] text-ink-muted leading-relaxed max-w-[360px] mx-auto">

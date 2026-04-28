@@ -19,7 +19,7 @@ export function TodayHero({ onStart, onAddExam }: Props) {
           size="lg"
           variant="ghost"
           onClick={onStart}
-          className="bg-amber text-paper rounded-sm hover:bg-[#ffcc4a] hover:-translate-y-px active:translate-y-0 transition-all font-semibold px-7 py-4 tracking-[0.02em]"
+          className="bg-amber text-paper rounded-sm hover:bg-[#ffcc4a] hover:-translate-y-px active:translate-y-0 transition-all font-semibold px-7 py-4"
         >
           Zacznij powtórkę
           <ArrowRightIcon size={18} weight="bold" className="ml-1" />

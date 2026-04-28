@@ -14,9 +14,7 @@ export function ProfileHeader({ name, initial, email }: Props) {
         <div className="display italic text-[31px] leading-none text-ink">
           {name}
         </div>
-        <div className="mono text-[14px] text-ink-muted tracking-[0.14em] uppercase">
-          {email}
-        </div>
+        <div className="mono text-[14px] text-ink-muted uppercase">{email}</div>
       </div>
     </section>
   );

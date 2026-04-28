@@ -48,15 +48,15 @@ export function NotePage() {
             size="xs"
             icon={ArrowLeftIcon}
             onClick={() => navigate(-1)}
-            className="mono tracking-[0.12em] uppercase text-ink-muted hover:text-ink hover:bg-transparent"
+            className="mono uppercase text-ink-muted hover:text-ink hover:bg-transparent"
           >
             Wróć
           </Button>
           <div className="flex flex-col gap-1.5">
-            <span className="mono text-[11px] tracking-[0.18em] uppercase text-amber">
+            <span className="mono text-[11px] uppercase text-amber">
               Notatka · {note.subject}
             </span>
-            <h1 className="display italic text-[clamp(32px,5vw,52px)] font-normal leading-[0.95] tracking-[-0.02em] m-0 text-ink">
+            <h1 className="display italic text-[clamp(32px,5vw,52px)] font-normal leading-[0.95] m-0 text-ink">
               {note.examName}
             </h1>
             <p className="mono text-[13px] text-ink-faint mt-1">
@@ -70,7 +70,7 @@ export function NotePage() {
           icon={copied ? CheckIcon : CopySimpleIcon}
           onClick={handleCopy}
           className={cn(
-            "shrink-0 mono text-[13px] tracking-[0.08em] border border-rule !rounded-[3px]",
+            "shrink-0 mono text-[13px] border border-rule !rounded-[3px]",
             copied
               ? "!bg-amber-wash !text-amber"
               : "!bg-kumo-base !text-ink-muted",
@@ -88,7 +88,7 @@ export function NotePage() {
         ) : (
           note.sections.map((section) => (
             <div key={section.topic}>
-              <p className="mono text-[11px] tracking-[0.18em] uppercase text-ink-faint pb-3 mb-5 border-b border-rule">
+              <p className="mono text-[11px] uppercase text-ink-faint pb-3 mb-5 border-b border-rule">
                 {section.topic}
               </p>
               <div className="flex flex-col gap-5">

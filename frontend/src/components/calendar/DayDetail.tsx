@@ -13,13 +13,11 @@ export function DayDetail({ selected, sessions }: Props) {
   return (
     <section className="mt-6">
       <div className="flex items-baseline justify-between gap-3 mb-5 pb-3 border-b border-rule">
-        <h2 className="display font-normal text-[25px] tracking-[-0.01em] text-ink flex items-baseline gap-3">
-          <span className="mono text-xs text-amber tracking-[0.08em]">
-            02 —
-          </span>{" "}
+        <h2 className="display font-normal text-[25px] text-ink flex items-baseline gap-3">
+          <span className="mono text-xs text-amber">02 —</span>{" "}
           {dayLong(selected)}
         </h2>
-        <span className="mono text-[14px] tracking-[0.14em] uppercase text-ink-faint">
+        <span className="mono text-[14px] uppercase text-ink-faint">
           {sessions.length === 0
             ? "Brak zaplanowanych sesji"
             : `${sessions.length} sesji`}
@@ -41,14 +39,14 @@ export function DayDetail({ selected, sessions }: Props) {
             >
               <span
                 className={cn(
-                  "mono text-[16px] tracking-[0.04em]",
+                  "mono text-[16px]",
                   s.done ? "text-ink-faint" : "text-ink-muted",
                 )}
               >
                 {s.timeOfDay}
               </span>
               <span className="flex flex-col gap-1 min-w-0">
-                <span className="flex items-center gap-2 mono text-[13px] tracking-[0.2em] uppercase text-ink-muted">
+                <span className="flex items-center gap-2 mono text-[13px] uppercase text-ink-muted">
                   <span
                     className={cn(
                       "w-2 h-2 rounded-full shrink-0",
@@ -59,7 +57,7 @@ export function DayDetail({ selected, sessions }: Props) {
                 </span>
                 <span
                   className={cn(
-                    "display font-normal text-[21px] leading-[1.2] tracking-[-0.005em]",
+                    "display font-normal text-[21px] leading-[1.2]",
                     s.done
                       ? "line-through decoration-rule-strong decoration-[1px] text-ink-faint"
                       : "text-ink",

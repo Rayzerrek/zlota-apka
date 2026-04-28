@@ -47,8 +47,8 @@ export function ProfileDataExport() {
 
   return (
     <section className="enter enter-d3 flex flex-col gap-3 pt-2">
-      <h2 className="display font-normal text-[21px] tracking-[-0.005em] text-ink flex items-baseline gap-3">
-        <span className="mono text-xs text-amber tracking-[0.08em]">02 —</span>
+      <h2 className="display font-normal text-[21px] text-ink flex items-baseline gap-3">
+        <span className="mono text-xs text-amber">02 —</span>
         Twoje dane
       </h2>
       <p className="text-[15px] text-ink-muted leading-[1.55] max-w-[52ch]">

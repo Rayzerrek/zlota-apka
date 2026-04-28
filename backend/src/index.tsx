@@ -16,7 +16,7 @@ import { usersRouter } from "./routes/users";
 
 const app = new OpenAPIHono<{ Bindings: Env }>();
 
-function createCorsMiddleware(origins: string[]) {
+function corsMiddleware(origins: string[]) {
   return cors({
     origin: (origin) => {
       if (origins.includes(origin)) return origin;
@@ -34,7 +34,7 @@ app.use("/api/*", async (c, next) => {
     .map((s) => s.trim())
     .filter(Boolean);
 
-  return createCorsMiddleware(origins)(c, next);
+  return corsMiddleware(origins)(c, next);
 });
 
 app.route("/api/onboarding", onboardingRouter);

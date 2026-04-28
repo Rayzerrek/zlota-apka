@@ -42,7 +42,7 @@ export function BrowseCard({ card }: Props) {
           SUBJECT_BG[card.subject],
         )}
       />
-      <div className="flex items-center justify-between mono text-[13px] tracking-[0.16em] uppercase text-ink-muted">
+      <div className="flex items-center justify-between mono text-[13px] uppercase text-ink-muted">
         <span className="flex items-center gap-2">
           <span
             className={cn(
@@ -61,7 +61,7 @@ export function BrowseCard({ card }: Props) {
           {STAGE_LABELS[card.stage]}
         </span>
       </div>
-      <div className="display text-[21px] leading-[1.3] text-ink tracking-[-0.005em]">
+      <div className="display text-[21px] leading-[1.3] text-ink">
         {card.question}
       </div>
       <div className="flex justify-between mono text-[13px] text-ink-faint pt-2.5 border-t border-dashed border-rule">

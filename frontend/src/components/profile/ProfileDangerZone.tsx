@@ -32,7 +32,7 @@ export function ProfileDangerZone({
         </Button>
       ) : (
         <div className="flex flex-col gap-3 p-4 border border-rating-1 rounded-sm bg-rating-1/5">
-          <div className="mono text-[14px] tracking-[0.14em] uppercase text-rating-1">
+          <div className="mono text-[14px] uppercase text-rating-1">
             Czy na pewno?
           </div>
           <div className="flex gap-2 flex-wrap">

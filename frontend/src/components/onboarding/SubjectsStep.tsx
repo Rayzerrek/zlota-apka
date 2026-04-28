@@ -43,7 +43,7 @@ export function SubjectsStep({ selected, onToggle }: Props) {
   return (
     <div className="flex flex-col gap-6">
       <div className="text-center">
-        <h2 className="display italic text-[28px] font-normal leading-[0.95] tracking-[-0.02em] text-ink">
+        <h2 className="display italic text-[28px] font-normal leading-[0.95] text-ink">
           Z czego chcesz się <em className="not-italic text-amber">uczyć</em>?
         </h2>
         <p className="text-[14px] text-ink-muted mt-2">
@@ -94,7 +94,7 @@ export function SubjectsStep({ selected, onToggle }: Props) {
         })}
       </div>
 
-      <p className="text-center mono text-[12px] text-ink-faint tracking-[0.08em]">
+      <p className="text-center mono text-[12px] text-ink-faint">
         Wybrano {selected.size} / {Object.keys(SUBJECTS).length}
       </p>
     </div>

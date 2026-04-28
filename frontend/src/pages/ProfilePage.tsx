@@ -79,12 +79,12 @@ export function ProfilePage({ theme, onThemeChange }: Props) {
             size="lg"
             variant="ghost"
             onClick={handleSave}
-            className="bg-amber text-paper rounded-sm hover:bg-[#ffcc4a] font-semibold px-7 py-3 tracking-[0.02em]"
+            className="bg-amber text-paper rounded-sm hover:bg-[#ffcc4a] font-semibold px-7 py-3"
           >
             Zapisz zmiany
           </Button>
           {saved && (
-            <span className="mono text-[14px] tracking-[0.14em] uppercase text-rating-4 flex items-center gap-1.5">
+            <span className="mono text-[14px] uppercase text-rating-4 flex items-center gap-1.5">
               <CheckIcon size={12} weight="bold" />
               Zapisano
             </span>

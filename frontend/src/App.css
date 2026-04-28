@@ -34,8 +34,8 @@
   --color-rating-4: #7cc36b;
   --color-rating-5: #4ec6b5;
 
-  --font-display: "Newsreader", ui-serif, Georgia, serif;
-  --font-body: "Inter", system-ui, sans-serif;
+  --font-display: "Geist Sans", system-ui, sans-serif;
+  --font-body: "Geist Sans", system-ui, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, monospace;
 
   --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
@@ -132,24 +132,22 @@
 
 @utility display {
   font-family: var(--font-display);
-  font-optical-sizing: auto;
-  font-variation-settings:
-    "opsz" 144,
-    "SOFT" 50;
   letter-spacing: -0.02em;
-  line-height: 0.95;
+  line-height: 0.92;
 }
 
 @utility mono {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
   font-feature-settings: "ss02";
+  line-height: 1.2;
 }
 
 @utility eyebrow {
   font-family: var(--font-mono);
   font-size: 11px;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.12em;
+  line-height: 1.05;
   text-transform: uppercase;
   color: var(--color-ink-muted);
   font-weight: 500;

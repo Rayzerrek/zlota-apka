@@ -30,9 +30,6 @@ export function createAuth(env: Env): AuthInstance {
   const db = drizzle(sql, { schema });
   const resend = new Resend(env.RESEND_API_KEY);
   const betterAuthUrl = env.BETTER_AUTH_URL;
-  if (!betterAuthUrl) {
-    throw new Error("Missing environment variable: BETTER_AUTH_URL");
-  }
   const isSecureAuth = betterAuthUrl.startsWith("https://");
 
   const opts: BetterAuthOptions = {

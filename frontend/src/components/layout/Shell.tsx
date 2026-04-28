@@ -87,7 +87,7 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
           <Sidebar className="flex-col w-full h-full px-5 pt-7 pb-6 border-r border-rule bg-linear-to-b from-paper-2 to-paper">
             <SidebarHeader className="px-1 pb-0">
               <div className="flex items-baseline gap-2.5 mb-10 pl-1">
-                <span className="display italic font-semibold text-[31px] text-amber leading-none tracking-[-0.02em]">
+                <span className="display italic font-semibold text-[31px] text-amber leading-none">
                   Nazwa
                 </span>
               </div>
@@ -226,7 +226,7 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
               aria-label={item.label}
               className={({ isActive }) =>
                 cn(
-                  "flex-1 flex flex-col items-center justify-center gap-0.5 px-1 py-2 bg-transparent border-0 rounded-sm mono text-[13px] tracking-widest uppercase cursor-pointer transition-colors duration-200",
+                  "flex-1 flex flex-col items-center justify-center gap-0.5 px-1 py-2 bg-transparent border-0 rounded-sm mono text-[13px] uppercase cursor-pointer transition-colors duration-200",
                   isActive ? "text-amber" : "text-ink-faint hover:text-ink",
                 )
               }
@@ -274,7 +274,7 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
               aria-expanded={isMobileProfileMenuOpen}
               onClick={handleMobileProfileClick}
               className={cn(
-                "w-full flex flex-col items-center justify-center gap-0.5 px-1 py-2 bg-transparent border-0 rounded-sm mono text-[13px] tracking-widest uppercase cursor-pointer transition-colors duration-200",
+                "w-full flex flex-col items-center justify-center gap-0.5 px-1 py-2 bg-transparent border-0 rounded-sm mono text-[13px] uppercase cursor-pointer transition-colors duration-200",
                 location.pathname === "/profile"
                   ? "text-amber"
                   : "text-ink-faint hover:text-ink",

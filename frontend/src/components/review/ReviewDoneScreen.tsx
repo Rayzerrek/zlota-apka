@@ -20,11 +20,11 @@ export function ReviewDoneScreen({ ratings, total, onExit }: Props) {
           variant="ghost"
           icon={XIcon}
           onClick={onExit}
-          className="text-ink-muted hover:text-amber mono text-[14px] tracking-[0.16em] uppercase"
+          className="text-ink-muted hover:text-amber mono text-[14px] uppercase"
         >
           Zamknij
         </Button>
-        <span className="mono text-[14px] tracking-[0.16em] uppercase text-ink-muted">
+        <span className="mono text-[14px] uppercase text-ink-muted">
           <span className="text-ink font-semibold">Ukończono</span>
         </span>
         <span className="w-20" />
@@ -35,7 +35,7 @@ export function ReviewDoneScreen({ ratings, total, onExit }: Props) {
           <div className="display italic text-[123px] text-amber leading-[0.9] font-light">
             ✓
           </div>
-          <div className="display font-normal text-[39px] tracking-[-0.02em] [&_em]:italic [&_em]:text-amber">
+          <div className="display font-normal text-[39px] [&_em]:italic [&_em]:text-amber">
             <em>Koniec</em> sesji.
           </div>
           <p className="text-ink-muted max-w-[40ch]">
@@ -47,7 +47,7 @@ export function ReviewDoneScreen({ ratings, total, onExit }: Props) {
               <div className="display text-[37px] leading-none text-rating-4">
                 {correct}
               </div>
-              <div className="mono text-[13px] tracking-[0.16em] uppercase text-ink-faint">
+              <div className="mono text-[13px] uppercase text-ink-faint">
                 Poprawnych
               </div>
             </div>
@@ -55,7 +55,7 @@ export function ReviewDoneScreen({ ratings, total, onExit }: Props) {
               <div className="display text-[37px] leading-none text-rating-1">
                 {wrong}
               </div>
-              <div className="mono text-[13px] tracking-[0.16em] uppercase text-ink-faint">
+              <div className="mono text-[13px] uppercase text-ink-faint">
                 Do poprawy
               </div>
             </div>
@@ -63,7 +63,7 @@ export function ReviewDoneScreen({ ratings, total, onExit }: Props) {
               <div className="display text-[37px] leading-none text-ink">
                 {total}
               </div>
-              <div className="mono text-[13px] tracking-[0.16em] uppercase text-ink-faint">
+              <div className="mono text-[13px] uppercase text-ink-faint">
                 Razem
               </div>
             </div>
@@ -72,7 +72,7 @@ export function ReviewDoneScreen({ ratings, total, onExit }: Props) {
             size="lg"
             variant="ghost"
             onClick={onExit}
-            className="bg-amber text-paper rounded-sm hover:bg-[#ffcc4a] font-semibold px-7 py-4 tracking-[0.02em]"
+            className="bg-amber text-paper rounded-sm hover:bg-[#ffcc4a] font-semibold px-7 py-4"
           >
             Wróć do planu
             <ArrowRightIcon size={18} weight="bold" className="ml-1" />

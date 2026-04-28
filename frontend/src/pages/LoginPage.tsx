@@ -64,7 +64,7 @@ export function LoginPage({ theme, onToggleTheme }: Props) {
       <main className="flex-1 flex items-center justify-center md:px-5 md:py-10">
         <div className="w-full md:max-w-[420px] enter">
           <div className="bg-transparent md:border md:border-rule md:rounded-[4px] p-8 md:p-10 ">
-            <h1 className="text-[22px] mb-5 font-semibold text-ink tracking-[-0.01em]">
+            <h1 className="text-[22px] mb-5 font-semibold text-ink">
               Zaloguj się
             </h1>
 
@@ -95,7 +95,7 @@ export function LoginPage({ theme, onToggleTheme }: Props) {
                     type="button"
                     variant="ghost"
                     tabIndex={-1}
-                    className="text-[12px] text-amber tracking-[0.10em] bg-transparent hover:text-amber/80 transition-colors p-0 h-auto"
+                    className="text-[12px] text-amber bg-transparent hover:text-amber/80 transition-colors p-0 h-auto"
                   >
                     Zapomniałeś hasła?
                   </Button>

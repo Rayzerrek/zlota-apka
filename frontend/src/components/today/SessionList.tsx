@@ -30,11 +30,8 @@ export function SessionList({ sessions, onOpenSession }: Props) {
     return (
       <section className="mt-16">
         <div className="flex items-baseline justify-between gap-3 mb-5 pb-3 border-b border-rule">
-          <h2 className="display font-normal text-[25px] tracking-[-0.01em] text-ink flex items-baseline gap-3">
-            <span className="mono text-xs text-amber tracking-[0.08em]">
-              01 —
-            </span>{" "}
-            Plan dnia
+          <h2 className="display font-normal text-[25px] text-ink flex items-baseline gap-3">
+            <span className="mono text-xs text-amber">01 —</span> Plan dnia
           </h2>
         </div>
         <Empty
@@ -63,13 +60,10 @@ export function SessionList({ sessions, onOpenSession }: Props) {
   return (
     <section className="mt-16">
       <div className="flex items-baseline justify-between gap-3 mb-5 pb-3 border-b border-rule">
-        <h2 className="display font-normal text-[25px] tracking-[-0.01em] text-ink flex items-baseline gap-3">
-          <span className="mono text-xs text-amber tracking-[0.08em]">
-            01 —
-          </span>{" "}
-          Plan dnia
+        <h2 className="display font-normal text-[25px] text-ink flex items-baseline gap-3">
+          <span className="mono text-xs text-amber">01 —</span> Plan dnia
         </h2>
-        <span className="mono text-[14px] tracking-[0.14em] uppercase text-ink-faint">
+        <span className="mono text-[14px] uppercase text-ink-faint">
           {sessions.filter((s) => s.status === "completed").length} /{" "}
           {sessions.length} ukończone
         </span>
@@ -87,7 +81,7 @@ export function SessionList({ sessions, onOpenSession }: Props) {
             onClick={() => !isDone && onOpenSession(s.id)}
           >
             <span className="flex flex-col gap-1 min-w-0">
-              <span className="flex items-center gap-2 mono text-[13px] tracking-[0.2em] uppercase text-ink-muted">
+              <span className="flex items-center gap-2 mono text-[13px] uppercase text-ink-muted">
                 {subjKey && (
                   <span
                     className={cn(
@@ -100,7 +94,7 @@ export function SessionList({ sessions, onOpenSession }: Props) {
               </span>
               <span
                 className={cn(
-                  "display font-normal text-[21px] leading-[1.2] tracking-[-0.005em]",
+                  "display font-normal text-[21px] leading-[1.2]",
                   isDone
                     ? "line-through decoration-rule-strong decoration-[1px] text-ink-faint"
                     : "text-ink",

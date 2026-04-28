@@ -18,17 +18,17 @@ export function ExamWidget({ exam }: Props) {
 
   return (
     <div className="relative flex flex-col gap-3.5 p-[22px_22px_24px] border border-rule rounded-[3px] bg-[linear-gradient(180deg,rgba(242,184,48,0.04),transparent_60%),var(--color-paper-2)]">
-      <div className="relative mono text-[13px] tracking-[0.18em] uppercase text-amber flex items-center gap-2.5 after:content-[''] after:flex-1 after:h-px after:opacity-40 after:bg-[linear-gradient(90deg,var(--color-amber),transparent)]">
+      <div className="relative mono text-[13px] uppercase text-amber flex items-center gap-2.5 after:content-[''] after:flex-1 after:h-px after:opacity-40 after:bg-[linear-gradient(90deg,var(--color-amber),transparent)]">
         Najbliższy sprawdzian
       </div>
       <div className="relative display italic text-[32px] font-medium leading-none text-ink">
         {exam.name}
       </div>
       <div className="relative flex items-end gap-2.5">
-        <span className="mono font-light text-[60px] leading-[0.9] tracking-[-0.04em] text-amber">
+        <span className="mono font-light text-[60px] leading-[0.9] text-amber">
           {examDays}
         </span>
-        <p className="mono text-xs text-ink-muted tracking-[0.16em] uppercase">
+        <p className="mono text-xs text-ink-muted uppercase">
           {examDays === 1 ? "dzień" : "dni"}
           <br />
           do terminu

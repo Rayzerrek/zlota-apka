@@ -34,7 +34,7 @@ export function WeekGrid({ days, selected, onSelect }: Props) {
                   : "border-rule bg-paper-2 hover:border-rule-strong",
             )}
           >
-            <span className="mono text-[13px] tracking-[0.14em] text-ink-faint uppercase">
+            <span className="mono text-[13px] text-ink-faint uppercase">
               {dayShort(iso)}
             </span>
             <span

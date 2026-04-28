@@ -38,10 +38,8 @@ export function ProfileAccountSection({
   return (
     <section className="enter enter-d1 flex flex-col gap-6">
       <div className="pb-3 border-b border-rule flex items-baseline gap-3">
-        <span className="mono text-xs text-amber tracking-[0.16em]">01 —</span>
-        <h2 className="display text-[23px] tracking-[-0.01em] text-ink">
-          Konto
-        </h2>
+        <span className="mono text-xs text-amber">01 —</span>
+        <h2 className="display text-[23px] text-ink">Konto</h2>
       </div>
 
       <ProfileField

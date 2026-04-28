@@ -146,7 +146,7 @@ export function AddExamModal({ open, onClose }: Props) {
         <div className="flex items-center justify-between px-6 py-5 border-b border-rule shrink-0">
           <div>
             <p className="eyebrow">Sprawdzian</p>
-            <h2 className="text-[18px] font-semibold text-ink tracking-[-0.01em] mt-0.5">
+            <h2 className="text-[18px] font-semibold text-ink mt-0.5">
               {planResult ? "Plan nauki" : "Dodaj sprawdzian"}
             </h2>
           </div>

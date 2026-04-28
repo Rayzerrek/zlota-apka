@@ -114,7 +114,7 @@ export function StatsPage() {
 
       <div className="enter enter-d1 grid grid-cols-1 gap-6 pb-10 border-b border-rule mb-10 min-[800px]:grid-cols-[1.2fr_1fr] min-[800px]:gap-14 min-[800px]:items-end">
         <div>
-          <div className="display font-light text-[clamp(140px,18vw,220px)] leading-[0.85] tracking-[-0.06em] flex items-start gap-2">
+          <div className="display font-light text-[clamp(140px,18vw,220px)] leading-[0.85] flex items-start gap-2">
             <em className="italic text-amber font-light">
               {STUDY_STATS.retentionPct}
             </em>
@@ -154,13 +154,11 @@ export function StatsPage() {
 
       <section className="enter enter-d2 mb-10 pb-10 border-b border-rule">
         <div className="flex items-baseline justify-between gap-3 mb-8 pb-3 border-b border-rule">
-          <h2 className="display font-normal text-[25px] tracking-[-0.01em] text-ink flex items-baseline gap-3">
-            <span className="mono text-xs text-amber tracking-[0.08em]">
-              01 —
-            </span>{" "}
-            Jak dobrze znasz karty
+          <h2 className="display font-normal text-[25px] text-ink flex items-baseline gap-3">
+            <span className="mono text-xs text-amber">01 —</span> Jak dobrze
+            znasz karty
           </h2>
-          <span className="mono text-[14px] tracking-[0.14em] uppercase text-ink-faint">
+          <span className="mono text-[14px] uppercase text-ink-faint">
             {total} kart
           </span>
         </div>
@@ -172,7 +170,7 @@ export function StatsPage() {
               <span className="display font-light text-[28px] leading-none text-ink">
                 {Math.round(matureFrac * 100)}%
               </span>
-              <span className="mono text-[10px] tracking-[0.12em] uppercase text-ink-muted">
+              <span className="mono text-[10px] uppercase text-ink-muted">
                 OPANOWANE
               </span>
             </div>
@@ -183,7 +181,7 @@ export function StatsPage() {
               <div key={label} className="flex items-center gap-4">
                 <div className={cn("w-2.5 h-2.5 rounded-full shrink-0", bg)} />
                 <div className="flex-1">
-                  <div className="mono text-[13px] tracking-[0.12em] uppercase text-ink-muted">
+                  <div className="mono text-[13px] uppercase text-ink-muted">
                     {label}
                   </div>
                   <div className="mono text-[12px] text-ink-faint">{sub}</div>
@@ -199,17 +197,15 @@ export function StatsPage() {
 
       <section className="enter enter-d3 mt-4">
         <div className="flex items-baseline justify-between gap-3 mb-5 pb-3 border-b border-rule">
-          <h2 className="display font-normal text-[25px] tracking-[-0.01em] text-ink flex items-baseline gap-3">
-            <span className="mono text-xs text-amber tracking-[0.08em]">
-              02 —
-            </span>{" "}
-            Z czego ci idzie najlepiej
+          <h2 className="display font-normal text-[25px] text-ink flex items-baseline gap-3">
+            <span className="mono text-xs text-amber">02 —</span> Z czego ci
+            idzie najlepiej
           </h2>
         </div>
         <div className="flex flex-col gap-4">
           {SUBJECT_RETENTION.map(({ subject, pct }) => (
             <div key={subject} className="flex items-center gap-4">
-              <div className="mono text-[13px] tracking-[0.08em] uppercase text-ink-muted w-24 shrink-0">
+              <div className="mono text-[13px] uppercase text-ink-muted w-24 shrink-0">
                 {SUBJECTS[subject].name}
               </div>
               <div className="flex-1 h-2 bg-kumo-base rounded-sm overflow-hidden">

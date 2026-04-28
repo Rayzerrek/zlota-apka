@@ -56,7 +56,7 @@ export function ReviewRatings({ flipped, onRate }: Props) {
           >
             {r}
           </span>
-          <span className="mono text-[12px] tracking-[0.16em] uppercase text-ink-muted max-[520px]:text-[11px]">
+          <span className="mono text-[12px] uppercase text-ink-muted max-[520px]:text-[11px]">
             {RATING_LABELS[r].label}
           </span>
           <span className="mono text-[11px] text-ink-faint mt-0.5 max-[520px]:hidden">

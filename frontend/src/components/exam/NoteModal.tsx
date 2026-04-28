@@ -35,7 +35,7 @@ export function NoteModal({ exam, onClose }: Props) {
       <Dialog className="!max-w-2xl w-full p-0 flex flex-col max-h-[90dvh] sm:max-h-[80dvh] rounded-[8px] sm:rounded-[4px] overflow-hidden outline-none bg-paper-2 border border-rule-strong shadow-[0_24px_80px_rgba(0,0,0,0.6)]">
         <div className="flex items-start justify-between gap-4 px-7 pt-6 pb-5 border-b border-rule shrink-0">
           <div>
-            <p className="mono text-[11px] tracking-[0.18em] uppercase text-amber mb-1.5">
+            <p className="mono text-[11px] uppercase text-amber mb-1.5">
               Notatka · {note.subject}
             </p>
             <Dialog.Title className="display font-normal text-[22px] leading-[1.2] text-ink m-0">
@@ -65,7 +65,7 @@ export function NoteModal({ exam, onClose }: Props) {
           ) : (
             note.sections.map((section) => (
               <div key={section.topic}>
-                <p className="mono text-[11px] tracking-[0.18em] uppercase text-ink-faint pb-3 mb-3 border-b border-rule">
+                <p className="mono text-[11px] uppercase text-ink-faint pb-3 mb-3 border-b border-rule">
                   {section.topic}
                 </p>
                 <div className="flex flex-col gap-4">
@@ -91,7 +91,7 @@ export function NoteModal({ exam, onClose }: Props) {
             icon={copied ? CheckIcon : CopySimpleIcon}
             onClick={handleCopy}
             className={cn(
-              "mono text-[13px] tracking-[0.08em] border border-rule !rounded-[3px]",
+              "mono text-[13px] border border-rule !rounded-[3px]",
               copied
                 ? "!bg-amber-wash !text-amber"
                 : "!bg-paper-3 !text-ink-muted",
