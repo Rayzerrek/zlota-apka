@@ -3,8 +3,6 @@ import { Scalar } from "@scalar/hono-api-reference";
 import { cors } from "hono/cors";
 
 import { type Env } from "./lib/auth";
-// import { createAuth } from "./lib/auth";
-// import { checkAuthRateLimit } from "./lib/utils";
 import { cardsRouter } from "./routes/cards";
 import { dashboardRouter } from "./routes/dashboard";
 import { examsRouter } from "./routes/exams";
@@ -13,11 +11,11 @@ import { sessionsRouter } from "./routes/sessions";
 import { subjectsRouter } from "./routes/subjects";
 import { topicsRouter } from "./routes/topics";
 import { usersRouter } from "./routes/users";
-import scanRouter from './routes/scan';
+import scanRouter from './routes/scan'; // Upewnij się, że w tym pliku jest "export default"
+
 const app = new OpenAPIHono<{ Bindings: Env }>();
 
-
-app.route('/api/scan',scanRouter);
+// 1. NAJPIERW DEFINIUJEMY FUNKCJĘ CORS
 function createCorsMiddleware(origins: string[]) {
   return cors({
     origin: (origin) => {
@@ -30,29 +28,29 @@ function createCorsMiddleware(origins: string[]) {
   });
 }
 
+// 2. POTEM URUCHAMIAMY MIDDLEWARE DLA WSZYSTKICH ŚCIEŻEK /api/*
 app.use("/api/*", async (c, next) => {
   const origins = (c.env.FRONTEND_URL ?? "")
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
 
-  return createCorsMiddleware(origins)(c, next);
+  const corsMiddleware = createCorsMiddleware(origins);
+  return corsMiddleware(c, next);
 });
 
+// 3. DOPIERO TERAZ DEFINIUJEMY ROUTY (Wszystkie pod CORS)
+app.route('/api/scan', scanRouter);
 app.route("/api/onboarding", onboardingRouter);
 app.route("/api/users", usersRouter);
 app.route("/api/subjects", subjectsRouter);
 app.route("/api/exams", examsRouter);
 app.route("/api/dashboard", dashboardRouter);
 app.route("/api/sessions", sessionsRouter);
+app.route("/api", topicsRouter);
+app.route("/api", cardsRouter);
 
-// Auth disabled temporarily
-// app.all("/api/auth/**", async (c) => {
-//   checkAuthRateLimit(c.req.header("cf-connecting-ip") ?? "unknown");
-//   const auth = createAuth(c.env);
-//   return auth.handler(c.req.raw);
-// });
-
+// Reszta konfiguracji...
 app.doc("/api/doc", {
   openapi: "3.0.0",
   info: { title: "API", version: "1.0.0" },
@@ -63,9 +61,6 @@ app.get("/", (c) => {
 });
 
 app.get("/api/reference", Scalar({ url: "/api/doc" }));
-
-app.route("/api", topicsRouter);
-app.route("/api", cardsRouter);
 
 app.onError((err, c) => {
   console.error("Unhandled app error", {
