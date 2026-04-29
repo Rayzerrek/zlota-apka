@@ -5,7 +5,7 @@ type Props = {
   onToggleTheme: () => void;
   className?: string;
 };
-export function ThemeToggleButton({ theme, onToggleTheme, className }: Props) {
+export function ThemeButton({ theme, onToggleTheme, className }: Props) {
   return (
     <Button
       variant="ghost"

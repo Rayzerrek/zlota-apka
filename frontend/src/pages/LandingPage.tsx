@@ -1,6 +1,8 @@
 import { Button } from "@cloudflare/kumo";
-import { ArrowRightIcon, MoonIcon, SunIcon } from "@phosphor-icons/react";
+import { ArrowRightIcon } from "@phosphor-icons/react";
 import { useNavigate } from "@tanstack/react-router";
+
+import { ThemeButton } from "../components/ui/ThemeButton";
 
 type Props = {
   theme: "dark" | "light";
@@ -19,18 +21,7 @@ export function LandingPage({ theme, onToggleTheme }: Props) {
           </span>
 
           <nav className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              icon={
-                theme === "dark" ? (
-                  <SunIcon size={16} />
-                ) : (
-                  <MoonIcon size={16} />
-                )
-              }
-              aria-label="Zmień motyw"
-              onClick={onToggleTheme}
-            />
+            <ThemeButton theme={theme} onToggleTheme={onToggleTheme} />
             {/* Auth disabled temporarily
             <Button variant="outline" onClick={() => navigate({ to: "/login" })}>
               Zaloguj się
@@ -50,7 +41,7 @@ export function LandingPage({ theme, onToggleTheme }: Props) {
 
           <div className="relative flex flex-col items-center text-center max-w-6xl mx-auto px-5 md:px-10 pt-20 pb-24 md:pt-28 md:pb-32">
             <h1 className="display italic font-semibold text-ink leading-none mb-7 text-[clamp(3.2rem,8vw,6.5rem)]">
-              Powtórki, <span className="text-amber">które&nbsp;zostają.</span>
+              Cos tam, <span className="text-amber">cos tam&nbsp;cos tam.</span>
             </h1>
 
             <p className="text-[17px] text-ink-muted leading-relaxed max-w-[500px] mb-10">

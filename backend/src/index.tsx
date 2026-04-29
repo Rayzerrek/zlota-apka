@@ -7,15 +7,14 @@ import { cardsRouter } from "./routes/cards";
 import { dashboardRouter } from "./routes/dashboard";
 import { examsRouter } from "./routes/exams";
 import { onboardingRouter } from "./routes/onboarding";
+import scanRouter from "./routes/scan";
 import { sessionsRouter } from "./routes/sessions";
 import { subjectsRouter } from "./routes/subjects";
 import { topicsRouter } from "./routes/topics";
 import { usersRouter } from "./routes/users";
-import scanRouter from './routes/scan'; // Upewnij się, że w tym pliku jest "export default"
-
 const app = new OpenAPIHono<{ Bindings: Env }>();
 
-// 1. NAJPIERW DEFINIUJEMY FUNKCJĘ CORS
+app.route("/api/scan", scanRouter);
 function createCorsMiddleware(origins: string[]) {
   return cors({
     origin: (origin) => {

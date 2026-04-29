@@ -14,6 +14,7 @@ import {
 } from "@cloudflare/kumo";
 import {
   CalendarBlankIcon,
+  CameraIcon,
   CardsIcon,
   CaretUpDownIcon,
   ChartBarIcon,
@@ -30,13 +31,14 @@ import { cn } from "../../utils/cn";
 
 import type { MouseEvent, ReactNode } from "react";
 
-type PagePath = "/today" | "/calendar" | "/browse" | "/stats";
+type PagePath = "/today" | "/calendar" | "/browse" | "/stats" | "/scanner";
 
 const NAV: { path: PagePath; label: string; icon: typeof SunIcon }[] = [
   { path: "/today", label: "Dziś", icon: SunIcon },
   { path: "/calendar", label: "Kalendarz", icon: CalendarBlankIcon },
   { path: "/browse", label: "Nauka", icon: CardsIcon },
   { path: "/stats", label: "Postęp", icon: ChartBarIcon },
+  { path: "/scanner", label: "Skaner", icon: CameraIcon },
 ];
 
 type Props = {
