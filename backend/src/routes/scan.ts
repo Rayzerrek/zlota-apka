@@ -1,14 +1,14 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Hono } from "hono";
 
-const scanRouter = new Hono<{ Bindings: { API_KEY: string } }>();
+const scanRouter = new Hono<{ Bindings: { GEMINI_API_KEY: string } }>();
 
 scanRouter.post("/", async (c) => {
   try {
     const { images } = (await c.req.json()) as {
       images: { data: string; mimeType: string }[];
     };
-    const currentKey = c.env.API_KEY;
+    const currentKey = c.env.GEMINI_API_KEY;
 
     if (!currentKey) {
       return c.json({ error: "Brak klucza API w .dev.vars" }, 500);

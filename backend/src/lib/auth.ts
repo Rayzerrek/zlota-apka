@@ -15,6 +15,7 @@ export type Env = {
   BETTER_AUTH_URL: string;
   RESEND_API_KEY: string;
   FRONTEND_URL?: string;
+  GEMINI_API_KEY?: string;
   GOOGLE_CLIENT_ID: string;
   GOOGLE_CLIENT_SECRET: string;
 };
