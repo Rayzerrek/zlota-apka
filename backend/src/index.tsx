@@ -14,12 +14,11 @@ import { topicsRouter } from "./routes/topics";
 import { usersRouter } from "./routes/users";
 const app = new OpenAPIHono<{ Bindings: Env }>();
 
-app.route("/api/scan", scanRouter);
 function createCorsMiddleware(origins: string[]) {
   return cors({
     origin: (origin) => {
-      if (origins.includes(origin)) return origin;
-      return null;
+      if (!origins.includes(origin)) return null;
+      return origin;
     },
     allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
@@ -27,7 +26,6 @@ function createCorsMiddleware(origins: string[]) {
   });
 }
 
-// 2. POTEM URUCHAMIAMY MIDDLEWARE DLA WSZYSTKICH ŚCIEŻEK /api/*
 app.use("/api/*", async (c, next) => {
   const origins = (c.env.FRONTEND_URL ?? "")
     .split(",")
@@ -38,7 +36,6 @@ app.use("/api/*", async (c, next) => {
   return corsMiddleware(c, next);
 });
 
-// 3. DOPIERO TERAZ DEFINIUJEMY ROUTY (Wszystkie pod CORS)
 app.route("/api/scan", scanRouter);
 app.route("/api/onboarding", onboardingRouter);
 app.route("/api/users", usersRouter);
@@ -46,10 +43,7 @@ app.route("/api/subjects", subjectsRouter);
 app.route("/api/exams", examsRouter);
 app.route("/api/dashboard", dashboardRouter);
 app.route("/api/sessions", sessionsRouter);
-app.route("/api", topicsRouter);
-app.route("/api", cardsRouter);
 
-// Reszta konfiguracji...
 app.doc("/api/doc", {
   openapi: "3.0.0",
   info: { title: "API", version: "1.0.0" },
@@ -60,6 +54,9 @@ app.get("/", (c) => {
 });
 
 app.get("/api/reference", Scalar({ url: "/api/doc" }));
+
+app.route("/api", topicsRouter);
+app.route("/api", cardsRouter);
 
 app.onError((err, c) => {
   console.error("Unhandled app error", {

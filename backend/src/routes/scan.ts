@@ -1,69 +1,111 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { Hono } from "hono";
+import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
+import { z } from "zod";
 
-const scanRouter = new Hono<{ Bindings: { GEMINI_API_KEY: string } }>();
+import {
+  SCAN_MIME_FALLBACK,
+  SCAN_MIME_JPG,
+  SCAN_MODEL_NAME,
+  SCAN_PROMPT,
+  SCAN_ROUTE_PATH,
+  SCAN_ROUTE_TAGS,
+  type ScanImage,
+  errorResponseSchema,
+  scanRequestSchema,
+  scanResponseSchema,
+} from "../lib/constant";
 
-scanRouter.post("/", async (c) => {
+import type { HonoEnv } from "../lib/factory";
+
+const scanRoute = createRoute({
+  method: "post",
+  path: SCAN_ROUTE_PATH,
+  tags: SCAN_ROUTE_TAGS,
+  request: {
+    body: {
+      content: { "application/json": { schema: scanRequestSchema } },
+      required: true,
+    },
+  },
+  responses: {
+    200: {
+      description: "Generated note",
+      content: { "application/json": { schema: scanResponseSchema } },
+    },
+    400: {
+      description: "Invalid request",
+      content: { "application/json": { schema: errorResponseSchema } },
+    },
+    500: {
+      description: "Server error",
+      content: { "application/json": { schema: errorResponseSchema } },
+    },
+    502: {
+      description: "Upstream AI error",
+      content: { "application/json": { schema: errorResponseSchema } },
+    },
+  },
+});
+
+const scanRouter = new OpenAPIHono<HonoEnv>();
+
+function normalizeMimeType(mimeType: string): string {
+  const normalized = mimeType.split(";")[0].trim().toLowerCase();
+  if (normalized === SCAN_MIME_JPG) return SCAN_MIME_FALLBACK;
+  return normalized || SCAN_MIME_FALLBACK;
+}
+
+function normalizeBase64(data: string): string {
+  const commaIndex = data.indexOf(",");
+  return commaIndex >= 0 ? data.slice(commaIndex + 1) : data;
+}
+
+function createImageParts(images: ScanImage[]) {
+  return images.map((image) => ({
+    inlineData: {
+      data: normalizeBase64(image.data),
+      mimeType: normalizeMimeType(image.mimeType),
+    },
+  }));
+}
+
+scanRouter.openapi(scanRoute, async (c) => {
+  const currentKey = c.env.GEMINI_API_KEY;
+
+  if (!currentKey) {
+    return c.json({ error: "Missing GEMINI_API_KEY" }, 500);
+  }
+
+  const { images } = c.req.valid("json") as z.infer<typeof scanRequestSchema>;
+  const genAI = new GoogleGenerativeAI(currentKey);
+  const model = genAI.getGenerativeModel({ model: SCAN_MODEL_NAME });
+
   try {
-    const { images } = (await c.req.json()) as {
-      images: { data: string; mimeType: string }[];
-    };
-    const currentKey = c.env.GEMINI_API_KEY;
+    const result = await model.generateContent([
+      SCAN_PROMPT,
+      ...createImageParts(images),
+    ]);
 
-    if (!currentKey) {
-      return c.json({ error: "Brak klucza API w .dev.vars" }, 500);
+    const text = result.response.text().trim();
+
+    if (!text) {
+      return c.json(
+        { error: "The model returned no content. Please try again." },
+        502,
+      );
     }
 
-    const genAI = new GoogleGenerativeAI(currentKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-
-    const prompt = `Jesteś ekspertem od robienia notatek (metoda Cornella/sketchnoting).
-
-Twoim zadaniem jest przetworzyć zdjęcia i przygotować ekstremalnie konkretną notatkę dla ucznia.
-
-
-
-Zasady:
-
-1. NIE PRZEPISUJ całych zdań.
-
-2. Używaj formatu:
-
-   - Tytuł (krótki).
-
-   - "W pigułce": 2-3 zdania wyjaśniające temat prostym językiem (używaj analogii).
-
-   - "Kluczowe wzory": tylko najważniejsze formuły w czytelnym formacie.
-
-   - "Zapamiętaj": 3 najważniejsze punkty, które na pewno będą na sprawdzianie.
-
-3. Ignoruj formalne wstępy typu "Cel lekcji".
-
-4. Zwracaj czysty tekst w formacie Markdown.
-5.Jeżeli w notatce pojawią się wzory zapisuj je w sposób zrozumiały, unikając znaków i symboli takich jak "$"`;
-
-    // Mapujemy obrazy poprawnie składniowo
-    const imageParts = images.map((img) => {
-      const rawMimeType = img.mimeType || "image/jpeg";
-      let type = rawMimeType.split(";")[0].toLowerCase();
-      if (type === "image/jpg") type = "image/jpeg";
-
-      return {
-        inlineData: {
-          data: img.data,
-          mimeType: type,
-        },
-      };
-    });
-
-    const result = await model.generateContent([prompt, ...imageParts]);
-
-    return c.json({ text: result.response.text() });
-  } catch (error: any) {
-    console.error("Błąd AI:", error);
+    return c.json({ text }, 200);
+  } catch (error: unknown) {
+    console.error("AI error:", error);
     return c.json(
-      { error: error.message || "Błąd podczas generowania notatki" },
-      500,
+      {
+        error:
+          error instanceof Error && error.message
+            ? error.message
+            : "Failed to generate the note",
+      },
+      502,
     );
   }
 });
