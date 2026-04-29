@@ -39,7 +39,7 @@ app.use("/api/*", async (c, next) => {
 });
 
 // 3. DOPIERO TERAZ DEFINIUJEMY ROUTY (Wszystkie pod CORS)
-app.route('/api/scan', scanRouter);
+app.route("/api/scan", scanRouter);
 app.route("/api/onboarding", onboardingRouter);
 app.route("/api/users", usersRouter);
 app.route("/api/subjects", subjectsRouter);
