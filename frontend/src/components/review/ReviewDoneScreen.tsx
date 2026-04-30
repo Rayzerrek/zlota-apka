@@ -14,7 +14,7 @@ export function ReviewDoneScreen({ ratings, total, onExit }: Props) {
   const wrong = ratings.length - correct;
 
   return (
-    <div className="fixed inset-0 bg-kumo-base light:bg-kumo-base z-50 flex flex-col">
+    <div className="fixed inset-0 z-50 flex flex-col bg-paper/95 backdrop-blur-[18px]">
       <div className="flex items-center justify-between px-6 py-5 border-b border-rule relative">
         <Button
           variant="ghost"

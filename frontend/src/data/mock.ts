@@ -1,5 +1,49 @@
 import type { Card, Exam, ReviewHistoryEntry, StudySession } from "../types";
 
+const uid = () => crypto.randomUUID();
+
+const _c = {
+  ciagi: uid(),
+  logarytmy: uid(),
+  funkcje: uid(),
+  fotosynteza: uid(),
+  genetyka: uid(),
+  ekologia: uid(),
+  iiRP: uid(),
+  powstania: uid(),
+  romantyzm: uid(),
+  srodki: uid(),
+  pozytywizm: uid(),
+  pH: uid(),
+  uklad: uid(),
+  redoks: uid(),
+  kinematyka: uid(),
+  elektro: uid(),
+  termodynamika: uid(),
+  presentPerfect: uid(),
+  phrasal: uid(),
+  eloquent: uid(),
+};
+
+const _s = {
+  s1: uid(),
+  s2: uid(),
+  s3: uid(),
+  s4: uid(),
+  s5: uid(),
+  s6: uid(),
+  s7: uid(),
+};
+
+const _e = {
+  e1: uid(),
+  e2: uid(),
+  e3: uid(),
+  e4: uid(),
+  e5: uid(),
+  e6: uid(),
+};
+
 export const TODAY = "2026-04-18";
 export const STUDENT_NAME = "Kacper";
 export const STUDENT_CLASS = "3 LO";
@@ -7,7 +51,7 @@ export const STUDENT_INITIAL = "K";
 
 export const CARDS: Card[] = [
   {
-    id: "c-001",
+    id: _c.ciagi,
     subject: "mat",
     topic: "Ciągi arytmetyczne",
     question: "Wzór na sumę n pierwszych wyrazów ciągu arytmetycznego",
@@ -20,7 +64,7 @@ export const CARDS: Card[] = [
     lapses: 1,
   },
   {
-    id: "c-002",
+    id: _c.logarytmy,
     subject: "mat",
     topic: "Logarytmy",
     question: "log_a(xy) = ?",
@@ -33,7 +77,7 @@ export const CARDS: Card[] = [
     lapses: 0,
   },
   {
-    id: "c-003",
+    id: _c.funkcje,
     subject: "mat",
     topic: "Funkcje kwadratowe",
     question: "Postać kanoniczna funkcji kwadratowej",
@@ -46,7 +90,7 @@ export const CARDS: Card[] = [
     lapses: 0,
   },
   {
-    id: "c-004",
+    id: _c.fotosynteza,
     subject: "bio",
     topic: "Fotosynteza",
     question: "Produkty reakcji świetlnej fotosyntezy",
@@ -59,7 +103,7 @@ export const CARDS: Card[] = [
     lapses: 2,
   },
   {
-    id: "c-005",
+    id: _c.genetyka,
     subject: "bio",
     topic: "Genetyka",
     question: "Pierwsze prawo Mendla",
@@ -73,7 +117,7 @@ export const CARDS: Card[] = [
     lapses: 0,
   },
   {
-    id: "c-006",
+    id: _c.ekologia,
     subject: "bio",
     topic: "Ekologia",
     question: "Co to jest nisza ekologiczna?",
@@ -87,7 +131,7 @@ export const CARDS: Card[] = [
     lapses: 0,
   },
   {
-    id: "c-007",
+    id: _c.iiRP,
     subject: "hist",
     topic: "II Rzeczpospolita",
     question: "Kiedy podpisano traktat ryski?",
@@ -100,7 +144,7 @@ export const CARDS: Card[] = [
     lapses: 1,
   },
   {
-    id: "c-008",
+    id: _c.powstania,
     subject: "hist",
     topic: "Powstania",
     question: "Główna przyczyna wybuchu Powstania Warszawskiego (1944)",
@@ -114,7 +158,7 @@ export const CARDS: Card[] = [
     lapses: 0,
   },
   {
-    id: "c-009",
+    id: _c.romantyzm,
     subject: "pol",
     topic: "Romantyzm",
     question: 'Autor „Dziadów" części III',
@@ -127,7 +171,7 @@ export const CARDS: Card[] = [
     lapses: 0,
   },
   {
-    id: "c-010",
+    id: _c.srodki,
     subject: "pol",
     topic: "Środki stylistyczne",
     question: "Co to jest oksymoron?",
@@ -141,7 +185,7 @@ export const CARDS: Card[] = [
     lapses: 1,
   },
   {
-    id: "c-011",
+    id: _c.pozytywizm,
     subject: "pol",
     topic: "Pozytywizm",
     question: "Hasła pozytywizmu polskiego",
@@ -155,7 +199,7 @@ export const CARDS: Card[] = [
     lapses: 0,
   },
   {
-    id: "c-012",
+    id: _c.pH,
     subject: "chem",
     topic: "Kwasy i zasady",
     question: "Definicja pH",
@@ -168,7 +212,7 @@ export const CARDS: Card[] = [
     lapses: 0,
   },
   {
-    id: "c-013",
+    id: _c.uklad,
     subject: "chem",
     topic: "Układ okresowy",
     question: "Ile elektronów walencyjnych ma atom tlenu?",
@@ -181,7 +225,7 @@ export const CARDS: Card[] = [
     lapses: 0,
   },
   {
-    id: "c-014",
+    id: _c.redoks,
     subject: "chem",
     topic: "Reakcje redoks",
     question: "Co to jest utlenianie?",
@@ -194,7 +238,7 @@ export const CARDS: Card[] = [
     lapses: 1,
   },
   {
-    id: "c-015",
+    id: _c.kinematyka,
     subject: "fiz",
     topic: "Kinematyka",
     question: "Wzór na drogę w ruchu jednostajnie przyspieszonym",
@@ -207,7 +251,7 @@ export const CARDS: Card[] = [
     lapses: 0,
   },
   {
-    id: "c-016",
+    id: _c.elektro,
     subject: "fiz",
     topic: "Elektrostatyka",
     question: "Prawo Coulomba",
@@ -220,7 +264,7 @@ export const CARDS: Card[] = [
     lapses: 0,
   },
   {
-    id: "c-017",
+    id: _c.termodynamika,
     subject: "fiz",
     topic: "Termodynamika",
     question: "Pierwsza zasada termodynamiki",
@@ -233,7 +277,7 @@ export const CARDS: Card[] = [
     lapses: 0,
   },
   {
-    id: "c-018",
+    id: _c.presentPerfect,
     subject: "ang",
     topic: "Czasy gramatyczne",
     question: "Kiedy używamy Present Perfect Continuous?",
@@ -247,7 +291,7 @@ export const CARDS: Card[] = [
     lapses: 0,
   },
   {
-    id: "c-019",
+    id: _c.phrasal,
     subject: "ang",
     topic: "Phrasal verbs",
     question: 'Co znaczy „to put off"?',
@@ -260,7 +304,7 @@ export const CARDS: Card[] = [
     lapses: 1,
   },
   {
-    id: "c-020",
+    id: _c.eloquent,
     subject: "ang",
     topic: "Słownictwo",
     question: 'Synonim słowa „eloquent"',
@@ -276,72 +320,72 @@ export const CARDS: Card[] = [
 
 export const SESSIONS: StudySession[] = [
   {
-    id: "s-01",
+    id: _s.s1,
     dateISO: "2026-04-18",
     timeOfDay: "07:40",
     subject: "mat",
     topic: "Ciągi arytmetyczne",
-    cardIds: ["c-001", "c-002"],
+    cardIds: [_c.ciagi, _c.logarytmy],
     estimateMinutes: 25,
     done: false,
   },
   {
-    id: "s-02",
+    id: _s.s2,
     dateISO: "2026-04-18",
     timeOfDay: "09:15",
     subject: "bio",
     topic: "Fotosynteza — faza jasna i ciemna",
-    cardIds: ["c-004", "c-005"],
+    cardIds: [_c.fotosynteza, _c.genetyka],
     estimateMinutes: 30,
     done: false,
   },
   {
-    id: "s-03",
+    id: _s.s3,
     dateISO: "2026-04-18",
     timeOfDay: "11:00",
     subject: "hist",
     topic: "II Rzeczpospolita — ustrój i granice",
-    cardIds: ["c-007"],
+    cardIds: [_c.iiRP],
     estimateMinutes: 20,
     done: false,
   },
   {
-    id: "s-04",
+    id: _s.s4,
     dateISO: "2026-04-18",
     timeOfDay: "14:30",
     subject: "pol",
-    topic: "Romantyzm — „Dziady” cz. III",
-    cardIds: ["c-009", "c-010"],
+    topic: 'Romantyzm — „Dziady" cz. III',
+    cardIds: [_c.romantyzm, _c.srodki],
     estimateMinutes: 45,
     done: false,
   },
   {
-    id: "s-05",
+    id: _s.s5,
     dateISO: "2026-04-18",
     timeOfDay: "16:00",
     subject: "chem",
     topic: "Reakcje redoks — stopnie utlenienia",
-    cardIds: ["c-014"],
+    cardIds: [_c.redoks],
     estimateMinutes: 25,
     done: false,
   },
   {
-    id: "s-06",
+    id: _s.s6,
     dateISO: "2026-04-18",
     timeOfDay: "18:30",
     subject: "fiz",
     topic: "Kinematyka — zadania z przyspieszeniem",
-    cardIds: ["c-015", "c-016"],
+    cardIds: [_c.kinematyka, _c.elektro],
     estimateMinutes: 35,
     done: false,
   },
   {
-    id: "s-07",
+    id: _s.s7,
     dateISO: "2026-04-18",
     timeOfDay: "20:00",
     subject: "ang",
     topic: "Present Perfect vs Past Simple",
-    cardIds: ["c-018", "c-019"],
+    cardIds: [_c.presentPerfect, _c.phrasal],
     estimateMinutes: 15,
     done: false,
   },
@@ -349,52 +393,58 @@ export const SESSIONS: StudySession[] = [
 
 export const EXAMS: Exam[] = [
   {
-    id: "e-01",
+    id: _e.e1,
     name: "Matura próbna — matematyka",
     subject: "mat",
     dateISO: "2026-04-27",
   },
   {
-    id: "e-02",
+    id: _e.e2,
     name: "Kartkówka — fotosynteza",
     subject: "bio",
     dateISO: "2026-04-22",
   },
   {
-    id: "e-03",
+    id: _e.e3,
     name: "Sprawdzian — II RP",
     subject: "hist",
     dateISO: "2026-04-29",
   },
   {
-    id: "e-04",
+    id: _e.e4,
     name: "Matura próbna — polski",
     subject: "pol",
     dateISO: "2026-05-05",
   },
   {
-    id: "e-05",
+    id: _e.e5,
     name: "Kartkówka — redoks",
     subject: "chem",
     dateISO: "2026-04-24",
   },
+  {
+    id: _e.e6,
+    name: "Sprawdzian — fizyka (kinematyka, elektrostatyka, termodynamika)",
+    subject: "fiz",
+    dateISO: "2026-05-02",
+  },
 ];
 
 export const HISTORY: ReviewHistoryEntry[] = [
-  { cardId: "c-001", dateISO: "2026-04-10", rating: 3 },
-  { cardId: "c-002", dateISO: "2026-03-28", rating: 4 },
-  { cardId: "c-003", dateISO: "2026-04-05", rating: 3 },
-  { cardId: "c-004", dateISO: "2026-04-13", rating: 2 },
-  { cardId: "c-005", dateISO: "2026-04-08", rating: 3 },
-  { cardId: "c-007", dateISO: "2026-04-06", rating: 2 },
-  { cardId: "c-008", dateISO: "2026-04-01", rating: 4 },
-  { cardId: "c-009", dateISO: "2026-03-19", rating: 4 },
-  { cardId: "c-010", dateISO: "2026-04-12", rating: 1 },
-  { cardId: "c-012", dateISO: "2026-03-30", rating: 4 },
-  { cardId: "c-014", dateISO: "2026-04-11", rating: 2 },
-  { cardId: "c-015", dateISO: "2026-04-03", rating: 3 },
-  { cardId: "c-018", dateISO: "2026-03-25", rating: 4 },
-  { cardId: "c-019", dateISO: "2026-04-09", rating: 2 },
+  { cardId: _c.ciagi, dateISO: "2026-04-10", rating: 3 },
+  { cardId: _c.logarytmy, dateISO: "2026-03-28", rating: 4 },
+  { cardId: _c.funkcje, dateISO: "2026-04-05", rating: 3 },
+  { cardId: _c.fotosynteza, dateISO: "2026-04-13", rating: 2 },
+  { cardId: _c.genetyka, dateISO: "2026-04-08", rating: 3 },
+  { cardId: _c.iiRP, dateISO: "2026-04-06", rating: 2 },
+  { cardId: _c.powstania, dateISO: "2026-04-01", rating: 4 },
+  { cardId: _c.romantyzm, dateISO: "2026-03-19", rating: 4 },
+  { cardId: _c.srodki, dateISO: "2026-04-12", rating: 1 },
+  { cardId: _c.pH, dateISO: "2026-03-30", rating: 4 },
+  { cardId: _c.redoks, dateISO: "2026-04-11", rating: 2 },
+  { cardId: _c.kinematyka, dateISO: "2026-04-03", rating: 3 },
+  { cardId: _c.presentPerfect, dateISO: "2026-03-25", rating: 4 },
+  { cardId: _c.phrasal, dateISO: "2026-04-09", rating: 2 },
 ];
 
 export const STUDY_STATS = {

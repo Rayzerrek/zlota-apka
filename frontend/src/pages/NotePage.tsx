@@ -77,7 +77,7 @@ export function NotePage() {
               : "!bg-kumo-base !text-ink-muted",
           )}
         >
-          {copied ? "Skopiowano" : "Kopiuj markdown"}
+          {!copied ? "Kopiuj" : "Skopiowano"}
         </Button>
       </div>
 

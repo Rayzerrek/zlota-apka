@@ -12,7 +12,8 @@ type Props = {
   onExit: () => void;
 };
 
-const reviewShellCls = "fixed inset-0 light:bg-kumo-base z-50 flex flex-col";
+const reviewShellCls =
+  "fixed inset-0 z-50 flex flex-col bg-paper/95 backdrop-blur-[18px]";
 
 export function ReviewPage({ cards, onExit }: Props) {
   const [idx, setIdx] = useState(0);

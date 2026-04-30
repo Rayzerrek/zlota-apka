@@ -97,7 +97,7 @@ export function NoteModal({ exam, onClose }: Props) {
                 : "!bg-paper-3 !text-ink-muted",
             )}
           >
-            {copied ? "Skopiowano" : "Kopiuj markdown"}
+            {!copied ? "Kopiuj" : "Skopiowano"}
           </Button>
         </div>
       </Dialog>
