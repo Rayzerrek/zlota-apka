@@ -13,6 +13,11 @@ export type Subject = {
   color: string;
 };
 
+export type ActiveSession = {
+  sessionId: string;
+  startedAt: number;
+} | null;
+
 export type CardStage = "new" | "learning" | "review" | "due";
 
 export type Card = {

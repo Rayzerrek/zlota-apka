@@ -14,7 +14,7 @@ import type { ApiDashboardSession } from "../../types/api";
 
 type Props = {
   sessions: ApiDashboardSession[];
-  onOpenSession: (id: string) => void;
+  onStartSession: (id: string) => void;
 };
 
 function toSubjectKey(k: string | null): SubjectKey | null {
@@ -23,7 +23,7 @@ function toSubjectKey(k: string | null): SubjectKey | null {
   return null;
 }
 
-export function SessionList({ sessions, onOpenSession }: Props) {
+export function SessionList({ sessions, onStartSession }: Props) {
   const navigate = useNavigate();
 
   if (sessions.length === 0) {
@@ -81,7 +81,7 @@ export function SessionList({ sessions, onOpenSession }: Props) {
             type="button"
             variant="ghost"
             className="group grid grid-cols-[1fr_auto] gap-5 items-center py-[18px] px-1 w-full text-left border-b border-rule transition-[background] duration-200 hover:bg-white/[0.015] justify-start"
-            onClick={() => !isDone && onOpenSession(s.id)}
+            onClick={() => !isDone && onStartSession(s.id)}
           >
             <span className="flex flex-col gap-1 min-w-0">
               <span className="flex items-center gap-2 mono text-[13px] uppercase text-ink-muted">

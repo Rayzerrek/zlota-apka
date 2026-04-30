@@ -13,10 +13,10 @@ import type { ApiDashboard } from "../types/api";
 
 type Props = {
   onStart: () => void;
-  onOpenSession: (id: string) => void;
+  onStartSession: (id: string) => void;
 };
 
-export function TodayPage({ onStart, onOpenSession }: Props) {
+export function TodayPage({ onStart, onStartSession }: Props) {
   const today = new Date().toISOString().slice(0, 10);
   const [addExamOpen, setAddExamOpen] = useState(false);
   const [dashboard, setDashboard] = useState<ApiDashboard | null>(null);
@@ -50,7 +50,7 @@ export function TodayPage({ onStart, onOpenSession }: Props) {
         </aside>
       </div>
 
-      <SessionList sessions={todaySessions} onOpenSession={onOpenSession} />
+      <SessionList sessions={todaySessions} onStartSession={onStartSession} />
 
       <AddExamModal open={addExamOpen} onClose={() => setAddExamOpen(false)} />
     </>

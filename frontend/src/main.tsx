@@ -5,6 +5,7 @@ import { createRoot } from "react-dom/client";
 
 import "./i18n";
 import { ReviewProvider } from "./contexts/ReviewContext.tsx";
+import { StudySessionProvider } from "./contexts/StudySessionContext.tsx";
 import { queryClient } from "./lib/queryClient.ts";
 import { router } from "./router.tsx";
 
@@ -15,7 +16,9 @@ createRoot(rootElement).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <ReviewProvider>
-        <RouterProvider router={router} />
+        <StudySessionProvider>
+          <RouterProvider router={router} />
+        </StudySessionProvider>
       </ReviewProvider>
     </QueryClientProvider>
   </StrictMode>,

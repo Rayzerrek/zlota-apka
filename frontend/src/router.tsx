@@ -11,6 +11,7 @@ import App from "./App";
 import { PageSkeleton } from "./components/layout/PageSkeleton";
 import { Shell } from "./components/layout/Shell";
 import { useReview } from "./contexts/ReviewContext";
+import { useStudySession } from "./contexts/StudySessionContext";
 import { useTheme } from "./hooks/useTheme";
 import { BrowsePage } from "./pages/BrowsePage";
 import { NotePage } from "./pages/NotePage";
@@ -55,10 +56,11 @@ const layoutRoute = createRoute({
 
 function TodayPageWrapper() {
   const { setReviewSessionId } = useReview();
+  const { startSession } = useStudySession();
   return (
     <TodayPage
       onStart={() => setReviewSessionId("__all_today__")}
-      onOpenSession={(id) => setReviewSessionId(id)}
+      onStartSession={startSession}
     />
   );
 }
