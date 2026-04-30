@@ -26,7 +26,7 @@ export function WeekGrid({ days, selected, onSelect }: Props) {
             type="button"
             onClick={() => onSelect(iso)}
             className={cn(
-              "relative overflow-hidden flex flex-col items-center gap-2.5 px-2.5 pt-3.5 pb-4 border rounded-[2px] cursor-pointer transition-all duration-200",
+              "relative overflow-hidden flex flex-col items-center gap-2.5 px-2.5 pt-3.5 pb-4 border rounded-xs cursor-pointer transition-all duration-200",
               isSelected
                 ? "border-ink bg-paper-3"
                 : isToday
@@ -45,18 +45,18 @@ export function WeekGrid({ days, selected, onSelect }: Props) {
             >
               {dayNum(iso)}
             </span>
-            <span className="flex gap-[3px] min-h-[6px]">
+            <span className="flex gap-0.75 min-h-1.5">
               {uniqSubjects.slice(0, 5).map((s) => (
                 <span
                   key={s}
                   className={cn(
-                    "w-[6px] h-[6px] rounded-full opacity-85",
+                    "w-1.5 h-1.5 rounded-full opacity-85",
                     SUBJECT_BG[s],
                   )}
                 />
               ))}
               {examOnDay && (
-                <span className="w-[6px] h-[6px] rounded-full opacity-85 bg-amber shadow-[0_0_6px_var(--color-amber)]" />
+                <span className="w-1.5 h-1.5 rounded-full opacity-85 bg-amber shadow-[0_0_6px_var(--color-amber)]" />
               )}
             </span>
           </button>

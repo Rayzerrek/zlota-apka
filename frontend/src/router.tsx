@@ -1,9 +1,9 @@
 import {
   Navigate,
   Outlet,
-  RootRoute,
-  Route,
-  Router,
+  createRootRoute,
+  createRoute,
+  createRouter,
 } from "@tanstack/react-router";
 import { Suspense, lazy } from "react";
 
@@ -29,27 +29,25 @@ const LandingPage = lazy(() =>
   import("./pages/LandingPage").then((m) => ({ default: m.LandingPage })),
 );
 
-const rootRoute = new RootRoute({
+const rootRoute = createRootRoute({
   component: App,
 });
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  // Auth disabled temporarily
-  return <>{children}</>;
-}
+// function ProtectedRoute({ children }: { children: React.ReactNode }) {
+//   Auth disabled temporarily
+//   return <>{children}</>;
+// }
 
 function ShellLayout() {
   const { theme, toggleTheme } = useTheme();
   return (
-    <ProtectedRoute>
-      <Shell theme={theme} onToggleTheme={toggleTheme}>
-        <Outlet />
-      </Shell>
-    </ProtectedRoute>
+    <Shell theme={theme} onToggleTheme={toggleTheme}>
+      <Outlet />
+    </Shell>
   );
 }
 
-const layoutRoute = new Route({
+const layoutRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "_layout",
   component: ShellLayout,
@@ -135,79 +133,79 @@ function SignUpPageWrapper() {
   );
 }
 
-const indexRoute = new Route({
+const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
   component: () => <Navigate to="/site" />,
 });
 
-const siteRoute = new Route({
+const siteRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "site",
   component: LandingPageWrapper,
 });
 
-const loginRoute = new Route({
+const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "login",
   component: LoginPageWrapper,
 });
 
-const signUpRoute = new Route({
+const signUpRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "sign-up",
   component: SignUpPageWrapper,
 });
 
-const todayRoute = new Route({
+const todayRoute = createRoute({
   getParentRoute: () => layoutRoute,
   path: "today",
   component: TodayPageWrapper,
 });
 
-const calendarRoute = new Route({
+const calendarRoute = createRoute({
   getParentRoute: () => layoutRoute,
   path: "calendar",
   component: CalendarPageWrapper,
 });
 
-const browseRoute = new Route({
+const browseRoute = createRoute({
   getParentRoute: () => layoutRoute,
   path: "browse",
   component: BrowsePageWrapper,
 });
 
-const statsRoute = new Route({
+const statsRoute = createRoute({
   getParentRoute: () => layoutRoute,
   path: "stats",
   component: StatsPageWrapper,
 });
 
-const scannerRoute = new Route({
+const scannerRoute = createRoute({
   getParentRoute: () => layoutRoute,
   path: "scanner",
   component: ScannerPageWrapper,
 });
 
-const profileRoute = new Route({
+const profileRoute = createRoute({
   getParentRoute: () => layoutRoute,
   path: "profile",
   component: ProfilePageWrapper,
 });
 
-const settingsRoute = new Route({
+const settingsRoute = createRoute({
   getParentRoute: () => layoutRoute,
   path: "settings",
   component: SettingsPage,
 });
 
-const notesRoute = new Route({
+const notesRoute = createRoute({
   getParentRoute: () => layoutRoute,
   path: "notes/$examId",
   component: NotePage,
 });
 
-const catchAllRoute = new Route({
+const catchAllRoute = createRoute({
   getParentRoute: () => layoutRoute,
   path: "*",
   component: () => <Navigate to="/today" />,
@@ -231,7 +229,7 @@ const routeTree = rootRoute.addChildren([
   ]),
 ]);
 
-export const router = new Router({ routeTree });
+export const router = createRouter({ routeTree });
 
 declare module "@tanstack/react-router" {
   interface Register {

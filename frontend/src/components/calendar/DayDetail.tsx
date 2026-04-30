@@ -34,7 +34,7 @@ export function DayDetail({ selected, sessions }: Props) {
           return (
             <div
               key={s.id}
-              className="enter grid grid-cols-[52px_1fr_auto] gap-5 items-center py-[18px] px-1 border-b border-rule"
+              className="enter grid grid-cols-[52px_1fr_auto] gap-5 items-center py-4.5 px-1 border-b border-rule"
               style={{ animationDelay: `${0.1 + idx * 0.04}s` }}
             >
               <span
@@ -59,7 +59,7 @@ export function DayDetail({ selected, sessions }: Props) {
                   className={cn(
                     "display font-normal text-[21px] leading-[1.2]",
                     s.done
-                      ? "line-through decoration-rule-strong decoration-[1px] text-ink-faint"
+                      ? "line-through decoration-rule-strong decoration-1 text-ink-faint"
                       : "text-ink",
                   )}
                 >
