@@ -1,3 +1,4 @@
+import { Button } from "@cloudflare/kumo";
 import {
   ArrowCounterClockwiseIcon,
   CameraIcon,
@@ -8,11 +9,14 @@ import {
 } from "@phosphor-icons/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { cn } from "../../utils/cn";
+
 type Props = {
   onCapture: (file: File) => void;
+  immersive?: boolean;
 };
 
-export function CameraCapture({ onCapture }: Props) {
+export function CameraCapture({ onCapture, immersive = false }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -64,11 +68,13 @@ export function CameraCapture({ onCapture }: Props) {
   );
 
   useEffect(() => {
-    startCamera(facing);
+    void (async () => {
+      await startCamera(facing);
+    })();
+
     return () => stopStream();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Cleanup captured Object URL on unmount or when captured changes
   useEffect(() => {
     return () => {
       if (captured) URL.revokeObjectURL(captured);
@@ -147,58 +153,90 @@ export function CameraCapture({ onCapture }: Props) {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center gap-5 py-16 px-6 bg-paper-2 border border-rule rounded-sm">
-        <div className="w-16 h-16 rounded-full bg-rating-1/10 flex items-center justify-center">
+      <div
+        className={cn(
+          "flex flex-col items-center justify-center gap-5 py-16 px-6",
+          immersive
+            ? "h-full bg-black text-white"
+            : "bg-paper-2 border border-rule rounded-sm",
+        )}
+      >
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-rating-1/10">
           <WarningCircleIcon size={32} className="text-rating-1" />
         </div>
-        <p className="text-[15px] text-ink-muted text-center max-w-72">
+        <p
+          className={cn(
+            "max-w-72 text-center text-[15px]",
+            immersive ? "text-white/80" : "text-ink-muted",
+          )}
+        >
           {error}
         </p>
-        <button
+        <Button
           type="button"
+          variant="primary"
+          icon={<ArrowCounterClockwiseIcon size={16} weight="bold" />}
           onClick={() => startCamera(facing)}
-          className="flex items-center gap-2 px-5 py-2.5 bg-amber text-paper rounded-sm text-[15px] font-medium cursor-pointer transition-colors duration-200 hover:bg-amber-dim"
+          className="rounded-full px-5 py-2.5 text-[15px] font-medium"
         >
-          <ArrowCounterClockwiseIcon size={16} weight="bold" />
           Spróbuj ponownie
-        </button>
+        </Button>
       </div>
     );
   }
 
   if (captured && capturedFile) {
     return (
-      <div className="relative flex flex-col">
-        <div className="relative rounded-sm overflow-hidden border border-rule bg-black">
+      <div className={cn("relative flex flex-col", immersive && "h-full")}>
+        <div
+          className={cn(
+            "relative overflow-hidden bg-black",
+            immersive ? "h-full" : "rounded-sm border border-rule",
+          )}
+        >
           <img
             src={captured}
             alt="Zrobione zdjęcie"
-            className="w-full h-auto max-h-[min(60vh,calc(100dvh-240px))] object-contain"
+            className={cn(
+              "w-full",
+              immersive
+                ? "h-full object-cover"
+                : "h-auto max-h-[min(60vh,calc(100dvh-240px))] object-contain",
+            )}
           />
-          <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute top-5 left-5 w-8 h-8 border-t-2 border-l-2 border-amber/70 rounded-tl-sm" />
-            <div className="absolute top-5 right-5 w-8 h-8 border-t-2 border-r-2 border-amber/70 rounded-tr-sm" />
-            <div className="absolute bottom-5 left-5 w-8 h-8 border-b-2 border-l-2 border-amber/70 rounded-bl-sm" />
-            <div className="absolute bottom-5 right-5 w-8 h-8 border-b-2 border-r-2 border-amber/70 rounded-br-sm" />
+          <div className="pointer-events-none absolute inset-0">
+            <div className="absolute left-5 top-5 h-8 w-8 rounded-tl-sm border-l-2 border-t-2 border-amber/70" />
+            <div className="absolute right-5 top-5 h-8 w-8 rounded-tr-sm border-r-2 border-t-2 border-amber/70" />
+            <div className="absolute bottom-5 left-5 h-8 w-8 rounded-bl-sm border-b-2 border-l-2 border-amber/70" />
+            <div className="absolute bottom-5 right-5 h-8 w-8 rounded-br-sm border-b-2 border-r-2 border-amber/70" />
           </div>
 
-          <div className="absolute bottom-5 left-0 right-0 flex items-center justify-center gap-3 z-10">
-            <button
+          <div
+            className={cn(
+              "absolute left-0 right-0 z-10 flex items-center justify-center gap-3",
+              immersive
+                ? "bottom-[calc(1.25rem+env(safe-area-inset-bottom))] px-4"
+                : "bottom-5",
+            )}
+          >
+            <Button
               type="button"
+              variant="ghost"
+              icon={<ArrowCounterClockwiseIcon size={18} weight="bold" />}
               onClick={handleRetake}
-              className="flex items-center gap-2 px-5 py-3 bg-paper-3/90 border border-rule rounded-sm text-ink-muted text-[15px] font-medium cursor-pointer transition-colors duration-200 hover:bg-paper-2 hover:text-ink shadow-lg"
+              className="rounded-full border border-rule bg-paper-3/90 px-5 py-3 text-[15px] font-medium text-ink-muted shadow-lg hover:bg-paper-2 hover:text-ink"
             >
-              <ArrowCounterClockwiseIcon size={18} weight="bold" />
               Powtórz
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              variant="primary"
+              icon={<CheckIcon size={18} weight="bold" />}
               onClick={handleConfirm}
-              className="flex items-center gap-2 px-6 py-3 bg-amber text-paper rounded-sm text-[15px] font-medium cursor-pointer transition-colors duration-200 hover:bg-amber-dim shadow-lg"
+              className="rounded-full px-6 py-3 text-[15px] font-medium shadow-lg"
             >
-              <CheckIcon size={18} weight="bold" />
               Skanuj zdjęcie
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -206,14 +244,24 @@ export function CameraCapture({ onCapture }: Props) {
   }
 
   return (
-    <div className="relative flex flex-col">
-      <div className="relative rounded-sm overflow-hidden border border-rule bg-black">
+    <div className={cn("relative flex flex-col", immersive && "h-full")}>
+      <div
+        className={cn(
+          "relative overflow-hidden bg-black",
+          immersive ? "h-full" : "rounded-sm border border-rule",
+        )}
+      >
         <video
           ref={videoRef}
           autoPlay
           playsInline
           muted
-          className="w-full h-auto max-h-[min(60vh,calc(100dvh-240px))] object-cover"
+          className={cn(
+            "w-full object-cover",
+            immersive
+              ? "h-full"
+              : "h-auto max-h-[min(60vh,calc(100dvh-240px))]",
+          )}
           style={facing === "user" ? { transform: "scaleX(-1)" } : undefined}
         />
 
@@ -226,18 +274,25 @@ export function CameraCapture({ onCapture }: Props) {
           </div>
         )}
 
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-6 left-6 w-10 h-10 border-t-2 border-l-2 border-amber/60 rounded-tl-sm" />
-          <div className="absolute top-6 right-6 w-10 h-10 border-t-2 border-r-2 border-amber/60 rounded-tr-sm" />
-          <div className="absolute bottom-6 left-6 w-10 h-10 border-b-2 border-l-2 border-amber/60 rounded-bl-sm" />
-          <div className="absolute bottom-6 right-6 w-10 h-10 border-b-2 border-r-2 border-amber/60 rounded-br-sm" />
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute left-6 top-6 h-10 w-10 rounded-tl-sm border-l-2 border-t-2 border-amber/60" />
+          <div className="absolute right-6 top-6 h-10 w-10 rounded-tr-sm border-r-2 border-t-2 border-amber/60" />
+          <div className="absolute bottom-6 left-6 h-10 w-10 rounded-bl-sm border-b-2 border-l-2 border-amber/60" />
+          <div className="absolute bottom-6 right-6 h-10 w-10 rounded-br-sm border-b-2 border-r-2 border-amber/60" />
         </div>
 
-        <div className="absolute top-3 right-3 flex gap-2">
+        <div
+          className={cn(
+            "absolute z-10 flex gap-2",
+            immersive
+              ? "right-4 top-[max(1rem,env(safe-area-inset-top))]"
+              : "right-3 top-3",
+          )}
+        >
           <button
             type="button"
             onClick={handleSwitchFacing}
-            className="w-9 h-9 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white/80 cursor-pointer transition-colors duration-200 hover:bg-black/60"
+            className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-black/40 text-white/80 backdrop-blur-sm transition-colors duration-200 hover:bg-black/60"
             aria-label="Zmień kamerę"
           >
             <CameraIcon size={16} weight="bold" />
@@ -245,7 +300,7 @@ export function CameraCapture({ onCapture }: Props) {
           <button
             type="button"
             onClick={handleFlash}
-            className="w-9 h-9 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center cursor-pointer transition-colors duration-200 hover:bg-black/60"
+            className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-black/40 backdrop-blur-sm transition-colors duration-200 hover:bg-black/60"
             aria-label={flashOn ? "Wyłącz lampę" : "Włącz lampę"}
           >
             <FlashlightIcon
@@ -256,18 +311,26 @@ export function CameraCapture({ onCapture }: Props) {
           </button>
         </div>
 
-        <div className="absolute bottom-5 left-1/2 -translate-x-1/2 z-10">
+        <div
+          className={cn(
+            "absolute left-1/2 z-10 -translate-x-1/2",
+            immersive
+              ? "bottom-[calc(1.5rem+env(safe-area-inset-bottom))]"
+              : "bottom-5",
+          )}
+        >
           <button
             type="button"
             onClick={handleCapture}
             disabled={!ready}
-            className="relative w-18 h-18 rounded-full border-3 border-amber bg-transparent flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed shadow-xl"
+            className="relative flex h-20 w-20 cursor-pointer items-center justify-center rounded-full border-3 border-amber bg-transparent shadow-xl transition-all duration-200 hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-30"
             aria-label="Zrób zdjęcie"
           >
-            <div className="w-15 h-15 rounded-full bg-amber" />
+            <div className="h-16 w-16 rounded-full bg-amber" />
           </button>
         </div>
       </div>
+      <canvas ref={canvasRef} className="hidden" />
     </div>
   );
 }
