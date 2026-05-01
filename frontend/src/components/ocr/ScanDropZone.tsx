@@ -40,7 +40,6 @@ export function ScanDropZone({ onFiles, disabled }: Props) {
     [handleFiles],
   );
 
-  // Wklejanie ze schowka
   useEffect(() => {
     if (disabled) return;
     const handler = (e: ClipboardEvent) => {
