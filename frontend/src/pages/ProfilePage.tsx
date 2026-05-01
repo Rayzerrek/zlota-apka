@@ -10,6 +10,7 @@ import { ProfileDataExport } from "../components/profile/ProfileDataExport";
 import { ProfileHeader } from "../components/profile/ProfileHeader";
 import { useSavedFeedback } from "../hooks/useSavedFeedback";
 import { apiDelete } from "../lib/api";
+import { OkResponseSchema } from "../lib/schemas";
 // import { authClient } from "../lib/auth";
 
 type Props = {
@@ -42,7 +43,7 @@ export function ProfilePage({ theme, onThemeChange }: Props) {
   };
 
   const handleDelete = async () => {
-    const res = await apiDelete("/api/users/me");
+    const res = await apiDelete("/api/users/me", OkResponseSchema);
     if (!res.ok) {
       alert("Nie udało się usunąć konta.");
       return;

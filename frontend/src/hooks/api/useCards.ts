@@ -1,15 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { apiDelete, apiGet, apiPost } from "../../lib/api";
+import { ApiCardSchema, OkResponseSchema } from "../../lib/schemas";
 import { queryKeys } from "./keys";
-
-import type { ApiCard } from "../../types/api";
 
 export function useCardsDue() {
   return useQuery({
     queryKey: queryKeys.cardsDue,
     queryFn: async () => {
-      const res = await apiGet<ApiCard[]>("/api/cards/due");
+      const res = await apiGet("/api/cards/due", ApiCardSchema.array());
       if (!res.ok) throw new Error(res.message);
       return res.data;
     },
@@ -20,7 +19,10 @@ export function useCardsByTopic(topicId: string) {
   return useQuery({
     queryKey: queryKeys.cardsByTopic(topicId),
     queryFn: async () => {
-      const res = await apiGet<ApiCard[]>(`/api/topics/${topicId}/cards`);
+      const res = await apiGet(
+        `/api/topics/${topicId}/cards`,
+        ApiCardSchema.array(),
+      );
       if (!res.ok) throw new Error(res.message);
       return res.data;
     },
@@ -45,7 +47,11 @@ export function useCreateCard() {
       topicId: string;
       body: CreateCardBody;
     }) => {
-      const res = await apiPost<ApiCard>(`/api/topics/${topicId}/cards`, body);
+      const res = await apiPost(
+        `/api/topics/${topicId}/cards`,
+        ApiCardSchema,
+        body,
+      );
       if (!res.ok) throw new Error(res.message);
       return res.data;
     },
@@ -63,7 +69,7 @@ export function useDeleteCard() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const res = await apiDelete<{ ok: boolean }>(`/api/cards/${id}`);
+      const res = await apiDelete(`/api/cards/${id}`, OkResponseSchema);
       if (!res.ok) throw new Error(res.message);
       return res.data;
     },
@@ -83,7 +89,7 @@ export function useReviewCard() {
 
   return useMutation({
     mutationFn: async ({ id, body }: { id: string; body: ReviewCardBody }) => {
-      const res = await apiPost<ApiCard>(`/api/cards/${id}/review`, body);
+      const res = await apiPost(`/api/cards/${id}/review`, ApiCardSchema, body);
       if (!res.ok) throw new Error(res.message);
       return res.data;
     },

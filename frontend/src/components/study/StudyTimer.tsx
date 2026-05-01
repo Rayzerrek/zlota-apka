@@ -62,6 +62,7 @@ export function StudyTimer({ sessionId, onExit }: Props) {
   const [scope, setScope] = useState<"yes" | "no" | "partially" | null>(null);
   const [notesExpanded, setNotesExpanded] = useState(false);
   const [notes, setNotes] = useState("");
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     startedAtRef.current = Date.now();
@@ -82,14 +83,21 @@ export function StudyTimer({ sessionId, onExit }: Props) {
     return () => clearInterval(id);
   }, [phase]);
 
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const handleFinish = useCallback(() => {
     setPhase("evaluation");
   }, []);
 
   const handleSave = useCallback(() => {
     setPhase("saved");
-    const timeout = setTimeout(() => onExit(), 1500);
-    return () => clearTimeout(timeout);
+    saveTimeoutRef.current = setTimeout(() => onExit(), 1500);
   }, [onExit]);
 
   const handleExitRequest = useCallback(() => {

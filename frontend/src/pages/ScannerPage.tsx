@@ -7,6 +7,7 @@ import { CameraCapture } from "../components/ocr/CameraCapture";
 import { Scanner } from "../components/ocr/Scanner";
 import { ScanResult } from "../components/ocr/ScanResult";
 import { apiPost } from "../lib/api";
+import { ScanResponseSchema } from "../lib/schemas";
 import { compressImage } from "../utils/image";
 
 type Mode = "camera" | "file";
@@ -45,7 +46,7 @@ export function ScannerPage() {
 
     try {
       const image = await compressImage(capturedFile);
-      const res = await apiPost<{ text?: string }>("/api/scan", {
+      const res = await apiPost("/api/scan", ScanResponseSchema, {
         images: [image],
       });
 

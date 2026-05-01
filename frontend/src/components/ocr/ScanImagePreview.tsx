@@ -1,7 +1,7 @@
 import { TrashIcon } from "@phosphor-icons/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-import { fileToObjectUrl, revokeObjectUrl } from "../../utils/image";
+import { revokeObjectUrl } from "../../utils/image";
 
 type Props = {
   files: File[];
@@ -23,11 +23,19 @@ export function ScanImagePreview({ files, onRemove }: Props) {
 }
 
 function PreviewItem({ file, onRemove }: { file: File; onRemove: () => void }) {
-  const url = fileToObjectUrl(file);
+  const [url, setUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    return () => revokeObjectUrl(url);
-  }, [url]);
+    const objectUrl = URL.createObjectURL(file);
+    setUrl(objectUrl);
+    return () => revokeObjectUrl(objectUrl);
+  }, [file]);
+
+  if (!url) {
+    return (
+      <div className="relative w-24 h-24 rounded-sm border border-rule overflow-hidden bg-paper-2 animate-pulse" />
+    );
+  }
 
   return (
     <div className="relative group w-24 h-24 rounded-sm border border-rule overflow-hidden bg-paper-2">

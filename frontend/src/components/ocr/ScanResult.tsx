@@ -11,7 +11,12 @@ export function ScanResult({ text }: Props) {
         Twoja Notatka
       </p>
       <div className="text-ink text-[17px] leading-relaxed prose prose-amber max-w-none">
-        <ReactMarkdown>{text}</ReactMarkdown>
+        <ReactMarkdown
+          disallowedElements={["script", "iframe", "form", "input", "style"]}
+          unwrapDisallowed
+        >
+          {text}
+        </ReactMarkdown>
       </div>
     </div>
   );

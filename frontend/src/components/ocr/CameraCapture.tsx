@@ -68,6 +68,13 @@ export function CameraCapture({ onCapture }: Props) {
     return () => stopStream();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Cleanup captured Object URL on unmount or when captured changes
+  useEffect(() => {
+    return () => {
+      if (captured) URL.revokeObjectURL(captured);
+    };
+  }, [captured]);
+
   const handleCapture = useCallback(() => {
     const video = videoRef.current;
     const canvas = canvasRef.current;

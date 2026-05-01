@@ -1,9 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { apiGet, apiPatch } from "../../lib/api";
+import { ApiSessionSchema } from "../../lib/schemas";
 import { queryKeys } from "./keys";
-
-import type { ApiSession } from "../../types/api";
 
 export function useSessions(params?: {
   date?: string;
@@ -21,7 +20,7 @@ export function useSessions(params?: {
   return useQuery({
     queryKey: queryKeys.sessions(params),
     queryFn: async () => {
-      const res = await apiGet<ApiSession[]>(path);
+      const res = await apiGet(path, ApiSessionSchema.array());
       if (!res.ok) throw new Error(res.message);
       return res.data;
     },
@@ -46,8 +45,9 @@ export function useCompleteSession() {
       id: string;
       body: CompleteSessionBody;
     }) => {
-      const res = await apiPatch<ApiSession>(
+      const res = await apiPatch(
         `/api/sessions/${id}/complete`,
+        ApiSessionSchema,
         body,
       );
       if (!res.ok) throw new Error(res.message);
@@ -65,7 +65,11 @@ export function useSkipSession() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const res = await apiPatch<ApiSession>(`/api/sessions/${id}/skip`, {});
+      const res = await apiPatch(
+        `/api/sessions/${id}/skip`,
+        ApiSessionSchema,
+        {},
+      );
       if (!res.ok) throw new Error(res.message);
       return res.data;
     },

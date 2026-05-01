@@ -3,6 +3,7 @@ import { CameraIcon, SpinnerIcon } from "@phosphor-icons/react";
 import { useCallback, useState } from "react";
 
 import { apiPost } from "../../lib/api";
+import { ScanResponseSchema } from "../../lib/schemas";
 import { compressImage } from "../../utils/image";
 import { ScanDropZone } from "./ScanDropZone";
 import { ScanImagePreview } from "./ScanImagePreview";
@@ -36,16 +37,18 @@ export const Scanner = () => {
         files.map((file) => compressImage(file)),
       );
 
-      const res = await apiPost<{ text?: string }>("/api/scan", { images });
+      const res = await apiPost("/api/scan", ScanResponseSchema, { images });
 
       if (!res.ok) {
         throw new Error(res.message || "Błąd serwera");
       }
 
       setResult(res.data?.text || "");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Błąd skanera:", err);
-      setError(err.message || "Wystąpił nieznany błąd");
+      const message =
+        err instanceof Error ? err.message : "Wystąpił nieznany błąd";
+      setError(message);
     } finally {
       setLoading(false);
     }

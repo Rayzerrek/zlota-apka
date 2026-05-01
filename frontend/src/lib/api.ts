@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 import type { ApiResult } from "../types/api";
 
 export type { ApiResult } from "../types/api";
@@ -14,10 +16,11 @@ export type {
 
 const BASE = import.meta.env.DEV ? "" : (import.meta.env.VITE_API_URL ?? "");
 
-async function request<T>(
+async function request<TSchema extends z.ZodType>(
   path: string,
+  schema: TSchema,
   init?: RequestInit,
-): Promise<ApiResult<T>> {
+): Promise<ApiResult<z.infer<TSchema>>> {
   try {
     const res = await fetch(`${BASE}${path}`, {
       credentials: "include",
@@ -32,28 +35,47 @@ async function request<T>(
         message: body.error ?? res.statusText,
       };
     }
-    const data = (await res.json()) as T;
+    const raw = await res.json();
+    const data = schema.parse(raw);
     return { ok: true, data };
-  } catch {
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      return {
+        ok: false,
+        status: 0,
+        message: `Błąd walidacji odpowiedzi: ${err.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`).join(", ")}`,
+      };
+    }
     return { ok: false, status: 0, message: "Błąd połączenia z serwerem" };
   }
 }
 
-export function apiGet<T>(path: string): Promise<ApiResult<T>> {
-  return request<T>(path);
-}
-
-export function apiPost<T>(path: string, body: unknown): Promise<ApiResult<T>> {
-  return request<T>(path, { method: "POST", body: JSON.stringify(body) });
-}
-
-export function apiPatch<T>(
+export function apiGet<TSchema extends z.ZodType>(
   path: string,
-  body: unknown,
-): Promise<ApiResult<T>> {
-  return request<T>(path, { method: "PATCH", body: JSON.stringify(body) });
+  schema: TSchema,
+): Promise<ApiResult<z.infer<TSchema>>> {
+  return request(path, schema);
 }
 
-export function apiDelete<T>(path: string): Promise<ApiResult<T>> {
-  return request<T>(path, { method: "DELETE" });
+export function apiPost<TSchema extends z.ZodType>(
+  path: string,
+  schema: TSchema,
+  body: unknown,
+): Promise<ApiResult<z.infer<TSchema>>> {
+  return request(path, schema, { method: "POST", body: JSON.stringify(body) });
+}
+
+export function apiPatch<TSchema extends z.ZodType>(
+  path: string,
+  schema: TSchema,
+  body: unknown,
+): Promise<ApiResult<z.infer<TSchema>>> {
+  return request(path, schema, { method: "PATCH", body: JSON.stringify(body) });
+}
+
+export function apiDelete<TSchema extends z.ZodType>(
+  path: string,
+  schema: TSchema,
+): Promise<ApiResult<z.infer<TSchema>>> {
+  return request(path, schema, { method: "DELETE" });
 }

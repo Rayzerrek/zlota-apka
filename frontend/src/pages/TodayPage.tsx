@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { AddExamModal } from "../components/exam/AddExamModal";
 import { PageHead } from "../components/layout/PageHead";
@@ -6,10 +6,8 @@ import { ExamWidget } from "../components/today/ExamWidget";
 import { SessionList } from "../components/today/SessionList";
 import { TodayHero } from "../components/today/TodayHero";
 import { TodayStats } from "../components/today/TodayStats";
-import { apiGet } from "../lib/api";
+import { useDashboard } from "../hooks/api";
 import { dayLong, longDate } from "../utils/date";
-
-import type { ApiDashboard } from "../types/api";
 
 type Props = {
   onStart: () => void;
@@ -19,13 +17,7 @@ type Props = {
 export function TodayPage({ onStart, onStartSession }: Props) {
   const today = new Date().toISOString().slice(0, 10);
   const [addExamOpen, setAddExamOpen] = useState(false);
-  const [dashboard, setDashboard] = useState<ApiDashboard | null>(null);
-
-  useEffect(() => {
-    apiGet<ApiDashboard>("/api/dashboard").then((res) => {
-      if (res.ok) setDashboard(res.data);
-    });
-  }, []);
+  const { data: dashboard, isLoading, error } = useDashboard();
 
   const todaySessions = dashboard?.today ?? [];
   const nextExam = dashboard?.upcomingExams[0] ?? null;
@@ -45,6 +37,14 @@ export function TodayPage({ onStart, onStartSession }: Props) {
         <TodayHero onStart={onStart} onAddExam={() => setAddExamOpen(true)} />
 
         <aside className="flex flex-col gap-7">
+          {isLoading && (
+            <div className="h-24 bg-paper-2 border border-rule rounded-sm animate-pulse" />
+          )}
+          {error && (
+            <div className="bg-rating-1/8 border border-rating-1/20 rounded-sm p-4 text-rating-1 text-[15px]">
+              {error.message}
+            </div>
+          )}
           {nextExam && <ExamWidget exam={nextExam} />}
           <TodayStats />
         </aside>

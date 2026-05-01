@@ -3,11 +3,11 @@ import { CheckIcon, PlusIcon, XIcon } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-import { apiGet, apiPost } from "../../lib/api";
+import { useCreateExam, useSubjects } from "../../hooks/api";
 import { cn } from "../../utils/cn";
 import { dayLong, longDate } from "../../utils/date";
 
-import type { ApiSubject, ExamCreateResponse } from "../../lib/api";
+import type { ApiSubject } from "../../types/api";
 
 type MaterialSize = "small" | "medium" | "large";
 
@@ -34,9 +34,18 @@ const FIELD =
   "w-full bg-paper-3 border border-rule rounded-[3px] px-3 py-2.5 text-[14px] text-ink placeholder:text-ink-faint focus:outline-none focus:border-amber/60 transition-colors";
 
 export function AddExamModal({ open, onClose }: Props) {
-  const [subjects, setSubjects] = useState<ApiSubject[]>([]);
-  const [subjectsLoading, setSubjectsLoading] = useState(false);
-  const [subjectsError, setSubjectsError] = useState<string | null>(null);
+  const {
+    data: subjects,
+    isLoading: subjectsLoading,
+    error: subjectsErrorQuery,
+  } = useSubjects();
+  const {
+    mutate: createExam,
+    isPending: submitting,
+    error: mutationError,
+    data: planResult,
+    reset: resetMutation,
+  } = useCreateExam();
 
   const [subjectId, setSubjectId] = useState("");
   const [name, setName] = useState("");
@@ -46,27 +55,15 @@ export function AddExamModal({ open, onClose }: Props) {
   const [topics, setTopics] = useState<string[]>([]);
   const [topicInput, setTopicInput] = useState("");
 
-  const [submitting, setSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [planResult, setPlanResult] = useState<ExamCreateResponse | null>(null);
-
   const topicInputRef = useRef<HTMLInputElement>(null);
   const todayIso = new Date().toISOString().slice(0, 10);
 
   useEffect(() => {
     if (!open) return;
-    setSubjectsLoading(true);
-    setSubjectsError(null);
-    void apiGet<ApiSubject[]>("/api/subjects").then((res) => {
-      setSubjectsLoading(false);
-      if (res.ok === false) {
-        setSubjectsError(res.message);
-        return;
-      }
-      setSubjects(res.data);
-      if (res.data[0]) setSubjectId(res.data[0].id);
-    });
-  }, [open]);
+    if (subjects && subjects.length > 0 && !subjectId) {
+      setSubjectId(subjects[0].id);
+    }
+  }, [open, subjects, subjectId]);
 
   useEffect(() => {
     if (open) return;
@@ -76,11 +73,9 @@ export function AddExamModal({ open, onClose }: Props) {
     setMaterialSize("medium");
     setTopics([]);
     setTopicInput("");
-    setSubmitError(null);
-    setPlanResult(null);
     setSubjectId("");
-    setSubjects([]);
-  }, [open]);
+    resetMutation();
+  }, [open, resetMutation]);
 
   useEffect(() => {
     if (!open) return;
@@ -98,12 +93,10 @@ export function AddExamModal({ open, onClose }: Props) {
     topicInputRef.current?.focus();
   }
 
-  async function handleSubmit(e: React.SubmitEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!subjectId) return;
-    setSubmitting(true);
-    setSubmitError(null);
-    const res = await apiPost<ExamCreateResponse>("/api/exams", {
+    createExam({
       subjectId,
       name,
       examDate,
@@ -111,18 +104,19 @@ export function AddExamModal({ open, onClose }: Props) {
       materialSize,
       topicNames: topics,
     });
-    setSubmitting(false);
-    if (res.ok === false) {
-      setSubmitError(res.message);
-      return;
-    }
-    setPlanResult(res.data);
   }
+
+  const subjectsError =
+    subjectsErrorQuery instanceof Error ? subjectsErrorQuery.message : null;
+  const submitError =
+    mutationError instanceof Error ? mutationError.message : null;
+
+  const subjectList: ApiSubject[] = subjects ?? [];
 
   const topicMap = planResult
     ? Object.fromEntries(planResult.topics.map((t) => [t.id, t.name]))
     : {};
-  const subjectMap = Object.fromEntries(subjects.map((s) => [s.id, s]));
+  const subjectMap = Object.fromEntries(subjectList.map((s) => [s.id, s]));
   const totalMinutes =
     planResult?.sessions.reduce((sum, s) => sum + s.plannedMinutes, 0) ?? 0;
 
@@ -251,7 +245,7 @@ export function AddExamModal({ open, onClose }: Props) {
                   <div className="h-10 bg-paper-3 border border-rule rounded-[3px] animate-pulse" />
                 ) : subjectsError ? (
                   <p className="text-[13px] text-rating-1">{subjectsError}</p>
-                ) : subjects.length === 0 ? (
+                ) : subjectList.length === 0 ? (
                   <p className="text-[13px] text-ink-muted">
                     Brak przedmiotów — uzupełnij profil, żeby dodać sprawdzian.
                   </p>
@@ -261,7 +255,7 @@ export function AddExamModal({ open, onClose }: Props) {
                     onValueChange={(v) => setSubjectId(v ?? "")}
                     required
                   >
-                    {subjects.map((s) => (
+                    {subjectList.map((s) => (
                       <Select.Option key={s.id} value={s.id}>
                         {s.name}
                       </Select.Option>
@@ -429,7 +423,7 @@ export function AddExamModal({ open, onClose }: Props) {
               <Button
                 type="submit"
                 variant="primary"
-                disabled={submitting || subjects.length === 0}
+                disabled={submitting || subjectList.length === 0}
                 className="bg-amber border-amber text-paper hover:bg-[#ffcc4a] hover:border-[#ffcc4a] font-semibold disabled:opacity-50"
               >
                 {submitting ? "Planuję…" : "Zaplanuj"}

@@ -1,15 +1,19 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { apiDelete, apiGet, apiPost } from "../../lib/api";
+import {
+  ApiExamSchema,
+  ExamCreateResponseSchema,
+  OkResponseSchema,
+  UseExamDataSchema,
+} from "../../lib/schemas";
 import { queryKeys } from "./keys";
-
-import type { ApiExam, ExamCreateResponse } from "../../types/api";
 
 export function useExams() {
   return useQuery({
     queryKey: queryKeys.exams,
     queryFn: async () => {
-      const res = await apiGet<ApiExam[]>("/api/exams");
+      const res = await apiGet("/api/exams", ApiExamSchema.array());
       if (!res.ok) throw new Error(res.message);
       return res.data;
     },
@@ -17,18 +21,10 @@ export function useExams() {
 }
 
 export function useExam(id: string) {
-  return useQuery<{
-    exam: ApiExam;
-    topics: import("../../types/api").ApiTopic[];
-    sessions: import("../../types/api").ApiSession[];
-  }>({
+  return useQuery({
     queryKey: queryKeys.exam(id),
     queryFn: async () => {
-      const res = await apiGet<{
-        exam: ApiExam;
-        topics: import("../../types/api").ApiTopic[];
-        sessions: import("../../types/api").ApiSession[];
-      }>(`/api/exams/${id}`);
+      const res = await apiGet(`/api/exams/${id}`, UseExamDataSchema);
       if (!res.ok) throw new Error(res.message);
       return res.data;
     },
@@ -51,7 +47,7 @@ export function useCreateExam() {
 
   return useMutation({
     mutationFn: async (body: ExamCreateBody) => {
-      const res = await apiPost<ExamCreateResponse>("/api/exams", body);
+      const res = await apiPost("/api/exams", ExamCreateResponseSchema, body);
       if (!res.ok) throw new Error(res.message);
       return res.data;
     },
@@ -67,7 +63,7 @@ export function useDeleteExam() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const res = await apiDelete<{ ok: boolean }>(`/api/exams/${id}`);
+      const res = await apiDelete(`/api/exams/${id}`, OkResponseSchema);
       if (!res.ok) throw new Error(res.message);
       return res.data;
     },

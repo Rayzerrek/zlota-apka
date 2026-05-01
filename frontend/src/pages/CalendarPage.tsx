@@ -41,10 +41,6 @@ function monthLabel(iso: string): string {
   );
 }
 
-const upcomingExams = [...EXAMS]
-  .filter((e) => e.dateISO >= TODAY)
-  .sort((a, b) => a.dateISO.localeCompare(b.dateISO));
-
 export function CalendarPage() {
   const [viewMode, setViewMode] = useState<ViewMode>("week");
   const [weekAnchor, setWeekAnchor] = useState(TODAY);
@@ -54,6 +50,13 @@ export function CalendarPage() {
   const selectedSessions = useMemo(
     () => SESSIONS.filter((s) => s.dateISO === selected),
     [selected],
+  );
+  const upcomingExams = useMemo(
+    () =>
+      [...EXAMS]
+        .filter((e) => e.dateISO >= TODAY)
+        .sort((a, b) => a.dateISO.localeCompare(b.dateISO)),
+    [],
   );
 
   const handlePrev = () => {
