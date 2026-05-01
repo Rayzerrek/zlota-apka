@@ -161,12 +161,12 @@ export function CameraCapture({ onCapture }: Props) {
 
   if (captured && capturedFile) {
     return (
-      <div className="relative flex flex-col gap-4">
+      <div className="relative flex flex-col">
         <div className="relative rounded-sm overflow-hidden border border-rule bg-black">
           <img
             src={captured}
             alt="Zrobione zdjęcie"
-            className="w-full h-auto max-h-[60vh] object-contain"
+            className="w-full h-auto max-h-[min(60vh,calc(100dvh-240px))] object-contain"
           />
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute top-5 left-5 w-8 h-8 border-t-2 border-l-2 border-amber/70 rounded-tl-sm" />
@@ -174,39 +174,39 @@ export function CameraCapture({ onCapture }: Props) {
             <div className="absolute bottom-5 left-5 w-8 h-8 border-b-2 border-l-2 border-amber/70 rounded-bl-sm" />
             <div className="absolute bottom-5 right-5 w-8 h-8 border-b-2 border-r-2 border-amber/70 rounded-br-sm" />
           </div>
-        </div>
 
-        <div className="flex items-center justify-center gap-4">
-          <button
-            type="button"
-            onClick={handleRetake}
-            className="flex items-center gap-2 px-5 py-3 bg-paper-3 border border-rule rounded-sm text-ink-muted text-[15px] font-medium cursor-pointer transition-colors duration-200 hover:bg-paper-2 hover:text-ink"
-          >
-            <ArrowCounterClockwiseIcon size={18} weight="bold" />
-            Powtórz
-          </button>
-          <button
-            type="button"
-            onClick={handleConfirm}
-            className="flex items-center gap-2 px-6 py-3 bg-amber text-paper rounded-sm text-[15px] font-medium cursor-pointer transition-colors duration-200 hover:bg-amber-dim"
-          >
-            <CheckIcon size={18} weight="bold" />
-            Skanuj zdjęcie
-          </button>
+          <div className="absolute bottom-5 left-0 right-0 flex items-center justify-center gap-3 z-10">
+            <button
+              type="button"
+              onClick={handleRetake}
+              className="flex items-center gap-2 px-5 py-3 bg-paper-3/90 border border-rule rounded-sm text-ink-muted text-[15px] font-medium cursor-pointer transition-colors duration-200 hover:bg-paper-2 hover:text-ink shadow-lg"
+            >
+              <ArrowCounterClockwiseIcon size={18} weight="bold" />
+              Powtórz
+            </button>
+            <button
+              type="button"
+              onClick={handleConfirm}
+              className="flex items-center gap-2 px-6 py-3 bg-amber text-paper rounded-sm text-[15px] font-medium cursor-pointer transition-colors duration-200 hover:bg-amber-dim shadow-lg"
+            >
+              <CheckIcon size={18} weight="bold" />
+              Skanuj zdjęcie
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="relative flex flex-col gap-4">
+    <div className="relative flex flex-col">
       <div className="relative rounded-sm overflow-hidden border border-rule bg-black">
         <video
           ref={videoRef}
           autoPlay
           playsInline
           muted
-          className="w-full h-auto max-h-[65vh] object-cover"
+          className="w-full h-auto max-h-[min(60vh,calc(100dvh-240px))] object-cover"
           style={facing === "user" ? { transform: "scaleX(-1)" } : undefined}
         />
 
@@ -248,18 +248,18 @@ export function CameraCapture({ onCapture }: Props) {
             />
           </button>
         </div>
-      </div>
 
-      <div className="flex items-center justify-center">
-        <button
-          type="button"
-          onClick={handleCapture}
-          disabled={!ready}
-          className="relative w-18 h-18 rounded-full border-3 border-amber bg-transparent flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed"
-          aria-label="Zrób zdjęcie"
-        >
-          <div className="w-15 h-15 rounded-full bg-amber" />
-        </button>
+        <div className="absolute bottom-5 left-1/2 -translate-x-1/2 z-10">
+          <button
+            type="button"
+            onClick={handleCapture}
+            disabled={!ready}
+            className="relative w-18 h-18 rounded-full border-3 border-amber bg-transparent flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed shadow-xl"
+            aria-label="Zrób zdjęcie"
+          >
+            <div className="w-15 h-15 rounded-full bg-amber" />
+          </button>
+        </div>
       </div>
     </div>
   );

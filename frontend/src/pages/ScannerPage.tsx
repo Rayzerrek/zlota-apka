@@ -1,6 +1,6 @@
 import { Button } from "@cloudflare/kumo";
 import { CameraIcon, FilesIcon, SpinnerIcon } from "@phosphor-icons/react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { PageHead } from "../components/layout/PageHead";
 import { CameraCapture } from "../components/ocr/CameraCapture";
@@ -14,9 +14,23 @@ type Mode = "camera" | "file";
 export function ScannerPage() {
   const [mode, setMode] = useState<Mode>("camera");
   const [capturedFile, setCapturedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState("");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    let url: string | null = null;
+    if (capturedFile) {
+      url = URL.createObjectURL(capturedFile);
+      setPreviewUrl(url);
+    } else {
+      setPreviewUrl(null);
+    }
+    return () => {
+      if (url) URL.revokeObjectURL(url);
+    };
+  }, [capturedFile]);
 
   const handleCameraCapture = useCallback((file: File) => {
     setCapturedFile(file);
@@ -120,24 +134,35 @@ export function ScannerPage() {
             )}
 
             {capturedFile && !loading && !result && !error && (
-              <div className="flex items-center gap-3">
-                <Button
-                  type="button"
-                  variant="primary"
-                  icon={<CameraIcon size={18} />}
-                  onClick={handleScanCaptured}
-                  className="rounded-sm"
-                >
-                  Skanuj
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={handleNewPhoto}
-                  className="rounded-sm"
-                >
-                  Nowe zdjęcie
-                </Button>
+              <div className="flex flex-col gap-4">
+                {previewUrl && (
+                  <div className="relative rounded-sm overflow-hidden border border-rule bg-black">
+                    <img
+                      src={previewUrl}
+                      alt="Zrobione zdjęcie"
+                      className="w-full h-auto max-h-[min(50vh,calc(100dvh-320px))] object-contain"
+                    />
+                  </div>
+                )}
+                <div className="flex items-center gap-3">
+                  <Button
+                    type="button"
+                    variant="primary"
+                    icon={<CameraIcon size={18} />}
+                    onClick={handleScanCaptured}
+                    className="rounded-sm"
+                  >
+                    Skanuj
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={handleNewPhoto}
+                    className="rounded-sm"
+                  >
+                    Nowe zdjęcie
+                  </Button>
+                </div>
               </div>
             )}
 
