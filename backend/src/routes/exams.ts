@@ -5,6 +5,7 @@ import {
   exams,
   schedulerRuns,
   studySessions,
+  subjects,
   topics,
   userAvailability,
 } from "../db/schema";
@@ -102,6 +103,12 @@ examsRouter.openapi(createExamRoute, async (c) => {
     const userId = c.get("userId");
     const body = c.req.valid("json");
     const today = new Date().toISOString().slice(0, 10);
+
+    const [subject] = await db
+      .select({ id: subjects.id })
+      .from(subjects)
+      .where(and(eq(subjects.id, body.subjectId), eq(subjects.userId, userId)));
+    if (!subject) return c.json({ error: "Subject not found" }, 404);
 
     const result = await db.transaction(async (tx) => {
       const [exam] = await tx

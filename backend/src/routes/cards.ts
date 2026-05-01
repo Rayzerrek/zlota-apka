@@ -1,7 +1,7 @@
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import { and, eq, lte } from "drizzle-orm";
 
-import { cards, reviewHistory } from "../db/schema";
+import { cards, reviewHistory, topics } from "../db/schema";
 import { createDb } from "../lib/db";
 import { type Rating, scheduleReview } from "../lib/fsrs";
 import { requireAuth } from "../middleware/auth";
@@ -16,7 +16,7 @@ import type { HonoEnv } from "../lib/factory";
 
 const dueCardsRoute = createRoute({
   method: "get",
-  path: "/due",
+  path: "/cards/due",
   tags: ["Cards"],
   responses: { 200: { description: "Due cards" } },
 });
@@ -113,12 +113,21 @@ cardsRouter.openapi(listCardsRoute, async (c) => {
 cardsRouter.openapi(createCardRoute, async (c) => {
   try {
     const db = createDb(c.env);
+    const userId = c.get("userId");
+    const topicId = c.req.valid("param").topicId;
+
+    const [topic] = await db
+      .select({ id: topics.id })
+      .from(topics)
+      .where(and(eq(topics.id, topicId), eq(topics.userId, userId)));
+    if (!topic) return c.json({ error: "Topic not found" }, 404);
+
     const [row] = await db
       .insert(cards)
       .values({
         ...c.req.valid("json"),
-        userId: c.get("userId"),
-        topicId: c.req.valid("param").topicId,
+        userId,
+        topicId,
       })
       .returning();
     return c.json(row, 201);

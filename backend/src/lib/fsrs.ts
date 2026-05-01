@@ -40,6 +40,7 @@ export function scheduleReview(
       nextState = 1;
     } else if (rating === 2) {
       stability = 1;
+      difficulty = Math.min(10, difficulty + 0.5);
       scheduledDays = 1;
       nextState = 1;
     } else if (rating === 3) {

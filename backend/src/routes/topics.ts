@@ -1,7 +1,7 @@
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import { and, eq } from "drizzle-orm";
 
-import { topics } from "../db/schema";
+import { exams, topics } from "../db/schema";
 import { createDb } from "../lib/db";
 import { requireAuth } from "../middleware/auth";
 import {
@@ -92,6 +92,12 @@ topicsRouter.openapi(createTopicRoute, async (c) => {
     const userId = c.get("userId");
     const examId = c.req.valid("param").examId;
     const body = c.req.valid("json");
+
+    const [exam] = await db
+      .select({ id: exams.id })
+      .from(exams)
+      .where(and(eq(exams.id, examId), eq(exams.userId, userId)));
+    if (!exam) return c.json({ error: "Exam not found" }, 404);
 
     const [row] = await db
       .insert(topics)
