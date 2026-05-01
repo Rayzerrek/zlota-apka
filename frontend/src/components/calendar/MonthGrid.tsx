@@ -12,7 +12,7 @@ import { pl } from "date-fns/locale";
 import { cn } from "../../utils/cn";
 import { SUBJECT_BG } from "../../utils/subjects";
 
-import type { Exam, StudySession } from "../../types";
+import type { Exam, StudySession, SubjectKey } from "../../types";
 
 type Props = {
   anchor: string;
@@ -121,7 +121,7 @@ export function MonthGrid({
                       key={s}
                       className={cn(
                         "w-1 h-1 rounded-full opacity-60",
-                        SUBJECT_BG[s],
+                        SUBJECT_BG[s as SubjectKey],
                       )}
                     />
                   ))}
