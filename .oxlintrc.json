@@ -15,6 +15,7 @@
     "no-non-null-assertion": "error",
     "no-non-null-asserted-nullish-coalescing": "error",
     "no-array-index-key": "error",
+    "unicorn/no-array-for-each": "error",
     "no-unused-vars": [
       "error",
       {
