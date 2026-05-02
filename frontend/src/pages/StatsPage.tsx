@@ -3,12 +3,14 @@ import { PieChart as EChartsPieChart } from "echarts/charts";
 import { TooltipComponent } from "echarts/components";
 import * as echarts from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 
 import { PageHead } from "../components/layout/PageHead";
 import { CARDS, STUDY_STATS, SUBJECT_RETENTION } from "../data/mock";
 import { cn } from "../utils/cn";
 import { SUBJECTS, SUBJECT_BG, SUBJECT_TEXT } from "../utils/subjects";
+
+echarts.use([EChartsPieChart, TooltipComponent, CanvasRenderer]);
 
 const { mature, young } = STUDY_STATS;
 const dueOrNew = CARDS.filter(
@@ -51,10 +53,6 @@ const legendItems = [
 ];
 
 export function StatsPage() {
-  useEffect(() => {
-    echarts.use([EChartsPieChart, TooltipComponent, CanvasRenderer]);
-  }, []);
-
   const donutOptions = useMemo(() => {
     function cssVar(name: string): string {
       return getComputedStyle(document.documentElement)
