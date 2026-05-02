@@ -29,6 +29,12 @@ const StatsPage = lazy(() =>
 const LandingPage = lazy(() =>
   import("./pages/LandingPage").then((m) => ({ default: m.LandingPage })),
 );
+const LoginPage = lazy(() =>
+  import("./pages/LoginPage").then((m) => ({ default: m.LoginPage })),
+);
+const SignUpPage = lazy(() =>
+  import("./pages/SignUpPage").then((m) => ({ default: m.SignUpPage })),
+);
 
 const rootRoute = createRootRoute({
   component: App,
@@ -113,9 +119,6 @@ function ScannerPageWrapper() {
 
 function LoginPageWrapper() {
   const { theme, toggleTheme } = useTheme();
-  const LoginPage = lazy(() =>
-    import("./pages/LoginPage").then((m) => ({ default: m.LoginPage })),
-  );
   return (
     <Suspense fallback={<PageSkeleton />}>
       <LoginPage theme={theme} onToggleTheme={toggleTheme} />
@@ -125,9 +128,6 @@ function LoginPageWrapper() {
 
 function SignUpPageWrapper() {
   const { theme, toggleTheme } = useTheme();
-  const SignUpPage = lazy(() =>
-    import("./pages/SignUpPage").then((m) => ({ default: m.SignUpPage })),
-  );
   return (
     <Suspense fallback={<PageSkeleton />}>
       <SignUpPage theme={theme} onToggleTheme={toggleTheme} />

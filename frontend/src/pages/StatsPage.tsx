@@ -3,13 +3,12 @@ import { PieChart as EChartsPieChart } from "echarts/charts";
 import { TooltipComponent } from "echarts/components";
 import * as echarts from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
+import { useEffect, useMemo } from "react";
 
 import { PageHead } from "../components/layout/PageHead";
 import { CARDS, STUDY_STATS, SUBJECT_RETENTION } from "../data/mock";
 import { cn } from "../utils/cn";
 import { SUBJECTS, SUBJECT_BG, SUBJECT_TEXT } from "../utils/subjects";
-
-echarts.use([EChartsPieChart, TooltipComponent, CanvasRenderer]);
 
 const { mature, young } = STUDY_STATS;
 const dueOrNew = CARDS.filter(
@@ -23,12 +22,6 @@ function formatMinutes(mins: number): string {
   if (h === 0) return `${m}m`;
   if (m === 0) return `${h}h`;
   return `${h}h ${m}m`;
-}
-
-function cssVar(name: string): string {
-  return getComputedStyle(document.documentElement)
-    .getPropertyValue(name)
-    .trim();
 }
 
 const matureFrac = mature / total;
@@ -58,47 +51,59 @@ const legendItems = [
 ];
 
 export function StatsPage() {
-  const donutOptions = {
-    tooltip: {
-      trigger: "item" as const,
-      formatter: "{b}: {c} kart",
-      backgroundColor: cssVar("--color-paper-3"),
-      borderColor: cssVar("--color-rule-strong"),
-      borderWidth: 1,
-      textStyle: {
-        fontFamily: cssVar("--font-mono"),
-        fontSize: 12,
-        color: cssVar("--color-ink"),
+  useEffect(() => {
+    echarts.use([EChartsPieChart, TooltipComponent, CanvasRenderer]);
+  }, []);
+
+  const donutOptions = useMemo(() => {
+    function cssVar(name: string): string {
+      return getComputedStyle(document.documentElement)
+        .getPropertyValue(name)
+        .trim();
+    }
+
+    return {
+      tooltip: {
+        trigger: "item" as const,
+        formatter: "{b}: {c} kart",
+        backgroundColor: cssVar("--color-paper-3"),
+        borderColor: cssVar("--color-rule-strong"),
+        borderWidth: 1,
+        textStyle: {
+          fontFamily: cssVar("--font-mono"),
+          fontSize: 12,
+          color: cssVar("--color-ink"),
+        },
       },
-    },
-    series: [
-      {
-        type: "pie" as const,
-        radius: ["51px", "65px"],
-        center: ["50%", "50%"],
-        startAngle: 90,
-        data: [
-          {
-            name: "Opanowane",
-            value: mature,
-            itemStyle: { color: cssVar("--color-rating-4") },
-          },
-          {
-            name: "W trakcie",
-            value: young,
-            itemStyle: { color: cssVar("--color-amber") },
-          },
-          {
-            name: "Do zrobienia",
-            value: dueOrNew,
-            itemStyle: { color: cssVar("--color-ink-faint") },
-          },
-        ].filter((d) => d.value > 0),
-        label: { show: false },
-        emphasis: { scale: false },
-      },
-    ],
-  };
+      series: [
+        {
+          type: "pie" as const,
+          radius: ["51px", "65px"],
+          center: ["50%", "50%"],
+          startAngle: 90,
+          data: [
+            {
+              name: "Opanowane",
+              value: mature,
+              itemStyle: { color: cssVar("--color-rating-4") },
+            },
+            {
+              name: "W trakcie",
+              value: young,
+              itemStyle: { color: cssVar("--color-amber") },
+            },
+            {
+              name: "Do zrobienia",
+              value: dueOrNew,
+              itemStyle: { color: cssVar("--color-ink-faint") },
+            },
+          ].filter((d) => d.value > 0),
+          label: { show: false },
+          emphasis: { scale: false },
+        },
+      ],
+    };
+  }, []);
 
   return (
     <>
