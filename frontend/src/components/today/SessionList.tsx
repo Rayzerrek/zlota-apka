@@ -7,6 +7,7 @@ import {
 import { useNavigate } from "@tanstack/react-router";
 
 import { cn } from "../../utils/cn";
+import { formatMinutes } from "../../utils/date";
 import { SUBJECT_BG } from "../../utils/subjects";
 
 import type { SubjectKey } from "../../types";
@@ -107,7 +108,9 @@ export function SessionList({ sessions, onStartSession }: Props) {
               </span>
             </span>
             <span className="mono text-sm text-ink flex items-center gap-2.5">
-              <span className="text-ink-faint">{s.plannedMinutes} min</span>
+              <span className="text-ink-faint">
+                {formatMinutes(s.plannedMinutes)}
+              </span>
               <ArrowRightIcon
                 size={16}
                 className="text-ink-faint transition-all duration-[0.25s] group-hover:text-amber group-hover:translate-x-1"

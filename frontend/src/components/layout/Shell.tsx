@@ -16,7 +16,6 @@ import {
   CalendarBlankIcon,
   CameraIcon,
   CardsIcon,
-  CaretUpDownIcon,
   ChartBarIcon,
   GearSixIcon,
   MoonIcon,
@@ -149,10 +148,6 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
                         {name}
                       </div>
                     </div>
-                    <CaretUpDownIcon
-                      size={14}
-                      className="text-ink-faint shrink-0"
-                    />
                   </DropdownMenu.Trigger>
                   <DropdownMenu.Portal>
                     <DropdownMenu.Content

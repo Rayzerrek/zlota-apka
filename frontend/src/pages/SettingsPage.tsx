@@ -4,9 +4,15 @@ import { CheckIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 
 import { PageHead } from "../components/layout/PageHead";
+import { ProfileAppearanceSection } from "../components/profile/ProfileAppearanceSection";
 import { useSavedFeedback } from "../hooks/useSavedFeedback";
 
-export function SettingsPage() {
+type Props = {
+  theme: "dark" | "light";
+  onThemeChange: (t: "dark" | "light") => void;
+};
+
+export function SettingsPage({ theme, onThemeChange }: Props) {
   const [notifications, setNotifications] = useState(
     () => localStorage.getItem("settings.notifications") !== "false",
   );
@@ -113,9 +119,11 @@ export function SettingsPage() {
           </Label>
         </section>
 
+        <ProfileAppearanceSection theme={theme} onThemeChange={onThemeChange} />
+
         <section className="enter enter-d2 flex flex-col gap-4">
           <div className="pb-3 border-b border-rule flex items-baseline gap-3">
-            <span className="mono text-xs text-amber">02 —</span>
+            <span className="mono text-xs text-amber">03 —</span>
             <h2 className="display text-[23px] text-ink">O aplikacji</h2>
           </div>
           <dl className="grid grid-cols-[140px_1fr] gap-y-3 text-[17px]">

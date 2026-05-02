@@ -26,8 +26,6 @@ function formatMinutes(mins: number): string {
   return `${h}h ${m}m`;
 }
 
-const matureFrac = mature / total;
-
 const legendItems = [
   {
     count: mature,
@@ -169,14 +167,7 @@ export function StatsPage() {
         <div className="flex flex-col gap-10 min-[640px]:flex-row min-[640px]:items-center min-[640px]:gap-14">
           <div className="shrink-0 self-center relative w-40 h-40">
             <Chart echarts={echarts} options={donutOptions} height={160} />
-            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none gap-1">
-              <span className="display font-light text-[28px] leading-none text-ink">
-                {Math.round(matureFrac * 100)}%
-              </span>
-              <span className="mono text-[10px] uppercase text-ink-muted">
-                OPANOWANE
-              </span>
-            </div>
+            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none gap-1"></div>
           </div>
 
           <div className="flex flex-col gap-5 flex-1">

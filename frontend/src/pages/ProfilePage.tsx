@@ -4,7 +4,6 @@ import { useState } from "react";
 
 import { PageHead } from "../components/layout/PageHead";
 import { ProfileAccountSection } from "../components/profile/ProfileAccountSection";
-import { ProfileAppearanceSection } from "../components/profile/ProfileAppearanceSection";
 import { ProfileDangerZone } from "../components/profile/ProfileDangerZone";
 import { ProfileDataExport } from "../components/profile/ProfileDataExport";
 import { ProfileHeader } from "../components/profile/ProfileHeader";
@@ -13,12 +12,7 @@ import { apiDelete } from "../lib/api";
 import { OkResponseSchema } from "../lib/schemas";
 // import { authClient } from "../lib/auth";
 
-type Props = {
-  theme: "dark" | "light";
-  onThemeChange: (t: "dark" | "light") => void;
-};
-
-export function ProfilePage({ theme, onThemeChange }: Props) {
+export function ProfilePage() {
   // Auth disabled temporarily
   // const { data: session } = authClient.useSession();
   // const user = session?.user;
@@ -91,8 +85,6 @@ export function ProfilePage({ theme, onThemeChange }: Props) {
             </span>
           )}
         </section>
-
-        <ProfileAppearanceSection theme={theme} onThemeChange={onThemeChange} />
 
         <ProfileDataExport />
 

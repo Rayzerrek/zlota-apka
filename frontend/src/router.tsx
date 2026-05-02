@@ -81,8 +81,7 @@ function LandingPageWrapper() {
 }
 
 function ProfilePageWrapper() {
-  const { theme, setTheme } = useTheme();
-  return <ProfilePage theme={theme} onThemeChange={setTheme} />;
+  return <ProfilePage />;
 }
 
 function CalendarPageWrapper() {
@@ -195,10 +194,15 @@ const profileRoute = createRoute({
   component: ProfilePageWrapper,
 });
 
+function SettingsPageWrapper() {
+  const { theme, setTheme } = useTheme();
+  return <SettingsPage theme={theme} onThemeChange={setTheme} />;
+}
+
 const settingsRoute = createRoute({
   getParentRoute: () => layoutRoute,
   path: "settings",
-  component: SettingsPage,
+  component: SettingsPageWrapper,
 });
 
 const notesRoute = createRoute({

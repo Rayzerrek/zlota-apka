@@ -1,6 +1,7 @@
 import { Button } from "@cloudflare/kumo";
 import { NotePencilIcon } from "@phosphor-icons/react";
 import { useNavigate } from "@tanstack/react-router";
+import { format } from "date-fns";
 
 import { daysBetween, longDate } from "../../utils/date";
 import { ExamMenu } from "../exam/ExamMenu";
@@ -12,7 +13,7 @@ type Props = {
 };
 
 export function ExamWidget({ exam }: Props) {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = format(new Date(), "yyyy-MM-dd");
   const examDays = daysBetween(today, exam.examDate);
   const navigate = useNavigate();
 
