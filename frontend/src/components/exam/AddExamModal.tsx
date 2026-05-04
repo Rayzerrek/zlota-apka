@@ -6,6 +6,7 @@ import { CheckIcon, PlusIcon, XIcon } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
+import { useNotifications } from "../../contexts/NotificationContext";
 import { useCreateExam } from "../../hooks/api/useExams";
 import { useSubjects } from "../../hooks/api/useSubjects";
 import { cn } from "../../utils/cn";
@@ -97,17 +98,31 @@ export function AddExamModal({ open, onClose }: Props) {
     topicInputRef.current?.focus();
   }
 
+  const { addNotification } = useNotifications();
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!subjectId) return;
-    createExam({
-      subjectId,
-      name,
-      examDate,
-      difficulty,
-      materialSize,
-      topicNames: topics,
-    });
+    createExam(
+      {
+        subjectId,
+        name,
+        examDate,
+        difficulty,
+        materialSize,
+        topicNames: topics,
+      },
+      {
+        onSuccess: (data) => {
+          addNotification({
+            type: "exam_created",
+            title: "Zaplanowano sesje nauki",
+            description: `${data.sessions.length} ${data.sessions.length === 1 ? "sesja" : "sesje"} · ${name}`,
+            actionUrl: "/calendar",
+          });
+        },
+      },
+    );
   }
 
   const subjectsError =
@@ -184,7 +199,6 @@ export function AddExamModal({ open, onClose }: Props) {
                 </div>
               </div>
 
-              {/* Sessions list */}
               {planResult.sessions.length === 0 ? (
                 <p className="text-[14px] text-ink-muted text-center py-8">
                   {planResult.topics.length === 0
@@ -236,13 +250,11 @@ export function AddExamModal({ open, onClose }: Props) {
             </div>
           </>
         ) : (
-          /* ── Form ── */
           <form
             onSubmit={handleSubmit}
             className="flex flex-col flex-1 min-h-0"
           >
             <div className="px-6 py-6 overflow-y-auto flex-1 flex flex-col gap-5">
-              {/* Subject */}
               <div className="flex flex-col gap-1.5">
                 <Label className="text-[13px] text-ink-muted">Przedmiot</Label>
                 {subjectsLoading ? (
@@ -283,7 +295,6 @@ export function AddExamModal({ open, onClose }: Props) {
                 />
               </div>
 
-              {/* Date */}
               <div className="flex flex-col gap-1.5">
                 <Label className="text-[13px] text-ink-muted">
                   Data sprawdzianu
@@ -298,7 +309,6 @@ export function AddExamModal({ open, onClose }: Props) {
                 />
               </div>
 
-              {/* Difficulty */}
               <div className="flex flex-col gap-2">
                 <div className="flex items-baseline justify-between">
                   <Label className="text-[13px] text-ink-muted">
@@ -332,7 +342,6 @@ export function AddExamModal({ open, onClose }: Props) {
                 </div>
               </div>
 
-              {/* Material size */}
               <div className="flex flex-col gap-1.5">
                 <Label className="text-[13px] text-ink-muted">
                   Ilość materiału
@@ -359,7 +368,6 @@ export function AddExamModal({ open, onClose }: Props) {
                 </div>
               </div>
 
-              {/* Topics */}
               <div className="flex flex-col gap-1.5">
                 <Label className="text-[13px] text-ink-muted">
                   Tematy <span className="text-ink-faint">(opcjonalnie)</span>
@@ -419,7 +427,6 @@ export function AddExamModal({ open, onClose }: Props) {
               )}
             </div>
 
-            {/* Footer */}
             <div className="px-6 py-4 border-t border-rule flex items-center justify-end gap-3 shrink-0">
               <Button type="button" variant="ghost" onClick={onClose}>
                 Anuluj

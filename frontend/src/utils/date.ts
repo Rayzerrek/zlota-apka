@@ -1,5 +1,7 @@
 import {
   differenceInDays,
+  differenceInHours,
+  differenceInMinutes,
   format,
   formatDuration,
   intervalToDuration,
@@ -52,4 +54,18 @@ export function formatMinutes(totalMinutes: number): string {
       zero: false,
     },
   );
+}
+
+export function timeAgo(ts: number): string {
+  const date = new Date(ts);
+  const now = Date.now();
+  const minutes = differenceInMinutes(now, date);
+  if (minutes < 1) return "przed chwilą";
+  if (minutes < 60) {
+    const h = differenceInHours(now, date);
+    if (h < 1) return `${minutes} min temu`;
+    if (h < 24) return `${h} godz. temu`;
+  }
+  if (differenceInHours(now, date) < 48) return "wczoraj";
+  return format(date, "d MMM", { locale: pl });
 }

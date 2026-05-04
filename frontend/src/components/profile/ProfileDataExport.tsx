@@ -3,6 +3,7 @@ import { DownloadSimpleIcon } from "@phosphor-icons/react";
 import Papa from "papaparse";
 import { useCallback } from "react";
 
+import { useNotifications } from "../../contexts/NotificationContext";
 import { CARDS, EXAMS, HISTORY, SESSIONS } from "../../data/mock";
 
 function download(filename: string, content: string, mime: string): void {
@@ -22,6 +23,8 @@ function todayStamp(): string {
 }
 
 export function ProfileDataExport() {
+  const { addNotification } = useNotifications();
+
   const handleJSON = useCallback(() => {
     const payload = {
       exportedAtISO: new Date().toISOString(),
@@ -35,7 +38,12 @@ export function ProfileDataExport() {
       JSON.stringify(payload, null, 2),
       "application/json",
     );
-  }, []);
+    addNotification({
+      type: "data_exported",
+      title: "Wyeksportowano dane",
+      description: `powtorki-${todayStamp()}.json`,
+    });
+  }, [addNotification]);
 
   const handleCSV = useCallback(() => {
     download(
@@ -43,7 +51,12 @@ export function ProfileDataExport() {
       Papa.unparse(HISTORY),
       "text/csv",
     );
-  }, []);
+    addNotification({
+      type: "data_exported",
+      title: "Wyeksportowano historię",
+      description: `powtorki-history-${todayStamp()}.csv`,
+    });
+  }, [addNotification]);
 
   return (
     <section className="enter enter-d3 flex flex-col gap-3 pt-2">

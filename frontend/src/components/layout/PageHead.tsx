@@ -1,3 +1,5 @@
+import { NotificationBell } from "../notifications/NotificationBell";
+
 import type { ReactNode } from "react";
 
 type Props = {
@@ -19,11 +21,14 @@ export function PageHead({ eyebrow, title, date }: Props) {
           {title}
         </h1>
       </div>
-      {date && (
-        <div className="mono text-[13px] uppercase text-amber flex flex-col gap-0.5 text-right">
-          <span>{date}</span>
-        </div>
-      )}
+      <div className="flex items-center gap-3 shrink-0">
+        {date && (
+          <div className="mono text-[13px] uppercase text-amber flex flex-col gap-0.5 text-right">
+            <span>{date}</span>
+          </div>
+        )}
+        <NotificationBell />
+      </div>
     </div>
   );
 }
