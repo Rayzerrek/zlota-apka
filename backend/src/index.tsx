@@ -6,6 +6,7 @@ import { type Env } from "./lib/auth";
 import { cardsRouter } from "./routes/cards";
 import { dashboardRouter } from "./routes/dashboard";
 import { examsRouter } from "./routes/exams";
+import { notesRouter } from "./routes/notes";
 import { onboardingRouter } from "./routes/onboarding";
 import scanRouter from "./routes/scan";
 import { sessionsRouter } from "./routes/sessions";
@@ -36,6 +37,7 @@ app.use("/api/*", async (c, next) => {
   return corsMiddleware(c, next);
 });
 
+app.route("/api", notesRouter);
 app.route("/api/scan", scanRouter);
 app.route("/api/onboarding", onboardingRouter);
 app.route("/api/users", usersRouter);

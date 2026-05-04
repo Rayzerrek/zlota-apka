@@ -1,5 +1,5 @@
 import { Button } from "@cloudflare/kumo";
-import { NotePencilIcon } from "@phosphor-icons/react";
+import { SparkleIcon } from "@phosphor-icons/react";
 import { useNavigate } from "@tanstack/react-router";
 
 import { TODAY } from "../../data/mock";
@@ -59,10 +59,18 @@ export function UpcomingExams({ exams }: Props) {
                   variant="ghost"
                   shape="square"
                   size="sm"
-                  aria-label="Wygeneruj notatkę"
-                  title="Wygeneruj notatkę"
-                  icon={NotePencilIcon}
-                  onClick={() => navigate({ to: `/notes/${e.id}` })}
+                  aria-label="Notatka"
+                  title="Generuj notatkę"
+                  icon={SparkleIcon}
+                  onClick={() =>
+                    navigate({
+                      to: "/note/new",
+                      search: {
+                        topic: e.name,
+                        subject: subjectName(e.subject),
+                      },
+                    })
+                  }
                   className="text-ink-faint hover:text-amber hover:!bg-amber-wash"
                 />
                 <ExamMenu examId={e.id} />

@@ -9,6 +9,8 @@ import {
 } from "../../lib/schemas";
 import { queryKeys } from "./keys";
 
+import type { ExamCreateResponse } from "../../types/api";
+
 export function useExams() {
   return useQuery({
     queryKey: queryKeys.exams,
@@ -45,8 +47,8 @@ export type ExamCreateBody = {
 export function useCreateExam() {
   const qc = useQueryClient();
 
-  return useMutation({
-    mutationFn: async (body: ExamCreateBody) => {
+  return useMutation<ExamCreateResponse, Error, ExamCreateBody>({
+    mutationFn: async (body) => {
       const res = await apiPost("/api/exams", ExamCreateResponseSchema, body);
       if (!res.ok) throw new Error(res.message);
       return res.data;

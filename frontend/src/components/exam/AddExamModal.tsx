@@ -3,7 +3,8 @@ import { CheckIcon, PlusIcon, XIcon } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-import { useCreateExam, useSubjects } from "../../hooks/api";
+import { useCreateExam } from "../../hooks/api/useExams";
+import { useSubjects } from "../../hooks/api/useSubjects";
 import { cn } from "../../utils/cn";
 import { dayLong, longDate } from "../../utils/date";
 

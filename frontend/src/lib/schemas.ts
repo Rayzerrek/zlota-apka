@@ -127,6 +127,19 @@ export const ScanResponseSchema = z.object({
   text: z.string().optional(),
 });
 
+export const GeneratedNoteSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  subject: z.string().nullable(),
+  content: z.string(),
+  createdAt: z.string(),
+});
+
+export const GenerateNoteRequestSchema = z.object({
+  topic: z.string().min(1),
+  subject: z.string().optional(),
+});
+
 export const OkResponseSchema = z.object({
   ok: z.boolean(),
 });

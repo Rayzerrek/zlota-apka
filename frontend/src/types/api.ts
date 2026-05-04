@@ -98,6 +98,14 @@ export type ApiReviewHistory = {
   reviewedAt: string;
 };
 
+export type ApiGeneratedNote = {
+  id: string;
+  title: string;
+  subject: string | null;
+  content: string;
+  createdAt: string;
+};
+
 export type ApiUserAvailability = {
   id: string;
   dayOfWeek: number;

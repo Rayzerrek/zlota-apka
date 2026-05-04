@@ -14,6 +14,8 @@ import { useReview } from "./contexts/ReviewContext";
 import { useStudySession } from "./contexts/StudySessionContext";
 import { useTheme } from "./hooks/useTheme";
 import { BrowsePage } from "./pages/BrowsePage";
+import { GeneratedNotePage } from "./pages/GeneratedNotePage";
+import { NoteGeneratorPage } from "./pages/NoteGeneratorPage";
 import { NotePage } from "./pages/NotePage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { ScannerPage } from "./pages/ScannerPage";
@@ -211,6 +213,18 @@ const notesRoute = createRoute({
   component: NotePage,
 });
 
+const noteNewRoute = createRoute({
+  getParentRoute: () => layoutRoute,
+  path: "note/new",
+  component: NoteGeneratorPage,
+});
+
+const noteIdRoute = createRoute({
+  getParentRoute: () => layoutRoute,
+  path: "note/$id",
+  component: GeneratedNotePage,
+});
+
 const catchAllRoute = createRoute({
   getParentRoute: () => layoutRoute,
   path: "*",
@@ -231,6 +245,8 @@ const routeTree = rootRoute.addChildren([
     profileRoute,
     settingsRoute,
     notesRoute,
+    noteNewRoute,
+    noteIdRoute,
     catchAllRoute,
   ]),
 ]);

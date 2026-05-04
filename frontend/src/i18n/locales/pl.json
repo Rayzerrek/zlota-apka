@@ -8,5 +8,20 @@
     "back": "Wróć",
     "loading": "Ładowanie...",
     "error": "Wystąpił błąd"
+  },
+  "generated-notes": {
+    "title": "Generator notatek",
+    "subtitle": "Wpisz temat, a AI przygotuje kompleksową notatkę",
+    "topicLabel": "Temat",
+    "topicPlaceholder": "np. Właściwości funkcji kwadratowej",
+    "subjectLabel": "Przedmiot",
+    "subjectOptional": "(opcjonalnie)",
+    "subjectPlaceholder": "np. Matematyka, Historia",
+    "generate": "Generuj notatkę",
+    "generating": "Generowanie...",
+    "notFound": "Notatka nie została znaleziona.",
+    "notFoundHint": "Sprawdź, czy link jest poprawny, albo wygeneruj nową.",
+    "generateNew": "Wygeneruj nową",
+    "generateAnother": "Wygeneruj kolejną"
   }
 }

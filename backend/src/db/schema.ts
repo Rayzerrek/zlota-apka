@@ -143,6 +143,20 @@ export const notes = pgTable("notes", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
+export const generatedNotes = pgTable("generated_notes", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: text("user_id").references(() => user.id, {
+    onDelete: "set null",
+  }),
+  title: text("title").notNull(),
+  subject: text("subject"),
+  prompt: text("prompt").notNull(),
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 export const cards = pgTable(
   "cards",
   {

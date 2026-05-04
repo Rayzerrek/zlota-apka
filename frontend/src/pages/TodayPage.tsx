@@ -11,7 +11,7 @@ import { useState } from "react";
 
 import { AddExamModal } from "../components/exam/AddExamModal";
 import { PageHead } from "../components/layout/PageHead";
-import { useDashboard } from "../hooks/api";
+import { useDashboard } from "../hooks/api/useDashboard";
 import { cn } from "../utils/cn";
 import { dayLong, daysBetween, formatMinutes, longDate } from "../utils/date";
 import { SUBJECT_BG } from "../utils/subjects";

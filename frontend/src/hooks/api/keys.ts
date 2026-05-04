@@ -8,5 +8,6 @@ export const queryKeys = {
   cardsByTopic: (topicId: string) => ["topics", topicId, "cards"] as const,
   subjects: ["subjects"] as const,
   topicsByExam: (examId: string) => ["exams", examId, "topics"] as const,
+  generatedNote: (id: string) => ["generated-notes", id] as const,
   user: ["user"] as const,
 };
