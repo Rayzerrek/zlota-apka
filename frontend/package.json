@@ -12,6 +12,7 @@
     "fmt:check": "oxfmt -c ../.oxfmtrc.json --check",
     "lint": "oxlint -c ../.oxlintrc.json",
     "lint:fix": "oxlint -c ../.oxlintrc.json --fix",
+    "typecheck": "tsc -b --noEmit",
     "test": "vitest run"
   },
   "dependencies": {

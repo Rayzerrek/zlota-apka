@@ -1,4 +1,5 @@
-import { Button, Meter } from "@cloudflare/kumo";
+import { Button } from "@cloudflare/kumo/components/button";
+import { Meter } from "@cloudflare/kumo/components/meter";
 import { XIcon } from "@phosphor-icons/react";
 
 type Props = {

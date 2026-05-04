@@ -1,4 +1,5 @@
-import { Input, Label } from "@cloudflare/kumo";
+import { Input } from "@cloudflare/kumo/components/input";
+import { Label } from "@cloudflare/kumo/components/label";
 import { Switch } from "@cloudflare/kumo/components/switch";
 import { CheckIcon } from "@phosphor-icons/react";
 import { useState } from "react";

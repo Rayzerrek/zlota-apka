@@ -1,4 +1,4 @@
-import { Input } from "@cloudflare/kumo";
+import { Input } from "@cloudflare/kumo/components/input";
 import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 
 type Props = {

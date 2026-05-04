@@ -1,4 +1,4 @@
-import { Button } from "@cloudflare/kumo";
+import { Button } from "@cloudflare/kumo/components/button";
 import { TrashIcon, WarningIcon } from "@phosphor-icons/react";
 
 type Props = {

@@ -1,4 +1,5 @@
-import { Button, Dialog } from "@cloudflare/kumo";
+import { Button } from "@cloudflare/kumo/components/button";
+import { Dialog } from "@cloudflare/kumo/components/dialog";
 import { CheckIcon, CopySimpleIcon, XIcon } from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
 

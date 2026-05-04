@@ -1,4 +1,4 @@
-import { Button } from "@cloudflare/kumo";
+import { Button } from "@cloudflare/kumo/components/button";
 import { ArrowRightIcon, XIcon } from "@phosphor-icons/react";
 
 import type { Rating } from "../../types";

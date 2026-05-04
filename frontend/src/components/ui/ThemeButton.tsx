@@ -1,4 +1,4 @@
-import { Button } from "@cloudflare/kumo";
+import { Button } from "@cloudflare/kumo/components/button";
 import { MoonIcon, SunIcon } from "@phosphor-icons/react";
 type Props = {
   theme: "dark" | "light";

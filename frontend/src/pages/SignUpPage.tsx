@@ -1,4 +1,6 @@
-import { Button, Input, Label } from "@cloudflare/kumo";
+import { Button } from "@cloudflare/kumo/components/button";
+import { Input } from "@cloudflare/kumo/components/input";
+import { Label } from "@cloudflare/kumo/components/label";
 import { EyeIcon, EyeSlashIcon } from "@phosphor-icons/react";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";

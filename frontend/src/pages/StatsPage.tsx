@@ -1,16 +1,8 @@
-import { Chart } from "@cloudflare/kumo/components/chart";
-import { PieChart as EChartsPieChart } from "echarts/charts";
-import { TooltipComponent } from "echarts/components";
-import * as echarts from "echarts/core";
-import { CanvasRenderer } from "echarts/renderers";
-import { useMemo } from "react";
-
+import { DonutChart } from "../components/charts/DonutChart";
 import { PageHead } from "../components/layout/PageHead";
 import { CARDS, STUDY_STATS, SUBJECT_RETENTION } from "../data/mock";
 import { cn } from "../utils/cn";
 import { SUBJECTS, SUBJECT_BG, SUBJECT_TEXT } from "../utils/subjects";
-
-echarts.use([EChartsPieChart, TooltipComponent, CanvasRenderer]);
 
 const { mature, young } = STUDY_STATS;
 const dueOrNew = CARDS.filter(
@@ -51,56 +43,6 @@ const legendItems = [
 ];
 
 export function StatsPage() {
-  const donutOptions = useMemo(() => {
-    function cssVar(name: string): string {
-      return getComputedStyle(document.documentElement)
-        .getPropertyValue(name)
-        .trim();
-    }
-
-    return {
-      tooltip: {
-        trigger: "item" as const,
-        formatter: "{b}: {c} kart",
-        backgroundColor: cssVar("--color-paper-3"),
-        borderColor: cssVar("--color-rule-strong"),
-        borderWidth: 1,
-        textStyle: {
-          fontFamily: cssVar("--font-mono"),
-          fontSize: 12,
-          color: cssVar("--color-ink"),
-        },
-      },
-      series: [
-        {
-          type: "pie" as const,
-          radius: ["51px", "65px"],
-          center: ["50%", "50%"],
-          startAngle: 90,
-          data: [
-            {
-              name: "Opanowane",
-              value: mature,
-              itemStyle: { color: cssVar("--color-rating-4") },
-            },
-            {
-              name: "W trakcie",
-              value: young,
-              itemStyle: { color: cssVar("--color-amber") },
-            },
-            {
-              name: "Do zrobienia",
-              value: dueOrNew,
-              itemStyle: { color: cssVar("--color-ink-faint") },
-            },
-          ].filter((d) => d.value > 0),
-          label: { show: false },
-          emphasis: { scale: false },
-        },
-      ],
-    };
-  }, []);
-
   return (
     <>
       <PageHead
@@ -166,8 +108,27 @@ export function StatsPage() {
 
         <div className="flex flex-col gap-10 min-[640px]:flex-row min-[640px]:items-center min-[640px]:gap-14">
           <div className="shrink-0 self-center relative w-40 h-40">
-            <Chart echarts={echarts} options={donutOptions} height={160} />
-            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none gap-1"></div>
+            <DonutChart
+              data={[
+                {
+                  name: "Opanowane",
+                  value: mature,
+                  color: "var(--color-rating-4)",
+                },
+                {
+                  name: "W trakcie",
+                  value: young,
+                  color: "var(--color-amber)",
+                },
+                {
+                  name: "Do zrobienia",
+                  value: dueOrNew,
+                  color: "var(--color-ink-faint)",
+                },
+              ].filter((d) => d.value > 0)}
+              size={160}
+              stroke={14}
+            />
           </div>
 
           <div className="flex flex-col gap-5 flex-1">

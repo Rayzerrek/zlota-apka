@@ -1,4 +1,4 @@
-import { DropdownMenu } from "@cloudflare/kumo";
+import { DropdownMenu } from "@cloudflare/kumo/components/dropdown";
 import {
   CardsIcon,
   DotsThreeIcon,

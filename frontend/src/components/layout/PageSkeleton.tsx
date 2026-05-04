@@ -1,4 +1,4 @@
-import { SkeletonLine } from "@cloudflare/kumo";
+import { SkeletonLine } from "@cloudflare/kumo/components/loader";
 
 export function PageSkeleton() {
   return (

@@ -1,4 +1,4 @@
-import { Button } from "@cloudflare/kumo";
+import { Button } from "@cloudflare/kumo/components/button";
 import { ArrowLeftIcon } from "@phosphor-icons/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 

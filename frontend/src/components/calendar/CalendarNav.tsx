@@ -1,4 +1,4 @@
-import { Button } from "@cloudflare/kumo";
+import { Button } from "@cloudflare/kumo/components/button";
 import { CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react";
 
 import { cn } from "../../utils/cn";

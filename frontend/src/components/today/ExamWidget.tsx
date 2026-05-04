@@ -1,4 +1,4 @@
-import { Button } from "@cloudflare/kumo";
+import { Button } from "@cloudflare/kumo/components/button";
 import { SparkleIcon } from "@phosphor-icons/react";
 import { useNavigate } from "@tanstack/react-router";
 import { format } from "date-fns";

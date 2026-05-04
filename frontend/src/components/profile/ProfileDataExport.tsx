@@ -1,4 +1,4 @@
-import { Button } from "@cloudflare/kumo";
+import { Button } from "@cloudflare/kumo/components/button";
 import { DownloadSimpleIcon } from "@phosphor-icons/react";
 import Papa from "papaparse";
 import { useCallback } from "react";

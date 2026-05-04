@@ -1,4 +1,4 @@
-import { Button } from "@cloudflare/kumo";
+import { Button } from "@cloudflare/kumo/components/button";
 import { ArrowRightIcon } from "@phosphor-icons/react";
 import { useNavigate } from "@tanstack/react-router";
 

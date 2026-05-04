@@ -1,4 +1,4 @@
-import { Button } from "@cloudflare/kumo";
+import { Button } from "@cloudflare/kumo/components/button";
 import { CameraIcon, SpinnerIcon } from "@phosphor-icons/react";
 import { useCallback, useState } from "react";
 

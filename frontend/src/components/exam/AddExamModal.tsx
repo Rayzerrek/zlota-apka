@@ -1,4 +1,7 @@
-import { Button, Input, Label, Select } from "@cloudflare/kumo";
+import { Button } from "@cloudflare/kumo/components/button";
+import { Input } from "@cloudflare/kumo/components/input";
+import { Label } from "@cloudflare/kumo/components/label";
+import { Select } from "@cloudflare/kumo/components/select";
 import { CheckIcon, PlusIcon, XIcon } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";

@@ -1,4 +1,5 @@
-import { Button, Empty } from "@cloudflare/kumo";
+import { Button } from "@cloudflare/kumo/components/button";
+import { Empty } from "@cloudflare/kumo/components/empty";
 import {
   ArrowRightIcon,
   CalendarPlusIcon,

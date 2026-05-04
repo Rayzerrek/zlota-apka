@@ -1,4 +1,4 @@
-import { Button } from "@cloudflare/kumo";
+import { Button } from "@cloudflare/kumo/components/button";
 import { CheckIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 

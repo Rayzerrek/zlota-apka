@@ -1,4 +1,4 @@
-import { Button } from "@cloudflare/kumo";
+import { Button } from "@cloudflare/kumo/components/button";
 
 import { cn } from "../../utils/cn";
 import { SUBJECTS, SUBJECT_BG } from "../../utils/subjects";

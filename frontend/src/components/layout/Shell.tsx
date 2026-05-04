@@ -1,6 +1,6 @@
+import { Button } from "@cloudflare/kumo/components/button";
+import { DropdownMenu } from "@cloudflare/kumo/components/dropdown";
 import {
-  Button,
-  DropdownMenu,
   Sidebar,
   SidebarContent,
   SidebarFooter,
@@ -11,7 +11,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
-} from "@cloudflare/kumo";
+} from "@cloudflare/kumo/components/sidebar";
 import {
   CalendarBlankIcon,
   CameraIcon,
