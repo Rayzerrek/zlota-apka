@@ -13,14 +13,6 @@ import { Shell } from "./components/layout/Shell";
 import { useReview } from "./contexts/ReviewContext";
 import { useStudySession } from "./contexts/StudySessionContext";
 import { useTheme } from "./hooks/useTheme";
-import { BrowsePage } from "./pages/BrowsePage";
-import { GeneratedNotePage } from "./pages/GeneratedNotePage";
-import { NoteGeneratorPage } from "./pages/NoteGeneratorPage";
-import { NotePage } from "./pages/NotePage";
-import { ProfilePage } from "./pages/ProfilePage";
-import { ScannerPage } from "./pages/ScannerPage";
-import { SettingsPage } from "./pages/SettingsPage";
-import { TodayPage } from "./pages/TodayPage";
 
 const CalendarPage = lazy(() =>
   import("./pages/CalendarPage").then((m) => ({ default: m.CalendarPage })),
@@ -36,6 +28,34 @@ const LoginPage = lazy(() =>
 );
 const SignUpPage = lazy(() =>
   import("./pages/SignUpPage").then((m) => ({ default: m.SignUpPage })),
+);
+const TodayPage = lazy(() =>
+  import("./pages/TodayPage").then((m) => ({ default: m.TodayPage })),
+);
+const BrowsePage = lazy(() =>
+  import("./pages/BrowsePage").then((m) => ({ default: m.BrowsePage })),
+);
+const ScannerPage = lazy(() =>
+  import("./pages/ScannerPage").then((m) => ({ default: m.ScannerPage })),
+);
+const ProfilePage = lazy(() =>
+  import("./pages/ProfilePage").then((m) => ({ default: m.ProfilePage })),
+);
+const SettingsPage = lazy(() =>
+  import("./pages/SettingsPage").then((m) => ({ default: m.SettingsPage })),
+);
+const NotePage = lazy(() =>
+  import("./pages/NotePage").then((m) => ({ default: m.NotePage })),
+);
+const NoteGeneratorPage = lazy(() =>
+  import("./pages/NoteGeneratorPage").then((m) => ({
+    default: m.NoteGeneratorPage,
+  })),
+);
+const GeneratedNotePage = lazy(() =>
+  import("./pages/GeneratedNotePage").then((m) => ({
+    default: m.GeneratedNotePage,
+  })),
 );
 
 const rootRoute = createRootRoute({
@@ -66,10 +86,12 @@ function TodayPageWrapper() {
   const { setReviewSessionId } = useReview();
   const { startSession } = useStudySession();
   return (
-    <TodayPage
-      onStart={() => setReviewSessionId("__all_today__")}
-      onStartSession={startSession}
-    />
+    <Suspense fallback={<PageSkeleton />}>
+      <TodayPage
+        onStart={() => setReviewSessionId("__all_today__")}
+        onStartSession={startSession}
+      />
+    </Suspense>
   );
 }
 
@@ -83,7 +105,11 @@ function LandingPageWrapper() {
 }
 
 function ProfilePageWrapper() {
-  return <ProfilePage />;
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <ProfilePage />
+    </Suspense>
+  );
 }
 
 function CalendarPageWrapper() {
@@ -198,7 +224,11 @@ const profileRoute = createRoute({
 
 function SettingsPageWrapper() {
   const { theme, setTheme } = useTheme();
-  return <SettingsPage theme={theme} onThemeChange={setTheme} />;
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <SettingsPage theme={theme} onThemeChange={setTheme} />
+    </Suspense>
+  );
 }
 
 const settingsRoute = createRoute({
@@ -207,22 +237,46 @@ const settingsRoute = createRoute({
   component: SettingsPageWrapper,
 });
 
+function NotePageWrapper() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <NotePage />
+    </Suspense>
+  );
+}
+
+function NoteGeneratorPageWrapper() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <NoteGeneratorPage />
+    </Suspense>
+  );
+}
+
+function GeneratedNotePageWrapper() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <GeneratedNotePage />
+    </Suspense>
+  );
+}
+
 const notesRoute = createRoute({
   getParentRoute: () => layoutRoute,
   path: "notes/$examId",
-  component: NotePage,
+  component: NotePageWrapper,
 });
 
 const noteNewRoute = createRoute({
   getParentRoute: () => layoutRoute,
   path: "note/new",
-  component: NoteGeneratorPage,
+  component: NoteGeneratorPageWrapper,
 });
 
 const noteIdRoute = createRoute({
   getParentRoute: () => layoutRoute,
   path: "note/$id",
-  component: GeneratedNotePage,
+  component: GeneratedNotePageWrapper,
 });
 
 const catchAllRoute = createRoute({

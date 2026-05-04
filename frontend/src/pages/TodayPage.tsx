@@ -72,7 +72,7 @@ export function TodayPage({ onStart, onStartSession }: Props) {
 
   const todaySessions = dashboard?.today ?? [];
   const nextExam = dashboard?.upcomingExams[0] ?? null;
-  const overdueCount = dashboard?.overdue.length ?? 0;
+  const overdueCount = dashboard?.overdueCount ?? 0;
   const completedSessions = todaySessions.filter(
     (session) => session.status === "completed",
   ).length;

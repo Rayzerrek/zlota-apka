@@ -34,10 +34,11 @@ describe("apiGet", () => {
     const result = await apiGet("/test", TestSchema);
 
     expect(result).toEqual({ ok: true, data: { id: "1", value: 42 } });
-    expect(fetch).toHaveBeenCalledWith("/test", {
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-    });
+
+    const [, options] = vi.mocked(fetch).mock.calls[0];
+    expect(options?.credentials).toBe("include");
+    expect(options?.method).toBeUndefined();
+    expect(new Headers(options?.headers).has("Content-Type")).toBe(false);
   });
 
   it("returns error on non-ok response", async () => {
@@ -76,12 +77,13 @@ describe("apiPost", () => {
 
     await apiPost("/test", TestSchema, { value: 10 });
 
-    expect(fetch).toHaveBeenCalledWith("/test", {
-      method: "POST",
-      body: JSON.stringify({ value: 10 }),
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-    });
+    const [, options] = vi.mocked(fetch).mock.calls[0];
+    expect(options?.method).toBe("POST");
+    expect(options?.body).toBe(JSON.stringify({ value: 10 }));
+    expect(options?.credentials).toBe("include");
+    expect(new Headers(options?.headers).get("Content-Type")).toBe(
+      "application/json",
+    );
   });
 
   it("returns parsed data on success", async () => {
@@ -98,12 +100,13 @@ describe("apiPatch", () => {
 
     await apiPatch("/test", TestSchema, { value: 20 });
 
-    expect(fetch).toHaveBeenCalledWith("/test", {
-      method: "PATCH",
-      body: JSON.stringify({ value: 20 }),
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-    });
+    const [, options] = vi.mocked(fetch).mock.calls[0];
+    expect(options?.method).toBe("PATCH");
+    expect(options?.body).toBe(JSON.stringify({ value: 20 }));
+    expect(options?.credentials).toBe("include");
+    expect(new Headers(options?.headers).get("Content-Type")).toBe(
+      "application/json",
+    );
   });
 
   it("returns parsed data on success", async () => {
@@ -120,11 +123,10 @@ describe("apiDelete", () => {
 
     await apiDelete("/test", TestSchema);
 
-    expect(fetch).toHaveBeenCalledWith("/test", {
-      method: "DELETE",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-    });
+    const [, options] = vi.mocked(fetch).mock.calls[0];
+    expect(options?.method).toBe("DELETE");
+    expect(options?.credentials).toBe("include");
+    expect(new Headers(options?.headers).has("Content-Type")).toBe(false);
   });
 
   it("returns parsed data on success", async () => {

@@ -188,7 +188,7 @@ describe("ApiDashboardExamSchema", () => {
 describe("ApiDashboardSchema", () => {
   const valid = {
     today: [],
-    overdue: [{ id: "1" }],
+    overdueCount: 1,
     upcomingExams: [],
     week: { total: 10, completed: 5, progressPercent: 50 },
   };

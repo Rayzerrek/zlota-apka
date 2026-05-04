@@ -63,7 +63,7 @@ export const ApiDashboardExamSchema = z.object({
 
 export const ApiDashboardSchema = z.object({
   today: z.array(ApiDashboardSessionSchema),
-  overdue: z.array(z.object({ id: z.string() })),
+  overdueCount: z.number(),
   upcomingExams: z.array(ApiDashboardExamSchema),
   week: z.object({
     total: z.number(),

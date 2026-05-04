@@ -1,5 +1,5 @@
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
-import { and, eq, gte, lt, lte } from "drizzle-orm";
+import { and, eq, gte, lt, lte, sql } from "drizzle-orm";
 
 import { exams, studySessions, subjects, topics } from "../db/schema";
 import { createDb } from "../lib/db";
@@ -45,7 +45,7 @@ dashboardRouter.openapi(dashboardRoute, async (c) => {
       subjectName: subjects.name,
     };
 
-    const [todaySessions, overdueSessions, upcomingExams, weekSessions] =
+    const [todaySessions, overdueStats, upcomingExams, weekSessions] =
       await Promise.all([
         db
           .select(sessionSelect)
@@ -60,7 +60,7 @@ dashboardRouter.openapi(dashboardRoute, async (c) => {
           ),
 
         db
-          .select({ id: studySessions.id })
+          .select({ count: sql<number>`count(*)` })
           .from(studySessions)
           .where(
             and(
@@ -105,7 +105,7 @@ dashboardRouter.openapi(dashboardRoute, async (c) => {
     return c.json(
       {
         today: todaySessions,
-        overdue: overdueSessions,
+        overdueCount: Number(overdueStats[0]?.count ?? 0),
         upcomingExams,
         week: {
           total: weekSessions.length,

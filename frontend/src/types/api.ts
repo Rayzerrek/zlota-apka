@@ -61,7 +61,7 @@ export type ApiDashboardExam = {
 
 export type ApiDashboard = {
   today: ApiDashboardSession[];
-  overdue: { id: string }[];
+  overdueCount: number;
   upcomingExams: ApiDashboardExam[];
   week: { total: number; completed: number; progressPercent: number };
 };

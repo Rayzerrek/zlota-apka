@@ -16,6 +16,25 @@ export type {
 
 const BASE = import.meta.env.DEV ? "" : (import.meta.env.VITE_API_URL ?? "");
 
+function buildHeaders(init?: RequestInit): Headers {
+  const headers = new Headers(init?.headers);
+  const body = init?.body;
+  const method = (init?.method ?? "GET").toUpperCase();
+
+  const shouldSetContentType =
+    body != null &&
+    method !== "GET" &&
+    method !== "HEAD" &&
+    !(body instanceof FormData) &&
+    !headers.has("Content-Type");
+
+  if (shouldSetContentType) {
+    headers.set("Content-Type", "application/json");
+  }
+
+  return headers;
+}
+
 async function request<TSchema extends z.ZodType>(
   path: string,
   schema: TSchema,
@@ -24,8 +43,8 @@ async function request<TSchema extends z.ZodType>(
   try {
     const res = await fetch(`${BASE}${path}`, {
       credentials: "include",
-      headers: { "Content-Type": "application/json", ...init?.headers },
       ...init,
+      headers: buildHeaders(init),
     });
     if (!res.ok) {
       const body = (await res.json().catch(() => ({}))) as { error?: string };
@@ -44,6 +63,13 @@ async function request<TSchema extends z.ZodType>(
         ok: false,
         status: 0,
         message: `Błąd walidacji odpowiedzi: ${err.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`).join(", ")}`,
+      };
+    }
+    if (err instanceof SyntaxError) {
+      return {
+        ok: false,
+        status: 0,
+        message: "Nieprawidłowy format odpowiedzi serwera",
       };
     }
     return { ok: false, status: 0, message: "Błąd połączenia z serwerem" };
