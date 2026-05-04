@@ -76,6 +76,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   }, [notifications]);
 
   const addNotification = useCallback((input: NotificationAddInput) => {
+    if (localStorage.getItem("settings.notifications") === "false") return;
     const notification: AppNotification = {
       ...input,
       id: crypto.randomUUID(),
