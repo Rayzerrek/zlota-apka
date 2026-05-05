@@ -16,7 +16,13 @@ import { MonthGrid } from "../components/calendar/MonthGrid";
 import { UpcomingExams } from "../components/calendar/UpcomingExams";
 import { WeekGrid } from "../components/calendar/WeekGrid";
 import { PageHead } from "../components/layout/PageHead";
-import { EXAMS, SESSIONS, TODAY } from "../data/mock";
+import { useAllExams } from "../hooks/api/useExams";
+import { useAllSessions } from "../hooks/api/useSessions";
+import { adaptApiSessionToStudySession } from "../lib/adapters";
+
+function todayISO(): string {
+  return new Date().toISOString().slice(0, 10);
+}
 
 type ViewMode = "week" | "month";
 
@@ -42,21 +48,30 @@ function monthLabel(iso: string): string {
 }
 
 export function CalendarPage() {
+  const today = todayISO();
   const [viewMode, setViewMode] = useState<ViewMode>("week");
-  const [weekAnchor, setWeekAnchor] = useState(TODAY);
-  const [selected, setSelected] = useState(TODAY);
+  const [weekAnchor, setWeekAnchor] = useState(today);
+  const [selected, setSelected] = useState(today);
+
+  const { data: exams, isLoading: examsLoading } = useAllExams();
+  const { data: apiSessions, isLoading: sessionsLoading } = useAllSessions();
+
+  const sessions = useMemo(
+    () => (apiSessions ?? []).map(adaptApiSessionToStudySession),
+    [apiSessions],
+  );
 
   const days = useMemo(() => weekDaysFrom(weekAnchor), [weekAnchor]);
   const selectedSessions = useMemo(
-    () => SESSIONS.filter((s) => s.dateISO === selected),
-    [selected],
+    () => sessions.filter((s) => s.dateISO === selected),
+    [sessions, selected],
   );
   const upcomingExams = useMemo(
     () =>
-      [...EXAMS]
-        .filter((e) => e.dateISO >= TODAY)
+      [...exams]
+        .filter((e) => e.dateISO >= today)
         .sort((a, b) => a.dateISO.localeCompare(b.dateISO)),
-    [],
+    [exams, today],
   );
 
   const handlePrev = () => {
@@ -76,13 +91,22 @@ export function CalendarPage() {
   };
 
   const handleToday = () => {
-    setWeekAnchor(TODAY);
-    setSelected(TODAY);
+    setWeekAnchor(today);
+    setSelected(today);
   };
 
   const handleToggleView = () => {
     setViewMode((prev) => (prev === "week" ? "month" : "week"));
   };
+
+  if (examsLoading || sessionsLoading) {
+    return (
+      <>
+        <PageHead eyebrow="plan" title={<em>Ładowanie...</em>} />
+        <div className="h-96 animate-pulse rounded-sm border border-rule bg-paper-2" />
+      </>
+    );
+  }
 
   return (
     <>
@@ -106,14 +130,21 @@ export function CalendarPage() {
       />
 
       {viewMode === "week" ? (
-        <WeekGrid days={days} selected={selected} onSelect={setSelected} />
+        <WeekGrid
+          days={days}
+          selected={selected}
+          onSelect={setSelected}
+          today={today}
+          exams={exams}
+          sessions={sessions}
+        />
       ) : (
         <MonthGrid
           anchor={weekAnchor}
           selected={selected}
-          today={TODAY}
-          exams={EXAMS}
-          sessions={SESSIONS}
+          today={today}
+          exams={exams}
+          sessions={sessions}
           onSelect={setSelected}
         />
       )}

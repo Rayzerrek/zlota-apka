@@ -1,7 +1,7 @@
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import { and, eq, lte } from "drizzle-orm";
 
-import { cards, reviewHistory, topics } from "../db/schema";
+import { cards, reviewHistory, subjects, topics } from "../db/schema";
 import { createDb } from "../lib/db";
 import { type Rating, scheduleReview } from "../lib/fsrs";
 import { requireAuth } from "../middleware/auth";
@@ -13,6 +13,13 @@ import {
 } from "../types/schemas";
 
 import type { HonoEnv } from "../lib/factory";
+
+const allCardsRoute = createRoute({
+  method: "get",
+  path: "/cards",
+  tags: ["Cards"],
+  responses: { 200: { description: "All user cards with topic and subject" } },
+});
 
 const dueCardsRoute = createRoute({
   method: "get",
@@ -71,9 +78,51 @@ const reviewCardRoute = createRoute({
   },
 });
 
+const reviewHistoryRoute = createRoute({
+  method: "get",
+  path: "/review-history",
+  tags: ["Cards"],
+  responses: { 200: { description: "User review history" } },
+});
+
 export const cardsRouter = new OpenAPIHono<HonoEnv>();
 
 cardsRouter.use(requireAuth);
+
+cardsRouter.openapi(allCardsRoute, async (c) => {
+  try {
+    const db = createDb(c.env);
+    const rows = await db
+      .select({
+        id: cards.id,
+        topicId: cards.topicId,
+        front: cards.front,
+        back: cards.back,
+        source: cards.source,
+        stability: cards.stability,
+        difficulty: cards.difficulty,
+        elapsedDays: cards.elapsedDays,
+        scheduledDays: cards.scheduledDays,
+        reps: cards.reps,
+        lapses: cards.lapses,
+        state: cards.state,
+        lastReview: cards.lastReview,
+        due: cards.due,
+        createdAt: cards.createdAt,
+        updatedAt: cards.updatedAt,
+        topicName: topics.name,
+        subjectKey: subjects.key,
+      })
+      .from(cards)
+      .leftJoin(topics, eq(cards.topicId, topics.id))
+      .leftJoin(subjects, eq(topics.subjectId, subjects.id))
+      .where(eq(cards.userId, c.get("userId")));
+    return c.json(rows, 200);
+  } catch (err) {
+    console.error("GET /cards failed", err);
+    throw err;
+  }
+});
 
 cardsRouter.openapi(dueCardsRoute, async (c) => {
   try {
@@ -207,6 +256,32 @@ cardsRouter.openapi(reviewCardRoute, async (c) => {
     return c.json(updated, 200);
   } catch (err) {
     console.error("POST /cards/:id/review failed", err);
+    throw err;
+  }
+});
+
+cardsRouter.openapi(reviewHistoryRoute, async (c) => {
+  try {
+    const db = createDb(c.env);
+    const rows = await db
+      .select({
+        id: reviewHistory.id,
+        cardId: reviewHistory.cardId,
+        sessionId: reviewHistory.sessionId,
+        rating: reviewHistory.rating,
+        stateBefore: reviewHistory.stateBefore,
+        stabilityBefore: reviewHistory.stabilityBefore,
+        difficultyBefore: reviewHistory.difficultyBefore,
+        scheduledDays: reviewHistory.scheduledDays,
+        elapsedDays: reviewHistory.elapsedDays,
+        reviewedAt: reviewHistory.reviewedAt,
+      })
+      .from(reviewHistory)
+      .where(eq(reviewHistory.userId, c.get("userId")))
+      .orderBy(reviewHistory.reviewedAt);
+    return c.json(rows, 200);
+  } catch (err) {
+    console.error("GET /review-history failed", err);
     throw err;
   }
 });

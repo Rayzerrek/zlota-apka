@@ -1,24 +1,35 @@
-import { EXAMS, SESSIONS, TODAY } from "../../data/mock";
 import { cn } from "../../utils/cn";
 import { dayNum, dayShort } from "../../utils/date";
 import { SUBJECT_BG } from "../../utils/subjects";
+
+import type { Exam, StudySession } from "../../types";
 
 type Props = {
   days: string[];
   selected: string;
   onSelect: (iso: string) => void;
+  today: string;
+  exams: Exam[];
+  sessions: StudySession[];
 };
 
-export function WeekGrid({ days, selected, onSelect }: Props) {
+export function WeekGrid({
+  days,
+  selected,
+  onSelect,
+  today,
+  exams,
+  sessions,
+}: Props) {
   return (
     <div className="grid grid-cols-7 gap-2 mb-10">
       {days.map((iso) => {
-        const sessionsOfDay = SESSIONS.filter((s) => s.dateISO === iso);
-        const examOnDay = EXAMS.find((e) => e.dateISO === iso);
+        const sessionsOfDay = sessions.filter((s) => s.dateISO === iso);
+        const examOnDay = exams.find((e) => e.dateISO === iso);
         const uniqSubjects = Array.from(
           new Set(sessionsOfDay.map((s) => s.subject)),
         );
-        const isToday = iso === TODAY;
+        const isToday = iso === today;
         const isSelected = iso === selected;
         return (
           <button

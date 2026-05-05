@@ -23,6 +23,27 @@ export const ApiSessionSchema = z.object({
   status: z.string(),
 });
 
+export const ApiExtendedSessionSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  examId: z.string().nullable(),
+  topicId: z.string().nullable(),
+  schedulerRunId: z.string().nullable(),
+  scheduledDate: z.string(),
+  plannedMinutes: z.number(),
+  actualMinutes: z.number().nullable(),
+  sessionType: z.string(),
+  status: z.string(),
+  notes: z.string().nullable(),
+  evaluationScore: z.number().nullable(),
+  completedScope: z.string().nullable(),
+  difficultyNotes: z.string().nullable(),
+  completedAt: z.string().nullable(),
+  createdAt: z.string(),
+  topicName: z.string().nullable(),
+  subjectKey: z.string().nullable(),
+});
+
 export const ApiExamSchema = z.object({
   id: z.string(),
   subjectId: z.string(),
@@ -30,6 +51,10 @@ export const ApiExamSchema = z.object({
   examDate: z.string(),
   difficulty: z.number(),
   materialSize: z.enum(["small", "medium", "large"]),
+});
+
+export const ApiExtendedExamSchema = ApiExamSchema.extend({
+  subjectKey: z.string().nullable(),
 });
 
 export const ExamCreateResponseSchema = z.object({
@@ -89,6 +114,11 @@ export const ApiCardSchema = z.object({
   due: z.string(),
   createdAt: z.string(),
   updatedAt: z.string(),
+});
+
+export const ApiExtendedCardSchema = ApiCardSchema.extend({
+  topicName: z.string().nullable(),
+  subjectKey: z.string().nullable(),
 });
 
 export const ApiNotificationSchema = z.object({

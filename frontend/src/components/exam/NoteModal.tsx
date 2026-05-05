@@ -3,7 +3,8 @@ import { Dialog } from "@cloudflare/kumo/components/dialog";
 import { CheckIcon, CopySimpleIcon, XIcon } from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
 
-import { CARDS } from "../../data/mock";
+import { useAllCards } from "../../hooks/api/useCards";
+import { adaptApiCardToCard } from "../../lib/adapters";
 import { cn } from "../../utils/cn";
 import { longDate } from "../../utils/date";
 import { generateExamNote, noteToMarkdown } from "../../utils/examNote";
@@ -16,7 +17,12 @@ type Props = {
 };
 
 export function NoteModal({ exam, onClose }: Props) {
-  const note = useMemo(() => generateExamNote(exam, CARDS), [exam]);
+  const { data: apiCards } = useAllCards();
+  const cards = useMemo(
+    () => (apiCards ?? []).map(adaptApiCardToCard),
+    [apiCards],
+  );
+  const note = useMemo(() => generateExamNote(exam, cards), [exam, cards]);
   const [copied, setCopied] = useState(false);
 
   function handleCopy() {

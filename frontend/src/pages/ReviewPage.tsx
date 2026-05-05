@@ -5,9 +5,15 @@ import { ReviewDoneScreen } from "../components/review/ReviewDoneScreen";
 import { ReviewHeader } from "../components/review/ReviewHeader";
 import { ReviewRatings } from "../components/review/ReviewRatings";
 import { useReview } from "../contexts/ReviewContext";
-import { CARDS, SESSIONS, TODAY } from "../data/mock";
+import { useCardsByTopic, useCardsDue } from "../hooks/api/useCards";
+import { useSession } from "../hooks/api/useSessions";
+import { adaptApiCardToCard } from "../lib/adapters";
 
 import type { Rating } from "../types";
+
+function todayISO(): string {
+  return new Date().toISOString().slice(0, 10);
+}
 
 const reviewShellCls =
   "fixed inset-0 z-50 flex flex-col bg-paper/95 backdrop-blur-[18px]";
@@ -15,17 +21,23 @@ const reviewShellCls =
 export function ReviewPage() {
   const { reviewSessionId, setReviewSessionId } = useReview();
 
+  const isAllToday = reviewSessionId === "__all_today__";
+  const sessionId = isAllToday ? "" : (reviewSessionId ?? "");
+
+  const { data: dueCards } = useCardsDue();
+  const { data: session } = useSession(sessionId);
+  const { data: topicCards } = useCardsByTopic(session?.topicId ?? "");
+
   const cards = useMemo(() => {
     if (!reviewSessionId) return [];
-    if (reviewSessionId === "__all_today__") {
-      return CARDS.filter((c) => c.dueISO === TODAY);
+    if (isAllToday) {
+      return (dueCards ?? [])
+        .filter((c) => c.due.slice(0, 10) <= todayISO())
+        .map(adaptApiCardToCard);
     }
-    const session = SESSIONS.find((s) => s.id === reviewSessionId);
-    if (!session) return [];
-    return session.cardIds
-      .map((id) => CARDS.find((c) => c.id === id))
-      .filter((c): c is (typeof CARDS)[number] => Boolean(c));
-  }, [reviewSessionId]);
+    if (!session?.topicId) return [];
+    return (topicCards ?? []).map(adaptApiCardToCard);
+  }, [reviewSessionId, isAllToday, dueCards, session?.topicId, topicCards]);
 
   const [idx, setIdx] = useState(0);
   const [flipped, setFlipped] = useState(false);
@@ -55,7 +67,17 @@ export function ReviewPage() {
     };
   }, []);
 
-  if (!current) return null;
+  if (!current) {
+    return (
+      <div className={reviewShellCls}>
+        <div className="flex-1 grid place-items-center">
+          <p className="text-ink-faint display italic text-[25px]">
+            Brak kart do powtórki.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (done) {
     return (

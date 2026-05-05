@@ -4,7 +4,15 @@ import Papa from "papaparse";
 import { useCallback } from "react";
 
 import { useNotifications } from "../../contexts/NotificationContext";
-import { CARDS, EXAMS, HISTORY, SESSIONS } from "../../data/mock";
+import { useAllCards } from "../../hooks/api/useCards";
+import { useReviewHistory } from "../../hooks/api/useCards";
+import { useAllExams } from "../../hooks/api/useExams";
+import { useAllSessions } from "../../hooks/api/useSessions";
+import {
+  adaptApiCardToCard,
+  adaptApiReviewHistoryToEntry,
+  adaptApiSessionToStudySession,
+} from "../../lib/adapters";
 
 function download(filename: string, content: string, mime: string): void {
   const blob = new Blob([content], { type: `${mime};charset=utf-8` });
@@ -24,14 +32,30 @@ function todayStamp(): string {
 
 export function ProfileDataExport() {
   const { addNotification } = useNotifications();
+  const { data: apiCards } = useAllCards();
+  const { data: apiExams } = useAllExams();
+  const { data: apiSessions } = useAllSessions();
+  const { data: apiHistory } = useReviewHistory();
+
+  const cards = (apiCards ?? []).map(adaptApiCardToCard);
+  const exams = apiExams ?? [];
+  const sessions = (apiSessions ?? []).map(adaptApiSessionToStudySession);
+  const history = (apiHistory ?? []).map(adaptApiReviewHistoryToEntry);
+
+  const isLoading =
+    apiCards === undefined ||
+    apiExams === undefined ||
+    apiSessions === undefined ||
+    apiHistory === undefined;
 
   const handleJSON = useCallback(() => {
+    if (isLoading) return;
     const payload = {
       exportedAtISO: new Date().toISOString(),
-      cards: CARDS,
-      sessions: SESSIONS,
-      exams: EXAMS,
-      history: HISTORY,
+      cards,
+      sessions,
+      exams,
+      history,
     };
     download(
       `powtorki-${todayStamp()}.json`,
@@ -43,12 +67,13 @@ export function ProfileDataExport() {
       title: "Wyeksportowano dane",
       description: `powtorki-${todayStamp()}.json`,
     });
-  }, [addNotification]);
+  }, [addNotification, cards, exams, history, isLoading, sessions]);
 
   const handleCSV = useCallback(() => {
+    if (isLoading) return;
     download(
       `powtorki-history-${todayStamp()}.csv`,
-      Papa.unparse(HISTORY),
+      Papa.unparse(history),
       "text/csv",
     );
     addNotification({
@@ -56,7 +81,7 @@ export function ProfileDataExport() {
       title: "Wyeksportowano historię",
       description: `powtorki-history-${todayStamp()}.csv`,
     });
-  }, [addNotification]);
+  }, [addNotification, history, isLoading]);
 
   return (
     <section className="enter enter-d3 flex flex-col gap-3 pt-2">
@@ -74,6 +99,7 @@ export function ProfileDataExport() {
           variant="secondary"
           icon={DownloadSimpleIcon}
           onClick={handleJSON}
+          disabled={isLoading}
         >
           Eksport JSON
         </Button>
@@ -81,6 +107,7 @@ export function ProfileDataExport() {
           variant="secondary"
           icon={DownloadSimpleIcon}
           onClick={handleCSV}
+          disabled={isLoading}
         >
           Eksport CSV (historia)
         </Button>
