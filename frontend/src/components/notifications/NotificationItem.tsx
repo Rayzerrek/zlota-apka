@@ -16,7 +16,7 @@ export function NotificationItem({
     if (notification.actionUrl) {
       onNavigate(notification.actionUrl);
     } else {
-      onMarkRead(notification.id);
+      void onMarkRead(notification.id);
     }
   };
 

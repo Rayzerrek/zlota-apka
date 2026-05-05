@@ -6,6 +6,7 @@ import {
   ApiDashboardSchema,
   ApiDashboardSessionSchema,
   ApiExamSchema,
+  ApiNotificationSchema,
   ApiReviewHistorySchema,
   ApiSessionSchema,
   ApiSubjectSchema,
@@ -235,6 +236,29 @@ describe("ApiCardSchema", () => {
     expect(() =>
       ApiCardSchema.parse({ ...valid, source: "unknown" }),
     ).toThrow();
+  });
+});
+
+describe("ApiNotificationSchema", () => {
+  const valid = {
+    id: "1",
+    userId: "u1",
+    type: "exam_created",
+    category: "exam",
+    priority: "medium",
+    title: "Nowy sprawdzian",
+    description: null,
+    actionUrl: "/calendar",
+    payload: null,
+    scheduledFor: null,
+    sentAt: "2024-01-01T10:00:00.000Z",
+    readAt: null,
+    dismissedAt: null,
+    createdAt: "2024-01-01T10:00:00.000Z",
+  };
+
+  it("parses valid notification", () => {
+    expect(ApiNotificationSchema.parse(valid)).toEqual(valid);
   });
 });
 

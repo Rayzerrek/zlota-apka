@@ -1,65 +1,29 @@
+/* eslint-disable react-refresh/only-export-components */
+
 import {
   type ReactNode,
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
-  useState,
 } from "react";
 
-export type NotificationType =
-  | "note_generated"
-  | "exam_created"
-  | "session_completed"
-  | "scan_completed"
-  | "exam_deleted"
-  | "data_exported";
+import { useNotificationInbox } from "../hooks/api/useNotifications";
 
-export interface AppNotification {
-  id: string;
-  type: NotificationType;
-  title: string;
-  description?: string;
-  timestamp: number;
-  read: boolean;
-  actionUrl?: string;
-}
-
-type NotificationAddInput = Omit<AppNotification, "id" | "timestamp" | "read">;
+import type {
+  AppNotification,
+  NotificationCreateInput,
+} from "../types/notifications";
 
 interface NotificationContextValue {
   notifications: AppNotification[];
   unreadCount: number;
-  addNotification: (input: NotificationAddInput) => void;
-  markAsRead: (id: string) => void;
-  markAllRead: () => void;
-}
-
-const STORAGE_KEY = "notifications";
-const MAX_STORED = 50;
-
-function loadStored(): AppNotification[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed: unknown = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return [];
-    return parsed as AppNotification[];
-  } catch {
-    return [];
-  }
-}
-
-function persist(notifications: AppNotification[]): void {
-  try {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(notifications.slice(0, MAX_STORED)),
-    );
-  } catch {
-    /* ignore quota errors */
-  }
+  isLoading: boolean;
+  isFetched: boolean;
+  addNotification: (input: NotificationCreateInput) => Promise<void>;
+  markAsRead: (id: string) => Promise<void>;
+  markAllRead: () => Promise<void>;
+  clearAll: () => Promise<void>;
 }
 
 const NotificationContext = createContext<NotificationContextValue | null>(
@@ -67,49 +31,57 @@ const NotificationContext = createContext<NotificationContextValue | null>(
 );
 
 export function NotificationProvider({ children }: { children: ReactNode }) {
-  const [notifications, setNotifications] = useState<AppNotification[]>(() =>
-    loadStored(),
+  const inbox = useNotificationInbox();
+  const {
+    addNotification: postNotification,
+    clearAll,
+    isFetched,
+    isLoading,
+    markAllRead,
+    markAsRead,
+    notifications,
+    unreadCount,
+  } = inbox;
+  const addNotification = useCallback(
+    async (input: NotificationCreateInput) => {
+      if (localStorage.getItem("settings.notifications") === "false") return;
+      await postNotification(input);
+    },
+    [postNotification],
   );
-
-  useEffect(() => {
-    persist(notifications);
-  }, [notifications]);
-
-  const addNotification = useCallback((input: NotificationAddInput) => {
-    if (localStorage.getItem("settings.notifications") === "false") return;
-    const notification: AppNotification = {
-      ...input,
-      id: crypto.randomUUID(),
-      timestamp: Date.now(),
-      read: false,
-    };
-    setNotifications((prev) => [notification, ...prev]);
-  }, []);
-
-  const markAsRead = useCallback((id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
-    );
-  }, []);
-
-  const markAllRead = useCallback(() => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-  }, []);
-
-  const unreadCount = useMemo(
-    () => notifications.filter((n) => !n.read).length,
-    [notifications],
+  const markAsReadAction = useCallback(
+    async (id: string) => {
+      await markAsRead(id);
+    },
+    [markAsRead],
   );
-
-  const value: NotificationContextValue = useMemo(
+  const markAllReadAction = useCallback(async () => {
+    await markAllRead();
+  }, [markAllRead]);
+  const clearAllAction = useCallback(async () => {
+    await clearAll();
+  }, [clearAll]);
+  const value = useMemo<NotificationContextValue>(
     () => ({
       notifications,
       unreadCount,
+      isLoading,
+      isFetched,
       addNotification,
-      markAsRead,
-      markAllRead,
+      markAsRead: markAsReadAction,
+      markAllRead: markAllReadAction,
+      clearAll: clearAllAction,
     }),
-    [notifications, unreadCount, addNotification, markAsRead, markAllRead],
+    [
+      notifications,
+      unreadCount,
+      isLoading,
+      isFetched,
+      addNotification,
+      markAsReadAction,
+      markAllReadAction,
+      clearAllAction,
+    ],
   );
 
   return (
@@ -118,6 +90,8 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     </NotificationContext.Provider>
   );
 }
+
+export type { AppNotification, NotificationType } from "../types/notifications";
 
 export function useNotifications(): NotificationContextValue {
   const ctx = useContext(NotificationContext);

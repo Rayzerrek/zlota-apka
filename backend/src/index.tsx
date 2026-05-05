@@ -7,6 +7,7 @@ import { cardsRouter } from "./routes/cards";
 import { dashboardRouter } from "./routes/dashboard";
 import { examsRouter } from "./routes/exams";
 import { notesRouter } from "./routes/notes";
+import { notificationsRouter } from "./routes/notifications";
 import { onboardingRouter } from "./routes/onboarding";
 import scanRouter from "./routes/scan";
 import { sessionsRouter } from "./routes/sessions";
@@ -43,6 +44,7 @@ app.route("/api/onboarding", onboardingRouter);
 app.route("/api/users", usersRouter);
 app.route("/api/subjects", subjectsRouter);
 app.route("/api/exams", examsRouter);
+app.route("/api/notifications", notificationsRouter);
 app.route("/api/dashboard", dashboardRouter);
 app.route("/api/sessions", sessionsRouter);
 

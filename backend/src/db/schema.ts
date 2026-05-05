@@ -278,6 +278,43 @@ export const reviewHistory = pgTable(
   ],
 );
 
+export const notifications = pgTable(
+  "notifications",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    type: text("type").notNull(),
+    category: text("category", {
+      enum: ["exam", "session", "review", "ai", "system"],
+    })
+      .notNull()
+      .default("system"),
+    priority: text("priority", {
+      enum: ["low", "medium", "high"],
+    })
+      .notNull()
+      .default("medium"),
+    title: text("title").notNull(),
+    description: text("description"),
+    actionUrl: text("action_url"),
+    payload: jsonb("payload"),
+    scheduledFor: timestamp("scheduled_for"),
+    sentAt: timestamp("sent_at"),
+    readAt: timestamp("read_at"),
+    dismissedAt: timestamp("dismissed_at"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => [
+    index("idx_notifications_user").on(t.userId, t.createdAt),
+    index("idx_notifications_user_read").on(t.userId, t.readAt),
+    index("idx_notifications_user_scheduled").on(t.userId, t.scheduledFor),
+  ],
+);
+
 export const schedulerRuns = pgTable("scheduler_runs", {
   id: text("id")
     .primaryKey()

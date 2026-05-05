@@ -1,5 +1,4 @@
 import { useKumoToastManager } from "@cloudflare/kumo/components/toast";
-import { useLocation } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 
 import { useNotifications } from "../../contexts/NotificationContext";
@@ -13,15 +12,27 @@ const variantMap: Record<string, ToastVariant> = {
   scan_completed: "info",
   exam_deleted: "warning",
   data_exported: "success",
+  overdue_reminder: "warning",
+  exam_reminder: "info",
 };
 
 export function NotificationToast() {
   const { add } = useKumoToastManager();
-  const { notifications } = useNotifications();
+  const { notifications, isFetched } = useNotifications();
   const shown = useRef<Set<string>>(new Set());
-  const location = useLocation();
+  const seeded = useRef(false);
 
   useEffect(() => {
+    if (!isFetched) return;
+
+    if (!seeded.current) {
+      for (const n of notifications) {
+        shown.current.add(n.id);
+      }
+      seeded.current = true;
+      return;
+    }
+
     for (const n of notifications) {
       if (shown.current.has(n.id)) continue;
       shown.current.add(n.id);
@@ -33,11 +44,7 @@ export function NotificationToast() {
         timeout: 5000,
       });
     }
-  }, [notifications, add]);
-
-  useEffect(() => {
-    shown.current.clear();
-  }, [location.pathname]);
+  }, [notifications, isFetched, add]);
 
   return null;
 }

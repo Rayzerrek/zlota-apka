@@ -7,8 +7,14 @@ import { NotificationItem } from "./NotificationItem";
 
 export function NotificationBell() {
   const navigate = useNavigate();
-  const { notifications, unreadCount, markAsRead, markAllRead } =
-    useNotifications();
+  const {
+    notifications,
+    unreadCount,
+    isFetched,
+    markAsRead,
+    markAllRead,
+    clearAll,
+  } = useNotifications();
 
   return (
     <Popover>
@@ -50,19 +56,35 @@ export function NotificationBell() {
               </span>
             )}
           </div>
-          {unreadCount > 0 && (
-            <button
-              type="button"
-              onClick={markAllRead}
-              className="text-[12px] text-amber hover:text-[#ffcc4a] transition-colors bg-transparent border-0 cursor-pointer"
-            >
-              Oznacz wszystkie jako przeczytane
-            </button>
+          {notifications.length > 0 && (
+            <div className="flex items-center gap-3">
+              {unreadCount > 0 && (
+                <button
+                  type="button"
+                  onClick={() => void markAllRead()}
+                  className="text-[12px] text-amber hover:text-[#ffcc4a] transition-colors bg-transparent border-0 cursor-pointer"
+                >
+                  Oznacz jako przeczytane
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => void clearAll()}
+                className="text-[12px] text-ink-faint hover:text-ink-muted transition-colors bg-transparent border-0 cursor-pointer"
+              >
+                Wyczyść wszystko
+              </button>
+            </div>
           )}
         </div>
 
         <div className="overflow-y-auto max-h-[340px]">
-          {notifications.length === 0 ? (
+          {!isFetched ? (
+            <div className="flex flex-col items-center justify-center gap-2 py-10 px-4 text-center">
+              <BellIcon size={28} className="text-ink-faint" />
+              <p className="text-[13px] text-ink-muted">Ładowanie...</p>
+            </div>
+          ) : notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-2 py-10 px-4 text-center">
               <BellIcon size={28} className="text-ink-faint" />
               <p className="text-[13px] text-ink-muted">Brak powiadomień</p>
@@ -79,7 +101,7 @@ export function NotificationBell() {
                   notification={n}
                   onMarkRead={markAsRead}
                   onNavigate={(url) => {
-                    markAsRead(n.id);
+                    void markAsRead(n.id);
                     navigate({ to: url });
                   }}
                 />

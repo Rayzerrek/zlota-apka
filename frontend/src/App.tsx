@@ -26,7 +26,11 @@ export default function App() {
         </Suspense>
       )}
       {activeSession && (
-        <StudyTimer sessionId={activeSession.sessionId} onExit={endSession} />
+        <StudyTimer
+          key={activeSession.sessionId}
+          sessionId={activeSession.sessionId}
+          onExit={endSession}
+        />
       )}
     </>
   );
