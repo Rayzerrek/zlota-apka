@@ -2,7 +2,8 @@ import { Button } from "@cloudflare/kumo/components/button";
 import { ArrowLeftIcon } from "@phosphor-icons/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { EXAMS, SESSIONS, TODAY } from "../../data/mock";
+import { useDashboard } from "../../hooks/api/useDashboard";
+import { useCompleteSession } from "../../hooks/api/useSessions";
 import { cn } from "../../utils/cn";
 import { daysBetween } from "../../utils/date";
 import { SUBJECTS, SUBJECT_BG } from "../../utils/subjects";
@@ -35,25 +36,47 @@ function formatPlanned(minutes: number): string {
   return `~${minutes}min`;
 }
 
-function findExamForSubject(subject: SubjectKey): {
+function toSubjectKey(key: string | null): SubjectKey | null {
+  if (key === null) return null;
+  if (key in SUBJECT_BG) return key as SubjectKey;
+  return null;
+}
+
+function findExamForSubject(
+  upcomingExams: Array<{
+    name: string;
+    examDate: string;
+    subjectKey: string | null;
+  }>,
+  today: string,
+  subjectKey: string | null,
+): {
   name: string;
   days: number;
 } | null {
-  const exam = EXAMS.filter((e) => e.dateISO >= TODAY)
-    .sort((a, b) => a.dateISO.localeCompare(b.dateISO))
-    .find((e) => e.subject === subject);
+  if (subjectKey === null) return null;
+
+  const exam = upcomingExams.find((item) => item.subjectKey === subjectKey);
   if (!exam) return null;
   return {
     name: exam.name,
-    days: daysBetween(TODAY, exam.dateISO),
+    days: daysBetween(today, exam.examDate),
   };
 }
 
 const SCORE_LABELS = ["słabo", "", "", "", "świetnie"] as const;
 
 export function StudyTimer({ sessionId, onExit }: Props) {
-  const session = SESSIONS.find((s) => s.id === sessionId);
-  const startedAtRef = useRef(Date.now());
+  const today = new Date().toISOString().slice(0, 10);
+  const { data: dashboard, isLoading } = useDashboard();
+  const {
+    mutate: completeSession,
+    isPending: isSaving,
+    error: saveError,
+  } = useCompleteSession();
+  const session =
+    dashboard?.today.find((item) => item.id === sessionId) ?? null;
+  const startedAtRef = useRef(0);
   const [elapsed, setElapsed] = useState(0);
   const [phase, setPhase] = useState<Phase>("timer");
   const [showExitConfirm, setShowExitConfirm] = useState(false);
@@ -63,20 +86,11 @@ export function StudyTimer({ sessionId, onExit }: Props) {
   const [notesExpanded, setNotesExpanded] = useState(false);
   const [notes, setNotes] = useState("");
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    startedAtRef.current = Date.now();
-    setElapsed(0);
-    setPhase("timer");
-    setShowExitConfirm(false);
-    setScore(null);
-    setScope(null);
-    setNotesExpanded(false);
-    setNotes("");
-  }, [sessionId]);
+  const actualMinutes = Math.max(1, Math.round(elapsed / 60));
 
   useEffect(() => {
     if (phase !== "timer") return;
+    startedAtRef.current = Date.now();
     const id = setInterval(() => {
       setElapsed(Math.floor((Date.now() - startedAtRef.current) / 1000));
     }, 250);
@@ -96,9 +110,35 @@ export function StudyTimer({ sessionId, onExit }: Props) {
   }, []);
 
   const handleSave = useCallback(() => {
-    setPhase("saved");
-    saveTimeoutRef.current = setTimeout(() => onExit(), 1500);
-  }, [onExit]);
+    if (!session || isSaving) return;
+
+    completeSession(
+      {
+        id: session.id,
+        body: {
+          actualMinutes,
+          evaluationScore: score ?? undefined,
+          completedScope: scope ?? undefined,
+          difficultyNotes: notes.trim() || undefined,
+        },
+      },
+      {
+        onSuccess: () => {
+          setPhase("saved");
+          saveTimeoutRef.current = setTimeout(() => onExit(), 1500);
+        },
+      },
+    );
+  }, [
+    actualMinutes,
+    completeSession,
+    isSaving,
+    notes,
+    onExit,
+    score,
+    scope,
+    session,
+  ]);
 
   const handleExitRequest = useCallback(() => {
     setShowExitConfirm(true);
@@ -112,14 +152,30 @@ export function StudyTimer({ sessionId, onExit }: Props) {
     setShowExitConfirm(false);
   }, []);
 
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 z-50 grid place-items-center bg-kumo-base">
+        <div className="flex flex-col items-center gap-3 text-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-rule border-t-amber" />
+          <p className="mono text-[13px] uppercase text-ink-muted">
+            Ładowanie sesji
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   if (!session) {
     return null;
   }
 
-  const subjectKey = session.subject as SubjectKey;
-  const subject = SUBJECTS[subjectKey];
-  const exam = findExamForSubject(subjectKey);
-  const actualMinutes = Math.max(1, Math.round(elapsed / 60));
+  const subjectKey = toSubjectKey(session.subjectKey);
+  const subject = subjectKey ? SUBJECTS[subjectKey] : null;
+  const exam = findExamForSubject(
+    dashboard?.upcomingExams ?? [],
+    today,
+    session.subjectKey,
+  );
   const canSave = score !== null || scope !== null;
 
   return (
@@ -142,16 +198,16 @@ export function StudyTimer({ sessionId, onExit }: Props) {
               <span
                 className={cn(
                   "w-3 h-3 rounded-full shrink-0",
-                  SUBJECT_BG[subjectKey],
+                  subjectKey ? SUBJECT_BG[subjectKey] : "bg-rule-strong",
                 )}
               />
               <span className="mono text-[14px] uppercase text-ink-muted">
-                {subject.name}
+                {subject?.name ?? session.subjectName ?? "Sesja nauki"}
               </span>
             </div>
 
             <h1 className="display italic text-[clamp(32px,7vw,56px)] font-medium leading-[1.05] text-ink text-center max-w-[18ch]">
-              {session.topic}
+              {session.topicName ?? "Sesja nauki"}
             </h1>
 
             <div className="flex flex-col items-center gap-1">
@@ -159,7 +215,7 @@ export function StudyTimer({ sessionId, onExit }: Props) {
                 {formatTimer(elapsed)}
               </span>
               <span className="mono text-[14px] text-ink-faint">
-                z {formatPlanned(session.estimateMinutes)}
+                z {formatPlanned(session.plannedMinutes)}
               </span>
             </div>
 
@@ -188,7 +244,7 @@ export function StudyTimer({ sessionId, onExit }: Props) {
               {formatTimer(elapsed)}
             </span>
             <span className="display italic text-[18px] text-ink text-center truncate max-w-[60%]">
-              {session.topic}
+              {session.topicName ?? "Sesja nauki"}
             </span>
             <span className="w-14" />
           </div>
@@ -286,8 +342,14 @@ export function StudyTimer({ sessionId, onExit }: Props) {
                   !canSave && "opacity-40 pointer-events-none",
                 )}
               >
-                Zapisz i wróć
+                {isSaving ? "Zapisywanie..." : "Zapisz i wróć"}
               </Button>
+
+              {saveError instanceof Error && (
+                <div className="w-full rounded-sm border border-rating-1/20 bg-rating-1/8 px-4 py-3 text-sm text-rating-1">
+                  {saveError.message}
+                </div>
+              )}
             </div>
           </div>
         </>
@@ -303,7 +365,8 @@ export function StudyTimer({ sessionId, onExit }: Props) {
               Zapisano
             </div>
             <p className="text-ink-muted mono text-[14px]">
-              {formatTimer(elapsed)} · {actualMinutes}min · {session.topic}
+              {formatTimer(elapsed)} · {actualMinutes}min ·{" "}
+              {session.topicName ?? "Sesja nauki"}
             </p>
           </div>
         </div>

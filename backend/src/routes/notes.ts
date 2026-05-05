@@ -3,7 +3,7 @@ import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 
-import { generatedNotes } from "../db/schema";
+import { generatedNotes, notifications } from "../db/schema";
 import {
   NOTE_PROMPT,
   SCAN_MODEL_NAME,
@@ -12,6 +12,7 @@ import {
   generatedNoteResponseSchema,
 } from "../lib/constant";
 import { createDb } from "../lib/db";
+import { requireAuth } from "../middleware/auth";
 
 import type { HonoEnv } from "../lib/factory";
 
@@ -70,6 +71,8 @@ const getNoteRoute = createRoute({
 
 export const notesRouter = new OpenAPIHono<HonoEnv>();
 
+notesRouter.use(requireAuth);
+
 notesRouter.openapi(generateNoteRoute, async (c) => {
   const apiKey = c.env.GEMINI_API_KEY;
   if (!apiKey) {
@@ -100,15 +103,30 @@ notesRouter.openapi(generateNoteRoute, async (c) => {
     const title = subject ? `${subject}: ${topic}` : topic;
 
     const db = createDb(c.env);
+    const userId = c.get("userId");
+
     const [note] = await db
       .insert(generatedNotes)
       .values({
+        userId,
         title,
         subject: subject ?? null,
         prompt: topic,
         content,
       })
       .returning();
+
+    await db.insert(notifications).values({
+      userId,
+      type: "note_generated",
+      category: "ai",
+      priority: "low",
+      title: "Wygenerowano notatkę",
+      description: title,
+      actionUrl: `/note/${note.id}`,
+      sentAt: new Date(),
+      scheduledFor: null,
+    });
 
     return c.json(
       {

@@ -56,6 +56,7 @@ export function useCompleteSession() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.sessions() });
       qc.invalidateQueries({ queryKey: queryKeys.dashboard });
+      qc.invalidateQueries({ queryKey: queryKeys.notifications });
     },
   });
 }

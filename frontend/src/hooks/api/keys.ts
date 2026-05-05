@@ -1,5 +1,6 @@
 export const queryKeys = {
   dashboard: ["dashboard"] as const,
+  notifications: ["notifications"] as const,
   exams: ["exams"] as const,
   exam: (id: string) => ["exams", id] as const,
   sessions: (params?: { date?: string; from?: string; to?: string }) =>

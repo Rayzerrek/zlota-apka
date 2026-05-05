@@ -3,8 +3,10 @@ import { Empty } from "@cloudflare/kumo/components/empty";
 import {
   ArrowRightIcon,
   CalendarPlusIcon,
+  ClockCountdownIcon,
   CoffeeIcon,
   NotePencilIcon,
+  WarningCircleIcon,
 } from "@phosphor-icons/react";
 import { useNavigate } from "@tanstack/react-router";
 import { format } from "date-fns";
@@ -109,6 +111,65 @@ export function TodayPage({ onStart, onStartSession }: Props) {
     remainingSessions,
   });
 
+  const reminders: Array<{
+    id: string;
+    title: string;
+    description: string;
+    actionLabel: string;
+    onAction: () => void;
+    icon: typeof WarningCircleIcon;
+    tone: "warning" | "info";
+  }> = [];
+
+  if (overdueCount > 0) {
+    reminders.push({
+      id: "overdue",
+      title:
+        overdueCount === 1
+          ? "Masz 1 zaległą sesję"
+          : `Masz ${overdueCount} zaległe sesje`,
+      description:
+        "Zacznij od najstarszej pozycji. To najszybciej porządkuje plan i zmniejsza presję przed kolejnymi dniami.",
+      actionLabel: "Otwórz plan dnia",
+      onAction: () => {
+        if (nextSession) {
+          onStartSession(nextSession.id);
+          return;
+        }
+        navigate({ to: "/calendar" });
+      },
+      icon: WarningCircleIcon,
+      tone: "warning",
+    });
+  }
+
+  if (nextExam && examDays !== null && examDays <= 3) {
+    reminders.push({
+      id: "exam",
+      title:
+        examDays === 0
+          ? `${nextExam.name} jest dziś`
+          : examDays === 1
+            ? `${nextExam.name} jest jutro`
+            : `${nextExam.name} za ${examDays} dni`,
+      description:
+        remainingSessions > 0
+          ? `Zostało jeszcze ${remainingSessions} ${remainingSessions === 1 ? "sesja" : "sesje"} na dziś. Dobrze domknąć przynajmniej pierwszą od razu.`
+          : "Dzisiejszy plan jest już gotowy. Możesz wejść w szybką powtórkę albo sprawdzić cały harmonogram.",
+      actionLabel:
+        remainingSessions > 0 ? "Zacznij pierwszą sesję" : "Zobacz plan",
+      onAction: () => {
+        if (remainingSessions > 0 && nextSession) {
+          onStartSession(nextSession.id);
+          return;
+        }
+        navigate({ to: "/calendar" });
+      },
+      icon: ClockCountdownIcon,
+      tone: "info",
+    });
+  }
+
   return (
     <>
       <PageHead
@@ -187,6 +248,61 @@ export function TodayPage({ onStart, onStartSession }: Props) {
                   </Button>
                 </div>
               </div>
+
+              {reminders.length > 0 && (
+                <div className="grid gap-3">
+                  {reminders.map((reminder) => {
+                    const Icon = reminder.icon;
+
+                    return (
+                      <div
+                        key={reminder.id}
+                        className={cn(
+                          "rounded-sm border p-4 sm:p-5",
+                          reminder.tone === "warning"
+                            ? "border-amber/30 bg-[linear-gradient(180deg,rgba(242,184,48,0.12),rgba(242,184,48,0.04))]"
+                            : "border-rule bg-paper",
+                        )}
+                      >
+                        <div className="flex flex-col gap-4 min-[720px]:flex-row min-[720px]:items-start min-[720px]:justify-between">
+                          <div className="flex items-start gap-3">
+                            <div
+                              className={cn(
+                                "grid h-10 w-10 shrink-0 place-items-center rounded-sm border",
+                                reminder.tone === "warning"
+                                  ? "border-amber/25 bg-amber/12 text-amber"
+                                  : "border-rule bg-kumo-base text-ink-muted",
+                              )}
+                            >
+                              <Icon size={18} weight="fill" />
+                            </div>
+                            <div>
+                              <div className="mono text-[11px] uppercase tracking-[0.16em] text-ink-faint">
+                                Dziś pilnuj tego
+                              </div>
+                              <h3 className="mt-2 text-[18px] leading-6 text-ink">
+                                {reminder.title}
+                              </h3>
+                              <p className="mt-1 text-sm leading-6 text-ink-muted">
+                                {reminder.description}
+                              </p>
+                            </div>
+                          </div>
+
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={reminder.onAction}
+                            className="shrink-0 rounded-sm"
+                          >
+                            {reminder.actionLabel}
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             <div className="grid gap-3 min-[680px]:grid-cols-2">

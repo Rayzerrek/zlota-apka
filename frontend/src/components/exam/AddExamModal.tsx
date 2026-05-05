@@ -161,10 +161,8 @@ export function AddExamModal({ open, onClose }: Props) {
         </div>
 
         {planResult ? (
-          /* ── Plan preview ── */
           <>
             <div className="px-6 py-6 overflow-y-auto flex-1 flex flex-col gap-4">
-              {/* Summary banner */}
               <div className="flex items-center gap-3 p-3.5 bg-amber-wash border border-amber/20 rounded-[4px]">
                 <div className="w-8 h-8 rounded-sm bg-amber/20 grid place-items-center text-amber shrink-0">
                   <CheckIcon size={16} weight="bold" />
@@ -184,7 +182,6 @@ export function AddExamModal({ open, onClose }: Props) {
                 </div>
               </div>
 
-              {/* Sessions list */}
               {planResult.sessions.length === 0 ? (
                 <p className="text-[14px] text-ink-muted text-center py-8">
                   {planResult.topics.length === 0
@@ -236,13 +233,11 @@ export function AddExamModal({ open, onClose }: Props) {
             </div>
           </>
         ) : (
-          /* ── Form ── */
           <form
             onSubmit={handleSubmit}
             className="flex flex-col flex-1 min-h-0"
           >
             <div className="px-6 py-6 overflow-y-auto flex-1 flex flex-col gap-5">
-              {/* Subject */}
               <div className="flex flex-col gap-1.5">
                 <Label className="text-[13px] text-ink-muted">Przedmiot</Label>
                 {subjectsLoading ? (
@@ -268,7 +263,6 @@ export function AddExamModal({ open, onClose }: Props) {
                 )}
               </div>
 
-              {/* Name */}
               <div className="flex flex-col gap-1.5">
                 <Label className="text-[13px] text-ink-muted">
                   Nazwa sprawdzianu
@@ -283,7 +277,6 @@ export function AddExamModal({ open, onClose }: Props) {
                 />
               </div>
 
-              {/* Date */}
               <div className="flex flex-col gap-1.5">
                 <Label className="text-[13px] text-ink-muted">
                   Data sprawdzianu
@@ -298,7 +291,6 @@ export function AddExamModal({ open, onClose }: Props) {
                 />
               </div>
 
-              {/* Difficulty */}
               <div className="flex flex-col gap-2">
                 <div className="flex items-baseline justify-between">
                   <Label className="text-[13px] text-ink-muted">
@@ -332,7 +324,6 @@ export function AddExamModal({ open, onClose }: Props) {
                 </div>
               </div>
 
-              {/* Material size */}
               <div className="flex flex-col gap-1.5">
                 <Label className="text-[13px] text-ink-muted">
                   Ilość materiału
@@ -359,7 +350,6 @@ export function AddExamModal({ open, onClose }: Props) {
                 </div>
               </div>
 
-              {/* Topics */}
               <div className="flex flex-col gap-1.5">
                 <Label className="text-[13px] text-ink-muted">
                   Tematy <span className="text-ink-faint">(opcjonalnie)</span>
@@ -419,7 +409,6 @@ export function AddExamModal({ open, onClose }: Props) {
               )}
             </div>
 
-            {/* Footer */}
             <div className="px-6 py-4 border-t border-rule flex items-center justify-end gap-3 shrink-0">
               <Button type="button" variant="ghost" onClick={onClose}>
                 Anuluj

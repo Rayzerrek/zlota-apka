@@ -3,6 +3,7 @@ import { Suspense, lazy } from "react";
 
 import "./App.css";
 import { PageSkeleton } from "./components/layout/PageSkeleton";
+import { NotificationToast } from "./components/notifications/NotificationToast";
 import { StudyTimer } from "./components/study/StudyTimer";
 import { useReview } from "./contexts/ReviewContext";
 import { useStudySession } from "./contexts/StudySessionContext";
@@ -17,6 +18,7 @@ export default function App() {
 
   return (
     <>
+      <NotificationToast />
       <Outlet />
       {reviewSessionId && (
         <Suspense fallback={<PageSkeleton />}>
@@ -24,7 +26,11 @@ export default function App() {
         </Suspense>
       )}
       {activeSession && (
-        <StudyTimer sessionId={activeSession.sessionId} onExit={endSession} />
+        <StudyTimer
+          key={activeSession.sessionId}
+          sessionId={activeSession.sessionId}
+          onExit={endSession}
+        />
       )}
     </>
   );

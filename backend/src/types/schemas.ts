@@ -90,6 +90,37 @@ export const cardReviewSchema = z.object({
   sessionId: z.string().optional(),
 });
 
+export const notificationTypeSchema = z.enum([
+  "note_generated",
+  "exam_created",
+  "session_completed",
+  "scan_completed",
+  "exam_deleted",
+  "data_exported",
+  "overdue_reminder",
+  "exam_reminder",
+]);
+
+export const notificationCategorySchema = z.enum([
+  "exam",
+  "session",
+  "review",
+  "ai",
+  "system",
+]);
+
+export const notificationPrioritySchema = z.enum(["low", "medium", "high"]);
+
+export const notificationCreateSchema = z.object({
+  type: notificationTypeSchema,
+  title: z.string().min(1).max(256),
+  description: z.string().max(1000).optional(),
+  actionUrl: z.string().min(1).max(512).optional(),
+  category: notificationCategorySchema.optional(),
+  priority: notificationPrioritySchema.optional(),
+  payload: z.record(z.string(), z.unknown()).optional(),
+});
+
 export const userPatchSchema = z.object({
   name: z.string().min(1).max(128).optional(),
   grade: z.string().min(1).max(32).nullable().optional(),

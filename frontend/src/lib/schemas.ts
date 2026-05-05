@@ -91,6 +91,32 @@ export const ApiCardSchema = z.object({
   updatedAt: z.string(),
 });
 
+export const ApiNotificationSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  type: z.enum([
+    "note_generated",
+    "exam_created",
+    "session_completed",
+    "scan_completed",
+    "exam_deleted",
+    "data_exported",
+    "overdue_reminder",
+    "exam_reminder",
+  ]),
+  category: z.enum(["exam", "session", "review", "ai", "system"]),
+  priority: z.enum(["low", "medium", "high"]),
+  title: z.string(),
+  description: z.string().nullable(),
+  actionUrl: z.string().nullable(),
+  payload: z.unknown().nullable(),
+  scheduledFor: z.string().nullable(),
+  sentAt: z.string().nullable(),
+  readAt: z.string().nullable(),
+  dismissedAt: z.string().nullable(),
+  createdAt: z.string(),
+});
+
 export const ApiReviewHistorySchema = z.object({
   id: z.string(),
   cardId: z.string(),

@@ -3,6 +3,7 @@ import { and, eq } from "drizzle-orm";
 
 import {
   exams,
+  notifications,
   schedulerRuns,
   studySessions,
   subjects,
@@ -189,6 +190,18 @@ examsRouter.openapi(createExamRoute, async (c) => {
               )
               .returning()
           : [];
+
+      await tx.insert(notifications).values({
+        userId,
+        type: "exam_created",
+        category: "exam",
+        priority: "medium",
+        title: "Zaplanowano sesje nauki",
+        description: `${createdSessions.length} ${createdSessions.length === 1 ? "sesja" : "sesje"} · ${body.name}`,
+        actionUrl: "/calendar",
+        sentAt: new Date(),
+        scheduledFor: null,
+      });
 
       return {
         exam,
