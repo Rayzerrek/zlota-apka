@@ -1,7 +1,7 @@
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import { and, eq, gte, lte } from "drizzle-orm";
 
-import { notifications, studySessions, topics } from "../db/schema";
+import { notifications, studySessions, subjects, topics } from "../db/schema";
 import { createDb } from "../lib/db";
 import { requireAuth } from "../middleware/auth";
 import {
@@ -48,6 +48,17 @@ const skipSessionRoute = createRoute({
   },
 });
 
+const getSessionRoute = createRoute({
+  method: "get",
+  path: "/{id}",
+  tags: ["Sessions"],
+  request: { params: idParamsSchema },
+  responses: {
+    200: { description: "Session detail" },
+    404: { description: "Not found" },
+  },
+});
+
 export const sessionsRouter = new OpenAPIHono<HonoEnv>();
 
 sessionsRouter.use(requireAuth);
@@ -68,8 +79,29 @@ sessionsRouter.openapi(listSessionsRoute, async (c) => {
     }
 
     const rows = await db
-      .select()
+      .select({
+        id: studySessions.id,
+        userId: studySessions.userId,
+        examId: studySessions.examId,
+        topicId: studySessions.topicId,
+        schedulerRunId: studySessions.schedulerRunId,
+        scheduledDate: studySessions.scheduledDate,
+        plannedMinutes: studySessions.plannedMinutes,
+        actualMinutes: studySessions.actualMinutes,
+        sessionType: studySessions.sessionType,
+        status: studySessions.status,
+        notes: studySessions.notes,
+        evaluationScore: studySessions.evaluationScore,
+        completedScope: studySessions.completedScope,
+        difficultyNotes: studySessions.difficultyNotes,
+        completedAt: studySessions.completedAt,
+        createdAt: studySessions.createdAt,
+        topicName: topics.name,
+        subjectKey: subjects.key,
+      })
       .from(studySessions)
+      .leftJoin(topics, eq(studySessions.topicId, topics.id))
+      .leftJoin(subjects, eq(topics.subjectId, subjects.id))
       .where(and(...conditions));
 
     return c.json(rows, 200);
@@ -151,6 +183,48 @@ sessionsRouter.openapi(skipSessionRoute, async (c) => {
     return c.json(row, 200);
   } catch (err) {
     console.error("PATCH /sessions/:id/skip failed", err);
+    throw err;
+  }
+});
+
+sessionsRouter.openapi(getSessionRoute, async (c) => {
+  try {
+    const db = createDb(c.env);
+    const userId = c.get("userId");
+    const sessionId = c.req.valid("param").id;
+
+    const [row] = await db
+      .select({
+        id: studySessions.id,
+        userId: studySessions.userId,
+        examId: studySessions.examId,
+        topicId: studySessions.topicId,
+        schedulerRunId: studySessions.schedulerRunId,
+        scheduledDate: studySessions.scheduledDate,
+        plannedMinutes: studySessions.plannedMinutes,
+        actualMinutes: studySessions.actualMinutes,
+        sessionType: studySessions.sessionType,
+        status: studySessions.status,
+        notes: studySessions.notes,
+        evaluationScore: studySessions.evaluationScore,
+        completedScope: studySessions.completedScope,
+        difficultyNotes: studySessions.difficultyNotes,
+        completedAt: studySessions.completedAt,
+        createdAt: studySessions.createdAt,
+        topicName: topics.name,
+        subjectKey: subjects.key,
+      })
+      .from(studySessions)
+      .leftJoin(topics, eq(studySessions.topicId, topics.id))
+      .leftJoin(subjects, eq(topics.subjectId, subjects.id))
+      .where(
+        and(eq(studySessions.id, sessionId), eq(studySessions.userId, userId)),
+      );
+
+    if (!row) return c.json({ error: "Not found" }, 404);
+    return c.json(row, 200);
+  } catch (err) {
+    console.error("GET /sessions/:id failed", err);
     throw err;
   }
 });

@@ -2,13 +2,16 @@ import { Button } from "@cloudflare/kumo/components/button";
 import { SparkleIcon } from "@phosphor-icons/react";
 import { useNavigate } from "@tanstack/react-router";
 
-import { TODAY } from "../../data/mock";
 import { cn } from "../../utils/cn";
 import { daysBetween, longDate } from "../../utils/date";
 import { subjectName } from "../../utils/subjects";
 import { ExamMenu } from "../exam/ExamMenu";
 
 import type { Exam } from "../../types";
+
+function todayISO(): string {
+  return new Date().toISOString().slice(0, 10);
+}
 
 type Props = {
   exams: Exam[];
@@ -30,7 +33,7 @@ export function UpcomingExams({ exams }: Props) {
       </div>
       <div className="flex flex-col">
         {exams.map((e, idx) => {
-          const daysUntil = daysBetween(TODAY, e.dateISO);
+          const daysUntil = daysBetween(todayISO(), e.dateISO);
           const near = daysUntil <= 7;
           return (
             <div

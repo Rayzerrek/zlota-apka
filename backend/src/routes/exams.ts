@@ -88,8 +88,20 @@ examsRouter.openapi(listExamsRoute, async (c) => {
   try {
     const db = createDb(c.env);
     const rows = await db
-      .select()
+      .select({
+        id: exams.id,
+        userId: exams.userId,
+        subjectId: exams.subjectId,
+        name: exams.name,
+        examDate: exams.examDate,
+        difficulty: exams.difficulty,
+        materialSize: exams.materialSize,
+        notes: exams.notes,
+        createdAt: exams.createdAt,
+        subjectKey: subjects.key,
+      })
       .from(exams)
+      .leftJoin(subjects, eq(exams.subjectId, subjects.id))
       .where(eq(exams.userId, c.get("userId")));
     return c.json(rows, 200);
   } catch (err) {

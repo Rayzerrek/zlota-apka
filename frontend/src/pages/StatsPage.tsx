@@ -1,14 +1,12 @@
+import { useMemo } from "react";
+
 import { DonutChart } from "../components/charts/DonutChart";
 import { PageHead } from "../components/layout/PageHead";
-import { CARDS, STUDY_STATS, SUBJECT_RETENTION } from "../data/mock";
+import { useAllCards } from "../hooks/api/useCards";
+import { useStudyStats } from "../hooks/api/useStudyStats";
+import { adaptApiCardToCard } from "../lib/adapters";
 import { cn } from "../utils/cn";
 import { SUBJECTS, SUBJECT_BG, SUBJECT_TEXT } from "../utils/subjects";
-
-const { mature, young } = STUDY_STATS;
-const dueOrNew = CARDS.filter(
-  (c) => c.stage === "new" || c.stage === "due",
-).length;
-const total = CARDS.length;
 
 function formatMinutes(mins: number): string {
   const h = Math.floor(mins / 60);
@@ -18,31 +16,61 @@ function formatMinutes(mins: number): string {
   return `${h}h ${m}m`;
 }
 
-const legendItems = [
-  {
-    count: mature,
-    label: "Dobrze opanowane",
-    sub: "zapamiętasz je długo",
-    bg: "bg-rating-4",
-    text: "text-rating-4",
-  },
-  {
-    count: young,
-    label: "W trakcie nauki",
-    sub: "powtarzaj regularnie",
-    bg: "bg-amber",
-    text: "text-amber",
-  },
-  {
-    count: dueOrNew,
-    label: "Czekają na Ciebie",
-    sub: "zacznij dziś",
-    bg: "bg-ink-faint",
-    text: "text-ink-faint",
-  },
-];
-
 export function StatsPage() {
+  const { data: apiCards, isLoading: cardsLoading } = useAllCards();
+  const {
+    retentionPct,
+    streakDays,
+    weekMinutes,
+    totalCards,
+    mature,
+    young,
+    subjectRetention,
+    isLoading: statsLoading,
+  } = useStudyStats();
+
+  const cards = useMemo(
+    () => (apiCards ?? []).map(adaptApiCardToCard),
+    [apiCards],
+  );
+  const dueOrNew = cards.filter(
+    (c) => c.stage === "new" || c.stage === "due",
+  ).length;
+  const total = cards.length;
+
+  const legendItems = [
+    {
+      count: mature,
+      label: "Dobrze opanowane",
+      sub: "zapamiętasz je długo",
+      bg: "bg-rating-4",
+      text: "text-rating-4",
+    },
+    {
+      count: young,
+      label: "W trakcie nauki",
+      sub: "powtarzaj regularnie",
+      bg: "bg-amber",
+      text: "text-amber",
+    },
+    {
+      count: dueOrNew,
+      label: "Czekają na Ciebie",
+      sub: "zacznij dziś",
+      bg: "bg-ink-faint",
+      text: "text-ink-faint",
+    },
+  ];
+
+  if (cardsLoading || statsLoading) {
+    return (
+      <>
+        <PageHead eyebrow="Statystyki" title={<em>postęp</em>} />
+        <div className="h-96 animate-pulse rounded-sm border border-rule bg-paper-2" />
+      </>
+    );
+  }
+
   return (
     <>
       <PageHead
@@ -58,36 +86,36 @@ export function StatsPage() {
       <div className="enter enter-d1 grid grid-cols-1 gap-6 pb-10 border-b border-rule mb-10 min-[800px]:grid-cols-[1.2fr_1fr] min-[800px]:gap-14 min-[800px]:items-end">
         <div>
           <div className="display font-light text-[clamp(140px,18vw,220px)] leading-[0.85] flex items-start gap-2">
-            <em className="italic text-amber font-light">
-              {STUDY_STATS.retentionPct}
-            </em>
+            <em className="italic text-amber font-light">{retentionPct}</em>
           </div>
         </div>
         <div className="flex flex-col gap-3">
           <span className="eyebrow">Co to znaczy</span>
           <p className="text-ink-muted leading-relaxed">
-            <strong className="text-ink">{STUDY_STATS.retentionPct}%</strong>{" "}
-            kart pamiętasz przy pierwszym podejściu. Cel to{" "}
+            <strong className="text-ink">{retentionPct}%</strong> kart pamiętasz
+            przy pierwszym podejściu. Cel to{" "}
             <strong className="text-ink">90%</strong> — im bliżej, tym mniej
             czasu tracisz na powtarzanie tych samych kart.
           </p>
           <div className="flex gap-6 pt-4 border-t border-dashed border-rule-strong mt-1">
             <div>
               <div className="display text-[31px] leading-none">
-                {STUDY_STATS.streakDays}
+                {streakDays}
               </div>
               <div className="eyebrow text-[13px]">dni z rzędu</div>
             </div>
             <div>
               <div className="mono text-[31px] leading-none">
-                {formatMinutes(STUDY_STATS.weekMinutes)}
+                {formatMinutes(weekMinutes)}
               </div>
               <div className="eyebrow text-[13px]">/ tydzień</div>
             </div>
             <div>
               <div className="mono text-[31px] leading-none">
                 {mature}
-                <span className="text-ink-faint text-[18px]">/{total}</span>
+                <span className="text-ink-faint text-[18px]">
+                  /{totalCards}
+                </span>
               </div>
               <div className="eyebrow text-[13px]">opanowanych</div>
             </div>
@@ -158,16 +186,21 @@ export function StatsPage() {
           </h2>
         </div>
         <div className="flex flex-col gap-4">
-          {SUBJECT_RETENTION.map(({ subject, pct }) => (
+          {subjectRetention.length === 0 && (
+            <p className="text-ink-faint mono text-sm">
+              Brak danych o retencji per przedmiot.
+            </p>
+          )}
+          {subjectRetention.map(({ subject, pct }) => (
             <div key={subject} className="flex items-center gap-4">
               <div className="mono text-[13px] uppercase text-ink-muted w-24 shrink-0">
-                {SUBJECTS[subject].name}
+                {SUBJECTS[subject as keyof typeof SUBJECTS]?.name ?? subject}
               </div>
               <div className="flex-1 h-2 bg-kumo-base rounded-sm overflow-hidden">
                 <div
                   className={cn(
                     "h-full rounded-sm transition-all",
-                    SUBJECT_BG[subject],
+                    SUBJECT_BG[subject as keyof typeof SUBJECT_BG],
                   )}
                   style={{ width: `${pct}%` }}
                 />
@@ -175,7 +208,7 @@ export function StatsPage() {
               <div
                 className={cn(
                   "mono text-[14px] w-10 text-right shrink-0",
-                  SUBJECT_TEXT[subject],
+                  SUBJECT_TEXT[subject as keyof typeof SUBJECT_TEXT],
                 )}
               >
                 {pct}%
