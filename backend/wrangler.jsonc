@@ -5,6 +5,10 @@
   "compatibility_flags": ["nodejs_compat"],
   "main": "./src/index.tsx",
 
+  "triggers": {
+    "crons": ["0 7 * * *"],
+  },
+
   "observability": {
     "logs": {
       "enabled": true,

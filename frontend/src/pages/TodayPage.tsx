@@ -10,11 +10,10 @@ import {
 } from "@phosphor-icons/react";
 import { useNavigate } from "@tanstack/react-router";
 import { format } from "date-fns";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { AddExamModal } from "../components/exam/AddExamModal";
 import { PageHead } from "../components/layout/PageHead";
-import { useNotifications } from "../contexts/NotificationContext";
 import { useDashboard } from "../hooks/api/useDashboard";
 import { cn } from "../utils/cn";
 import { dayLong, daysBetween, formatMinutes, longDate } from "../utils/date";
@@ -27,8 +26,6 @@ type Props = {
   onStart: () => void;
   onStartSession: (id: string) => void;
 };
-
-const DAILY_REMINDER_KEY = "notifications.daily-reminder";
 
 function toSubjectKey(k: string | null): SubjectKey | null {
   if (k === null) return null;
@@ -74,7 +71,6 @@ export function TodayPage({ onStart, onStartSession }: Props) {
   const today = format(new Date(), "yyyy-MM-dd");
   const [addExamOpen, setAddExamOpen] = useState(false);
   const navigate = useNavigate();
-  const { addNotification } = useNotifications();
   const { data: dashboard, isLoading, error } = useDashboard();
 
   const todaySessions = dashboard?.today ?? [];
@@ -173,48 +169,6 @@ export function TodayPage({ onStart, onStartSession }: Props) {
       tone: "info",
     });
   }
-
-  useEffect(() => {
-    if (overdueCount <= 0) return;
-
-    const key = `${DAILY_REMINDER_KEY}.overdue.${today}`;
-    if (localStorage.getItem(key) === "sent") return;
-
-    addNotification({
-      type: "overdue_reminder",
-      title:
-        overdueCount === 1
-          ? "Masz 1 zaległą sesję"
-          : `Masz ${overdueCount} zaległe sesje`,
-      description:
-        "Najlepiej zacząć od pierwszej wolnej pozycji w planie dnia.",
-      actionUrl: "/today",
-    });
-    localStorage.setItem(key, "sent");
-  }, [addNotification, overdueCount, today]);
-
-  useEffect(() => {
-    if (!nextExam || examDays === null || examDays > 3) return;
-
-    const key = `${DAILY_REMINDER_KEY}.exam.${nextExam.id}.${today}`;
-    if (localStorage.getItem(key) === "sent") return;
-
-    addNotification({
-      type: "exam_reminder",
-      title:
-        examDays === 0
-          ? `${nextExam.name} jest dziś`
-          : examDays === 1
-            ? `${nextExam.name} jest jutro`
-            : `${nextExam.name} za ${examDays} dni`,
-      description:
-        remainingSessions > 0
-          ? `Na dziś zostało jeszcze ${remainingSessions} ${remainingSessions === 1 ? "sesja" : "sesje"}.`
-          : "Plan na dziś masz już domknięty.",
-      actionUrl: "/calendar",
-    });
-    localStorage.setItem(key, "sent");
-  }, [addNotification, examDays, nextExam, remainingSessions, today]);
 
   return (
     <>

@@ -6,7 +6,6 @@ import { CheckIcon, PlusIcon, XIcon } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-import { useNotifications } from "../../contexts/NotificationContext";
 import { useCreateExam } from "../../hooks/api/useExams";
 import { useSubjects } from "../../hooks/api/useSubjects";
 import { cn } from "../../utils/cn";
@@ -98,31 +97,17 @@ export function AddExamModal({ open, onClose }: Props) {
     topicInputRef.current?.focus();
   }
 
-  const { addNotification } = useNotifications();
-
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!subjectId) return;
-    createExam(
-      {
-        subjectId,
-        name,
-        examDate,
-        difficulty,
-        materialSize,
-        topicNames: topics,
-      },
-      {
-        onSuccess: (data) => {
-          addNotification({
-            type: "exam_created",
-            title: "Zaplanowano sesje nauki",
-            description: `${data.sessions.length} ${data.sessions.length === 1 ? "sesja" : "sesje"} · ${name}`,
-            actionUrl: "/calendar",
-          });
-        },
-      },
-    );
+    createExam({
+      subjectId,
+      name,
+      examDate,
+      difficulty,
+      materialSize,
+      topicNames: topics,
+    });
   }
 
   const subjectsError =
@@ -176,10 +161,8 @@ export function AddExamModal({ open, onClose }: Props) {
         </div>
 
         {planResult ? (
-          /* ── Plan preview ── */
           <>
             <div className="px-6 py-6 overflow-y-auto flex-1 flex flex-col gap-4">
-              {/* Summary banner */}
               <div className="flex items-center gap-3 p-3.5 bg-amber-wash border border-amber/20 rounded-[4px]">
                 <div className="w-8 h-8 rounded-sm bg-amber/20 grid place-items-center text-amber shrink-0">
                   <CheckIcon size={16} weight="bold" />
@@ -280,7 +263,6 @@ export function AddExamModal({ open, onClose }: Props) {
                 )}
               </div>
 
-              {/* Name */}
               <div className="flex flex-col gap-1.5">
                 <Label className="text-[13px] text-ink-muted">
                   Nazwa sprawdzianu

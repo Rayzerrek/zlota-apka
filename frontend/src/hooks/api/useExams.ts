@@ -56,6 +56,7 @@ export function useCreateExam() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.exams });
       qc.invalidateQueries({ queryKey: queryKeys.dashboard });
+      qc.invalidateQueries({ queryKey: queryKeys.notifications });
     },
   });
 }

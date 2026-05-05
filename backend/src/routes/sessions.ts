@@ -1,7 +1,7 @@
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import { and, eq, gte, lte } from "drizzle-orm";
 
-import { studySessions } from "../db/schema";
+import { notifications, studySessions, topics } from "../db/schema";
 import { createDb } from "../lib/db";
 import { requireAuth } from "../middleware/auth";
 import {
@@ -104,6 +104,28 @@ sessionsRouter.openapi(completeSessionRoute, async (c) => {
       .returning();
 
     if (!row) return c.json({ error: "Not found" }, 404);
+
+    let topicName: string | null = null;
+    if (row.topicId) {
+      const [topic] = await db
+        .select({ name: topics.name })
+        .from(topics)
+        .where(eq(topics.id, row.topicId));
+      topicName = topic?.name ?? null;
+    }
+
+    await db.insert(notifications).values({
+      userId,
+      type: "session_completed",
+      category: "session",
+      priority: "low",
+      title: "Sesja ukończona",
+      description: `${topicName ?? "Bez nazwy tematu"} · ${body.actualMinutes} min`,
+      actionUrl: "/today",
+      sentAt: new Date(),
+      scheduledFor: null,
+    });
+
     return c.json(row, 200);
   } catch (err) {
     console.error("PATCH /sessions/:id/complete failed", err);

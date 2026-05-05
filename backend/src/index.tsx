@@ -3,6 +3,8 @@ import { Scalar } from "@scalar/hono-api-reference";
 import { cors } from "hono/cors";
 
 import { type Env } from "./lib/auth";
+import { createDb } from "./lib/db";
+import { generateScheduledNotifications } from "./lib/scheduled-notifications";
 import { cardsRouter } from "./routes/cards";
 import { dashboardRouter } from "./routes/dashboard";
 import { examsRouter } from "./routes/exams";
@@ -14,6 +16,7 @@ import { sessionsRouter } from "./routes/sessions";
 import { subjectsRouter } from "./routes/subjects";
 import { topicsRouter } from "./routes/topics";
 import { usersRouter } from "./routes/users";
+
 const app = new OpenAPIHono<{ Bindings: Env }>();
 
 function createCorsMiddleware(origins: string[]) {
@@ -72,4 +75,15 @@ app.onError((err, c) => {
   return c.json({ error: "Internal server error" }, 500);
 });
 
-export default app;
+export default {
+  fetch: app.fetch,
+  async scheduled(
+    _controller: ScheduledController,
+    env: Env,
+    _ctx: ExecutionContext,
+  ) {
+    const db = createDb(env);
+    const today = new Date().toISOString().slice(0, 10);
+    await generateScheduledNotifications(db, today, new Date());
+  },
+} satisfies ExportedHandler<Env>;

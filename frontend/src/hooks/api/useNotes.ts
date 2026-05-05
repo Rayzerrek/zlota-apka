@@ -15,6 +15,7 @@ export function useGenerateNote() {
     },
     onSuccess: (data) => {
       qc.setQueryData(queryKeys.generatedNote(data.id), data);
+      qc.invalidateQueries({ queryKey: queryKeys.notifications });
     },
   });
 }

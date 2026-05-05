@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { PageHead } from "../components/layout/PageHead";
 import {
@@ -10,7 +11,7 @@ import {
   MobileFileView,
   type ScannerPageMode,
 } from "../components/ocr/ScannerPageViews";
-import { useNotifications } from "../contexts/NotificationContext";
+import { queryKeys } from "../hooks/api/keys";
 import { apiPost } from "../lib/api";
 import { ScanResponseSchema } from "../lib/schemas";
 import { compressImage } from "../utils/image";
@@ -23,9 +24,7 @@ export function ScannerPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState("");
   const [error, setError] = useState("");
-  const { addNotification } = useNotifications();
-
-  const prevResult = useRef(result);
+  const qc = useQueryClient();
 
   const previewUrl = useMemo(
     () => (capturedFile ? URL.createObjectURL(capturedFile) : null),
@@ -37,17 +36,6 @@ export function ScannerPage() {
       if (previewUrl) URL.revokeObjectURL(previewUrl);
     };
   }, [previewUrl]);
-
-  useEffect(() => {
-    if (result && !prevResult.current) {
-      addNotification({
-        type: "scan_completed",
-        title: "Przeskanowano dokument",
-        description: result.length > 80 ? `${result.slice(0, 80)}…` : result,
-      });
-    }
-    prevResult.current = result;
-  }, [result, addNotification]);
 
   const resetCameraFlow = useCallback(() => {
     setCapturedFile(null);
@@ -85,6 +73,7 @@ export function ScannerPage() {
       }
 
       setResult(res.data?.text || "");
+      qc.invalidateQueries({ queryKey: queryKeys.notifications });
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Wystąpił nieznany błąd";
@@ -92,7 +81,7 @@ export function ScannerPage() {
     } finally {
       setLoading(false);
     }
-  }, [capturedFile]);
+  }, [capturedFile, qc]);
 
   const cameraViewProps: CameraViewProps = {
     capturedFile,

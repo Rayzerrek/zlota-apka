@@ -119,8 +119,6 @@ export const notificationCreateSchema = z.object({
   category: notificationCategorySchema.optional(),
   priority: notificationPrioritySchema.optional(),
   payload: z.record(z.string(), z.unknown()).optional(),
-  scheduledFor: z.string().datetime().optional(),
-  sentAt: z.string().datetime().optional(),
 });
 
 export const userPatchSchema = z.object({

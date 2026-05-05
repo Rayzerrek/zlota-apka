@@ -2,7 +2,6 @@ import { Button } from "@cloudflare/kumo/components/button";
 import { ArrowLeftIcon } from "@phosphor-icons/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { useNotifications } from "../../contexts/NotificationContext";
 import { useDashboard } from "../../hooks/api/useDashboard";
 import { useCompleteSession } from "../../hooks/api/useSessions";
 import { cn } from "../../utils/cn";
@@ -70,7 +69,6 @@ const SCORE_LABELS = ["słabo", "", "", "", "świetnie"] as const;
 export function StudyTimer({ sessionId, onExit }: Props) {
   const today = new Date().toISOString().slice(0, 10);
   const { data: dashboard, isLoading } = useDashboard();
-  const { addNotification } = useNotifications();
   const {
     mutate: completeSession,
     isPending: isSaving,
@@ -126,28 +124,6 @@ export function StudyTimer({ sessionId, onExit }: Props) {
       },
       {
         onSuccess: () => {
-          const totalSessions = dashboard?.today.length ?? 0;
-          const alreadyCompleted =
-            dashboard?.today.filter((item) => item.status === "completed")
-              .length ?? 0;
-          const completedAfter = Math.min(
-            totalSessions,
-            alreadyCompleted + (session.status === "completed" ? 0 : 1),
-          );
-
-          addNotification({
-            type: "session_completed",
-            title:
-              completedAfter >= totalSessions && totalSessions > 0
-                ? "Plan na dziś domknięty"
-                : "Sesja ukończona",
-            description:
-              totalSessions > 0
-                ? `${completedAfter}/${totalSessions} sesji gotowe · ${session.topicName ?? "Bez nazwy tematu"}`
-                : (session.topicName ?? "Sesja została zapisana"),
-            actionUrl: "/today",
-          });
-
           setPhase("saved");
           saveTimeoutRef.current = setTimeout(() => onExit(), 1500);
         },
@@ -155,9 +131,7 @@ export function StudyTimer({ sessionId, onExit }: Props) {
     );
   }, [
     actualMinutes,
-    addNotification,
     completeSession,
-    dashboard?.today,
     isSaving,
     notes,
     onExit,

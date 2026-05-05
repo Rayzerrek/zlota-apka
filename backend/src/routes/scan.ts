@@ -2,6 +2,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import { z } from "zod";
 
+import { notifications } from "../db/schema";
 import {
   SCAN_MIME_FALLBACK,
   SCAN_MIME_JPG,
@@ -14,6 +15,8 @@ import {
   scanRequestSchema,
   scanResponseSchema,
 } from "../lib/constant";
+import { createDb } from "../lib/db";
+import { requireAuth } from "../middleware/auth";
 
 import type { HonoEnv } from "../lib/factory";
 
@@ -48,6 +51,8 @@ const scanRoute = createRoute({
 });
 
 const scanRouter = new OpenAPIHono<HonoEnv>();
+
+scanRouter.use(requireAuth);
 
 function normalizeMimeType(mimeType: string): string {
   const normalized = mimeType.split(";")[0].trim().toLowerCase();
@@ -94,6 +99,20 @@ scanRouter.openapi(scanRoute, async (c) => {
         502,
       );
     }
+
+    const db = createDb(c.env);
+    const userId = c.get("userId");
+
+    await db.insert(notifications).values({
+      userId,
+      type: "scan_completed",
+      category: "ai",
+      priority: "low",
+      title: "Przeskanowano dokument",
+      description: text.length > 80 ? `${text.slice(0, 80)}…` : text,
+      sentAt: new Date(),
+      scheduledFor: null,
+    });
 
     return c.json({ text }, 200);
   } catch (error: unknown) {

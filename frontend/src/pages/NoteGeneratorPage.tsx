@@ -9,7 +9,6 @@ import { useRouter, useSearch } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 import { PageHead } from "../components/layout/PageHead";
-import { useNotifications } from "../contexts/NotificationContext";
 import { useGenerateNote } from "../hooks/api/useNotes";
 
 export function NoteGeneratorPage() {
@@ -19,7 +18,6 @@ export function NoteGeneratorPage() {
     subject?: string;
   };
   const { mutate: generateNote, isPending, error } = useGenerateNote();
-  const { addNotification } = useNotifications();
 
   const [topic, setTopic] = useState("");
   const [subject, setSubject] = useState("");
@@ -37,12 +35,6 @@ export function NoteGeneratorPage() {
       { topic: topic.trim(), subject: subject.trim() || undefined },
       {
         onSuccess: (data) => {
-          addNotification({
-            type: "note_generated",
-            title: "Wygenerowano notatkę",
-            description: topic.trim(),
-            actionUrl: `/note/${data.id}`,
-          });
           router.navigate({ to: "/note/$id", params: { id: data.id } });
         },
       },

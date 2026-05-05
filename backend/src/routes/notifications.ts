@@ -97,8 +97,8 @@ notificationsRouter.openapi(createNotificationRoute, async (c) => {
         category: body.category ?? "system",
         priority: body.priority ?? "medium",
         payload: body.payload,
-        scheduledFor: body.scheduledFor ? new Date(body.scheduledFor) : null,
-        sentAt: body.sentAt ? new Date(body.sentAt) : null,
+        scheduledFor: null,
+        sentAt: new Date(),
       })
       .returning();
 
