@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { apiGet, apiPatch } from "../../lib/api";
-import { ApiSessionSchema } from "../../lib/schemas";
+import { ApiExtendedSessionSchema, ApiSessionSchema } from "../../lib/schemas";
 import { queryKeys } from "./keys";
 
 export function useSessions(params?: {
@@ -78,5 +78,31 @@ export function useSkipSession() {
       qc.invalidateQueries({ queryKey: queryKeys.sessions() });
       qc.invalidateQueries({ queryKey: queryKeys.dashboard });
     },
+  });
+}
+
+export function useAllSessions() {
+  return useQuery({
+    queryKey: queryKeys.allSessions,
+    queryFn: async () => {
+      const res = await apiGet(
+        "/api/sessions",
+        ApiExtendedSessionSchema.array(),
+      );
+      if (!res.ok) throw new Error(res.message);
+      return res.data;
+    },
+  });
+}
+
+export function useSession(id: string) {
+  return useQuery({
+    queryKey: queryKeys.session(id),
+    queryFn: async () => {
+      const res = await apiGet(`/api/sessions/${id}`, ApiExtendedSessionSchema);
+      if (!res.ok) throw new Error(res.message);
+      return res.data;
+    },
+    enabled: Boolean(id),
   });
 }

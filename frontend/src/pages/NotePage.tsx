@@ -7,7 +7,9 @@ import {
 import { useParams, useRouter } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 
-import { CARDS, EXAMS } from "../data/mock";
+import { useAllCards } from "../hooks/api/useCards";
+import { useAllExams } from "../hooks/api/useExams";
+import { adaptApiCardToCard } from "../lib/adapters";
 import { cn } from "../utils/cn";
 import { longDate } from "../utils/date";
 import { generateExamNote, noteToMarkdown } from "../utils/examNote";
@@ -18,11 +20,28 @@ export function NotePage() {
   const router = useRouter();
   const [copied, setCopied] = useState(false);
 
-  const exam = useMemo(() => EXAMS.find((e) => e.id === examId), [examId]);
-  const note = useMemo(
-    () => (exam ? generateExamNote(exam, CARDS) : null),
-    [exam],
+  const { data: exams, isLoading: examsLoading } = useAllExams();
+  const { data: apiCards, isLoading: cardsLoading } = useAllCards();
+
+  const cards = useMemo(
+    () => (apiCards ?? []).map(adaptApiCardToCard),
+    [apiCards],
   );
+
+  const exam = useMemo(
+    () => exams.find((e) => e.id === examId),
+    [exams, examId],
+  );
+  const note = useMemo(
+    () => (exam ? generateExamNote(exam, cards) : null),
+    [exam, cards],
+  );
+
+  if (examsLoading || cardsLoading) {
+    return (
+      <div className="h-96 animate-pulse rounded-sm border border-rule bg-paper-2" />
+    );
+  }
 
   function handleCopy() {
     if (!note) return;

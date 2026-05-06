@@ -14,7 +14,21 @@ export type {
   ExamCreateResponse,
 } from "../types/api";
 
-const BASE = import.meta.env.DEV ? "" : (import.meta.env.VITE_API_URL ?? "");
+const apiUrlSchema = z.string().url().optional();
+const parsedApiUrl = apiUrlSchema.safeParse(import.meta.env.VITE_API_URL);
+if (!parsedApiUrl.success) {
+  console.error(
+    "VITE_API_URL is invalid; falling back to current origin",
+    parsedApiUrl.error.issues,
+  );
+}
+const BASE = import.meta.env.DEV
+  ? ""
+  : parsedApiUrl.success
+    ? (parsedApiUrl.data ?? "")
+    : "";
+
+export type RequestOptions = { signal?: AbortSignal };
 
 function buildHeaders(init?: RequestInit): Headers {
   const headers = new Headers(init?.headers);
@@ -58,6 +72,10 @@ async function request<TSchema extends z.ZodType>(
     const data = schema.parse(raw);
     return { ok: true, data };
   } catch (err) {
+    // Cancellations bubble up so React Query treats them as cancelled, not errored.
+    if (err instanceof DOMException && err.name === "AbortError") {
+      throw err;
+    }
     if (err instanceof z.ZodError) {
       return {
         ok: false,
@@ -79,29 +97,41 @@ async function request<TSchema extends z.ZodType>(
 export function apiGet<TSchema extends z.ZodType>(
   path: string,
   schema: TSchema,
+  options?: RequestOptions,
 ): Promise<ApiResult<z.infer<TSchema>>> {
-  return request(path, schema);
+  return request(path, schema, { signal: options?.signal });
 }
 
 export function apiPost<TSchema extends z.ZodType>(
   path: string,
   schema: TSchema,
   body: unknown,
+  options?: RequestOptions,
 ): Promise<ApiResult<z.infer<TSchema>>> {
-  return request(path, schema, { method: "POST", body: JSON.stringify(body) });
+  return request(path, schema, {
+    method: "POST",
+    body: JSON.stringify(body),
+    signal: options?.signal,
+  });
 }
 
 export function apiPatch<TSchema extends z.ZodType>(
   path: string,
   schema: TSchema,
   body: unknown,
+  options?: RequestOptions,
 ): Promise<ApiResult<z.infer<TSchema>>> {
-  return request(path, schema, { method: "PATCH", body: JSON.stringify(body) });
+  return request(path, schema, {
+    method: "PATCH",
+    body: JSON.stringify(body),
+    signal: options?.signal,
+  });
 }
 
 export function apiDelete<TSchema extends z.ZodType>(
   path: string,
   schema: TSchema,
+  options?: RequestOptions,
 ): Promise<ApiResult<z.infer<TSchema>>> {
-  return request(path, schema, { method: "DELETE" });
+  return request(path, schema, { method: "DELETE", signal: options?.signal });
 }

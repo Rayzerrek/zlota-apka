@@ -1,4 +1,3 @@
-import { TODAY } from "../../data/mock";
 import { cn } from "../../utils/cn";
 import { daysBetween } from "../../utils/date";
 import { SUBJECTS, SUBJECT_BG } from "../../utils/subjects";
@@ -19,13 +18,17 @@ const STAGE_COLORS: Record<CardStage, string> = {
   due: "text-rating-1",
 };
 
+function todayISO(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
 type Props = {
   card: Card;
 };
 
 export function BrowseCard({ card }: Props) {
   const subj = SUBJECTS[card.subject];
-  const dueDays = daysBetween(TODAY, card.dueISO);
+  const dueDays = daysBetween(todayISO(), card.dueISO);
   const dueText =
     dueDays < 0
       ? `zaległa ${Math.abs(dueDays)} d`

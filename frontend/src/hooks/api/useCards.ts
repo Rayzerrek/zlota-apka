@@ -1,7 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { apiDelete, apiGet, apiPost } from "../../lib/api";
-import { ApiCardSchema, OkResponseSchema } from "../../lib/schemas";
+import {
+  ApiCardSchema,
+  ApiExtendedCardSchema,
+  ApiReviewHistorySchema,
+  OkResponseSchema,
+} from "../../lib/schemas";
 import { queryKeys } from "./keys";
 
 export function useCardsDue() {
@@ -21,7 +26,7 @@ export function useCardsByTopic(topicId: string) {
     queryFn: async () => {
       const res = await apiGet(
         `/api/topics/${topicId}/cards`,
-        ApiCardSchema.array(),
+        ApiExtendedCardSchema.array(),
       );
       if (!res.ok) throw new Error(res.message);
       return res.data;
@@ -95,6 +100,31 @@ export function useReviewCard() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.cardsDue });
+    },
+  });
+}
+
+export function useAllCards() {
+  return useQuery({
+    queryKey: queryKeys.allCards,
+    queryFn: async () => {
+      const res = await apiGet("/api/cards", ApiExtendedCardSchema.array());
+      if (!res.ok) throw new Error(res.message);
+      return res.data;
+    },
+  });
+}
+
+export function useReviewHistory() {
+  return useQuery({
+    queryKey: queryKeys.reviewHistory,
+    queryFn: async () => {
+      const res = await apiGet(
+        "/api/review-history",
+        ApiReviewHistorySchema.array(),
+      );
+      if (!res.ok) throw new Error(res.message);
+      return res.data;
     },
   });
 }

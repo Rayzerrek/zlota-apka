@@ -136,3 +136,40 @@ describe("apiDelete", () => {
     expect(result).toEqual({ ok: true, data: { id: "1", value: 99 } });
   });
 });
+
+describe("AbortSignal", () => {
+  it("forwards signal to fetch from apiGet", async () => {
+    mockFetch({ id: "1", value: 1 });
+    const controller = new AbortController();
+
+    await apiGet("/test", TestSchema, { signal: controller.signal });
+
+    const [, options] = vi.mocked(fetch).mock.calls[0];
+    expect(options?.signal).toBe(controller.signal);
+  });
+
+  it("forwards signal to fetch from apiPost", async () => {
+    mockFetch({ id: "1", value: 1 });
+    const controller = new AbortController();
+
+    await apiPost(
+      "/test",
+      TestSchema,
+      { value: 1 },
+      { signal: controller.signal },
+    );
+
+    const [, options] = vi.mocked(fetch).mock.calls[0];
+    expect(options?.signal).toBe(controller.signal);
+  });
+
+  it("re-throws AbortError so React Query treats it as cancelled", async () => {
+    vi.mocked(fetch).mockRejectedValueOnce(
+      new DOMException("Aborted", "AbortError"),
+    );
+
+    await expect(apiGet("/test", TestSchema)).rejects.toMatchObject({
+      name: "AbortError",
+    });
+  });
+});

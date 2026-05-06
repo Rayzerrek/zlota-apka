@@ -1,8 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMemo } from "react";
 
+import { adaptApiExamToExam } from "../../lib/adapters";
 import { apiDelete, apiGet, apiPost } from "../../lib/api";
 import {
-  ApiExamSchema,
+  ApiExtendedExamSchema,
   ExamCreateResponseSchema,
   OkResponseSchema,
   UseExamDataSchema,
@@ -15,7 +17,7 @@ export function useExams() {
   return useQuery({
     queryKey: queryKeys.exams,
     queryFn: async () => {
-      const res = await apiGet("/api/exams", ApiExamSchema.array());
+      const res = await apiGet("/api/exams", ApiExtendedExamSchema.array());
       if (!res.ok) throw new Error(res.message);
       return res.data;
     },
@@ -75,4 +77,15 @@ export function useDeleteExam() {
       qc.invalidateQueries({ queryKey: queryKeys.dashboard });
     },
   });
+}
+
+export function useAllExams() {
+  const { data, isLoading, error } = useExams();
+
+  const exams = useMemo(() => {
+    if (!data) return [];
+    return data.map(adaptApiExamToExam);
+  }, [data]);
+
+  return { data: exams, isLoading, error };
 }
