@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { subjects, user, userAvailability } from "../db/schema";
 import { createDb } from "../lib/db";
 import { requireAuth } from "../middleware/auth";
-import { onboardingSchema } from "../types/schemas";
+import { okResponseSchema, onboardingSchema } from "../types/schemas";
 
 import type { HonoEnv } from "../lib/factory";
 
@@ -18,7 +18,12 @@ const onboardingRoute = createRoute({
       required: true,
     },
   },
-  responses: { 200: { description: "Onboarding complete" } },
+  responses: {
+    200: {
+      description: "Onboarding complete",
+      content: { "application/json": { schema: okResponseSchema } },
+    },
+  },
 });
 
 export const onboardingRouter = new OpenAPIHono<HonoEnv>();
@@ -26,39 +31,34 @@ export const onboardingRouter = new OpenAPIHono<HonoEnv>();
 onboardingRouter.use(requireAuth);
 
 onboardingRouter.openapi(onboardingRoute, async (c) => {
-  try {
-    const db = createDb(c.env);
-    const userId = c.get("userId");
-    const body = c.req.valid("json");
+  const db = createDb(c.env);
+  const userId = c.get("userId");
+  const body = c.req.valid("json");
 
-    await db.transaction(async (tx) => {
+  await db.transaction(async (tx) => {
+    await tx
+      .update(user)
+      .set({
+        name: body.name ?? undefined,
+        grade: body.grade,
+        onboardingDone: true,
+      })
+      .where(eq(user.id, userId));
+
+    if (body.subjects.length > 0) {
       await tx
-        .update(user)
-        .set({
-          name: body.name ?? undefined,
-          grade: body.grade,
-          onboardingDone: true,
-        })
-        .where(eq(user.id, userId));
+        .insert(subjects)
+        .values(body.subjects.map((s) => ({ ...s, userId })))
+        .onConflictDoNothing();
+    }
 
-      if (body.subjects.length > 0) {
-        await tx
-          .insert(subjects)
-          .values(body.subjects.map((s) => ({ ...s, userId })))
-          .onConflictDoNothing();
-      }
+    if (body.availability.length > 0) {
+      await tx
+        .insert(userAvailability)
+        .values(body.availability.map((a) => ({ ...a, userId })))
+        .onConflictDoNothing();
+    }
+  });
 
-      if (body.availability.length > 0) {
-        await tx
-          .insert(userAvailability)
-          .values(body.availability.map((a) => ({ ...a, userId })))
-          .onConflictDoNothing();
-      }
-    });
-
-    return c.json({ ok: true }, 200);
-  } catch (err) {
-    console.error("POST /onboarding failed", err);
-    throw err;
-  }
+  return c.json({ ok: true }, 200);
 });

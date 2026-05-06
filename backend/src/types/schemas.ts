@@ -161,5 +161,181 @@ export const userExportResponseSchema = z.object({
 });
 
 export const okResponseSchema = z.object({
-  ok: z.literal(true),
+  // boolean (nie literal(true)) — handlery z wieloma branchami (200 + 404)
+  // unionują typy zwracane, co rozszerza literal `true` do `boolean` po stronie TS.
+  ok: z.boolean(),
+});
+
+// ---------------------------------------------------------------------------
+// Response schemas (kształty zwracane przez handlery — używane w OpenAPI doc)
+// Konwencja timestampów: Drizzle zwraca Date, JSON serializuje do string —
+// schemat akceptuje obie formy, identycznie jak userMeResponseSchema powyżej.
+// ---------------------------------------------------------------------------
+
+const dbTimestamp = z.union([z.string(), z.date()]);
+
+export const subjectRowSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  key: z.string(),
+  name: z.string(),
+  color: z.string(),
+  difficulty: z.number().int(),
+});
+export const subjectListResponseSchema = z.array(subjectRowSchema);
+
+export const topicRowSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  subjectId: z.string(),
+  examId: z.string().nullable(),
+  name: z.string(),
+  position: z.number().int(),
+  createdAt: dbTimestamp,
+});
+export const topicListResponseSchema = z.array(topicRowSchema);
+
+export const examRowSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  subjectId: z.string(),
+  name: z.string(),
+  examDate: z.string(),
+  difficulty: z.number().int(),
+  materialSize: z.enum(["small", "medium", "large"]),
+  notes: z.string().nullable(),
+  createdAt: dbTimestamp,
+});
+export const examListItemSchema = examRowSchema.extend({
+  subjectKey: z.string().nullable(),
+});
+export const examListResponseSchema = z.array(examListItemSchema);
+
+export const sessionRowSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  examId: z.string().nullable(),
+  topicId: z.string().nullable(),
+  schedulerRunId: z.string().nullable(),
+  scheduledDate: z.string(),
+  plannedMinutes: z.number().int(),
+  actualMinutes: z.number().int().nullable(),
+  sessionType: z.enum(["study", "review", "quick_review"]),
+  status: z.enum(["planned", "completed", "skipped"]),
+  notes: z.string().nullable(),
+  evaluationScore: z.number().int().nullable(),
+  completedScope: z.enum(["yes", "no", "partially"]).nullable(),
+  difficultyNotes: z.string().nullable(),
+  completedAt: dbTimestamp.nullable(),
+  createdAt: dbTimestamp,
+});
+export const sessionWithJoinSchema = sessionRowSchema.extend({
+  topicName: z.string().nullable(),
+  subjectKey: z.string().nullable(),
+});
+export const sessionListResponseSchema = z.array(sessionWithJoinSchema);
+
+export const examCreateResponseSchema = z.object({
+  exam: examRowSchema,
+  topics: z.array(topicRowSchema),
+  sessions: z.array(sessionRowSchema),
+  schedulerRunId: z.string(),
+});
+export const examDetailResponseSchema = z.object({
+  exam: examRowSchema,
+  topics: z.array(topicRowSchema),
+  sessions: z.array(sessionRowSchema),
+});
+
+export const cardRowSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  topicId: z.string(),
+  front: z.string(),
+  back: z.string(),
+  source: z.enum(["manual", "ai"]),
+  stability: z.number(),
+  difficulty: z.number(),
+  elapsedDays: z.number().int(),
+  scheduledDays: z.number().int(),
+  reps: z.number().int(),
+  lapses: z.number().int(),
+  state: z.number().int(),
+  lastReview: dbTimestamp.nullable(),
+  due: dbTimestamp,
+  createdAt: dbTimestamp,
+  updatedAt: dbTimestamp,
+});
+export const cardListResponseSchema = z.array(cardRowSchema);
+
+// allCardsRoute robi explicit select bez userId, z dołączonymi topicName/subjectKey
+export const cardWithJoinSchema = cardRowSchema.omit({ userId: true }).extend({
+  topicName: z.string().nullable(),
+  subjectKey: z.string().nullable(),
+});
+export const cardAllListResponseSchema = z.array(cardWithJoinSchema);
+
+export const reviewHistoryRowSchema = z.object({
+  id: z.string(),
+  cardId: z.string(),
+  sessionId: z.string().nullable(),
+  rating: z.number().int(),
+  stateBefore: z.number().int(),
+  stabilityBefore: z.number(),
+  difficultyBefore: z.number(),
+  scheduledDays: z.number().int(),
+  elapsedDays: z.number().int(),
+  reviewedAt: dbTimestamp,
+});
+export const reviewHistoryListResponseSchema = z.array(reviewHistoryRowSchema);
+
+export const notificationRowSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  type: z.string(),
+  category: notificationCategorySchema,
+  priority: notificationPrioritySchema,
+  title: z.string(),
+  description: z.string().nullable(),
+  actionUrl: z.string().nullable(),
+  // payload: jsonb w Drizzle bez $type<> — może być null lub dowolny JSON.
+  // z.unknown() obejmuje null po stronie TS; klient i tak parsuje payload sam.
+  payload: z.unknown(),
+  scheduledFor: dbTimestamp.nullable(),
+  sentAt: dbTimestamp.nullable(),
+  readAt: dbTimestamp.nullable(),
+  dismissedAt: dbTimestamp.nullable(),
+  createdAt: dbTimestamp,
+});
+export const notificationListResponseSchema = z.array(notificationRowSchema);
+
+export const dashboardSessionSchema = z.object({
+  id: z.string(),
+  scheduledDate: z.string(),
+  plannedMinutes: z.number().int(),
+  sessionType: z.enum(["study", "review", "quick_review"]),
+  status: z.enum(["planned", "completed", "skipped"]),
+  topicId: z.string().nullable(),
+  topicName: z.string().nullable(),
+  subjectKey: z.string().nullable(),
+  subjectName: z.string().nullable(),
+});
+export const dashboardExamSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  examDate: z.string(),
+  difficulty: z.number().int(),
+  materialSize: z.enum(["small", "medium", "large"]),
+  subjectKey: z.string().nullable(),
+  subjectName: z.string().nullable(),
+});
+export const dashboardResponseSchema = z.object({
+  today: z.array(dashboardSessionSchema),
+  overdueCount: z.number().int(),
+  upcomingExams: z.array(dashboardExamSchema),
+  week: z.object({
+    total: z.number().int(),
+    completed: z.number().int(),
+    progressPercent: z.number().int(),
+  }),
 });
