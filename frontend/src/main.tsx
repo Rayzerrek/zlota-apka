@@ -6,7 +6,6 @@ import { createRoot } from "react-dom/client";
 
 import "./i18n";
 import { NotificationProvider } from "./contexts/NotificationContext.tsx";
-import { ReviewProvider } from "./contexts/ReviewContext.tsx";
 import { StudySessionProvider } from "./contexts/StudySessionContext.tsx";
 import { queryClient } from "./lib/queryClient.ts";
 import { router } from "./router.tsx";
@@ -19,11 +18,9 @@ createRoot(rootElement).render(
     <QueryClientProvider client={queryClient}>
       <NotificationProvider>
         <Toasty>
-          <ReviewProvider>
-            <StudySessionProvider>
-              <RouterProvider router={router} />
-            </StudySessionProvider>
-          </ReviewProvider>
+          <StudySessionProvider>
+            <RouterProvider router={router} />
+          </StudySessionProvider>
         </Toasty>
       </NotificationProvider>
     </QueryClientProvider>

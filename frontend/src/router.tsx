@@ -10,7 +10,6 @@ import { Suspense, lazy } from "react";
 import App from "./App";
 import { PageSkeleton } from "./components/layout/PageSkeleton";
 import { Shell } from "./components/layout/Shell";
-import { useReview } from "./contexts/ReviewContext";
 import { useStudySession } from "./contexts/StudySessionContext";
 import { useTheme } from "./hooks/useTheme";
 
@@ -57,6 +56,9 @@ const GeneratedNotePage = lazy(() =>
     default: m.GeneratedNotePage,
   })),
 );
+const ReviewPage = lazy(() =>
+  import("./pages/ReviewPage").then((m) => ({ default: m.ReviewPage })),
+);
 
 const rootRoute = createRootRoute({
   component: App,
@@ -83,14 +85,10 @@ const layoutRoute = createRoute({
 });
 
 function TodayPageWrapper() {
-  const { setReviewSessionId } = useReview();
   const { startSession } = useStudySession();
   return (
     <Suspense fallback={<PageSkeleton />}>
-      <TodayPage
-        onStart={() => setReviewSessionId("__all_today__")}
-        onStartSession={startSession}
-      />
+      <TodayPage onStartSession={startSession} />
     </Suspense>
   );
 }
@@ -261,6 +259,14 @@ function GeneratedNotePageWrapper() {
   );
 }
 
+function ReviewPageWrapper() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <ReviewPage />
+    </Suspense>
+  );
+}
+
 const notesRoute = createRoute({
   getParentRoute: () => layoutRoute,
   path: "notes/$examId",
@@ -277,6 +283,12 @@ const noteIdRoute = createRoute({
   getParentRoute: () => layoutRoute,
   path: "note/$id",
   component: GeneratedNotePageWrapper,
+});
+
+const reviewRoute = createRoute({
+  getParentRoute: () => layoutRoute,
+  path: "review/$sessionId",
+  component: ReviewPageWrapper,
 });
 
 const catchAllRoute = createRoute({
@@ -301,6 +313,7 @@ const routeTree = rootRoute.addChildren([
     notesRoute,
     noteNewRoute,
     noteIdRoute,
+    reviewRoute,
     catchAllRoute,
   ]),
 ]);

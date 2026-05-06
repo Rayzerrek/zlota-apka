@@ -1,10 +1,12 @@
+import { Button } from "@cloudflare/kumo/components/button";
+import { XIcon } from "@phosphor-icons/react";
+import { useNavigate, useParams } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { ReviewCard } from "../components/review/ReviewCard";
 import { ReviewDoneScreen } from "../components/review/ReviewDoneScreen";
 import { ReviewHeader } from "../components/review/ReviewHeader";
 import { ReviewRatings } from "../components/review/ReviewRatings";
-import { useReview } from "../contexts/ReviewContext";
 import { useCardsByTopic, useCardsDue } from "../hooks/api/useCards";
 import { useSession } from "../hooks/api/useSessions";
 import { adaptApiCardToCard } from "../lib/adapters";
@@ -19,17 +21,17 @@ const reviewShellCls =
   "fixed inset-0 z-50 flex flex-col bg-paper/95 backdrop-blur-[18px]";
 
 export function ReviewPage() {
-  const { reviewSessionId, setReviewSessionId } = useReview();
+  const { sessionId } = useParams({ from: "/_layout/review/$sessionId" });
+  const navigate = useNavigate();
 
-  const isAllToday = reviewSessionId === "__all_today__";
-  const sessionId = isAllToday ? "" : (reviewSessionId ?? "");
+  const isAllToday = sessionId === "today";
+  const actualSessionId = isAllToday ? "" : sessionId;
 
   const { data: dueCards } = useCardsDue();
-  const { data: session } = useSession(sessionId);
+  const { data: session } = useSession(actualSessionId);
   const { data: topicCards } = useCardsByTopic(session?.topicId ?? "");
 
   const cards = useMemo(() => {
-    if (!reviewSessionId) return [];
     if (isAllToday) {
       return (dueCards ?? [])
         .filter((c) => c.due.slice(0, 10) <= todayISO())
@@ -37,7 +39,7 @@ export function ReviewPage() {
     }
     if (!session?.topicId) return [];
     return (topicCards ?? []).map(adaptApiCardToCard);
-  }, [reviewSessionId, isAllToday, dueCards, session?.topicId, topicCards]);
+  }, [isAllToday, dueCards, session?.topicId, topicCards]);
 
   const [idx, setIdx] = useState(0);
   const [flipped, setFlipped] = useState(false);
@@ -70,6 +72,16 @@ export function ReviewPage() {
   if (!current) {
     return (
       <div className={reviewShellCls}>
+        <div className="flex items-center px-6 py-4 border-b border-rule">
+          <Button
+            variant="ghost"
+            icon={XIcon}
+            onClick={() => navigate({ to: "/today" })}
+            className="text-ink-muted hover:text-amber mono text-[14px] uppercase"
+          >
+            Zamknij
+          </Button>
+        </div>
         <div className="flex-1 grid place-items-center">
           <p className="text-ink-faint display italic text-[25px]">
             Brak kart do powtórki.
@@ -84,7 +96,7 @@ export function ReviewPage() {
       <ReviewDoneScreen
         ratings={ratings}
         total={cards.length}
-        onExit={() => setReviewSessionId(null)}
+        onExit={() => navigate({ to: "/today" })}
       />
     );
   }
@@ -95,7 +107,7 @@ export function ReviewPage() {
         current={idx + 1}
         total={cards.length}
         progress={progress}
-        onExit={() => setReviewSessionId(null)}
+        onExit={() => navigate({ to: "/today" })}
       />
 
       <div className="flex-1 grid place-items-center p-6 [perspective:1800px]">
