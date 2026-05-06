@@ -10,13 +10,19 @@ import {
   topics,
   userAvailability,
 } from "../db/schema";
+import { errorResponseSchema } from "../lib/constant";
 import { createDb } from "../lib/db";
 import { generatePlan } from "../lib/scheduler";
 import { requireAuth } from "../middleware/auth";
 import {
+  examCreateResponseSchema,
   examCreateSchema,
+  examDetailResponseSchema,
+  examListResponseSchema,
   examPatchSchema,
+  examRowSchema,
   idParamsSchema,
+  okResponseSchema,
 } from "../types/schemas";
 
 import type { HonoEnv } from "../lib/factory";
@@ -25,7 +31,12 @@ const listExamsRoute = createRoute({
   method: "get",
   path: "/",
   tags: ["Exams"],
-  responses: { 200: { description: "List of exams" } },
+  responses: {
+    200: {
+      description: "List of exams",
+      content: { "application/json": { schema: examListResponseSchema } },
+    },
+  },
 });
 
 const createExamRoute = createRoute({
@@ -38,7 +49,16 @@ const createExamRoute = createRoute({
       required: true,
     },
   },
-  responses: { 201: { description: "Created exam with topics and sessions" } },
+  responses: {
+    201: {
+      description: "Created exam with topics and sessions",
+      content: { "application/json": { schema: examCreateResponseSchema } },
+    },
+    404: {
+      description: "Subject not found",
+      content: { "application/json": { schema: errorResponseSchema } },
+    },
+  },
 });
 
 const getExamRoute = createRoute({
@@ -47,8 +67,14 @@ const getExamRoute = createRoute({
   tags: ["Exams"],
   request: { params: idParamsSchema },
   responses: {
-    200: { description: "Exam detail" },
-    404: { description: "Not found" },
+    200: {
+      description: "Exam detail",
+      content: { "application/json": { schema: examDetailResponseSchema } },
+    },
+    404: {
+      description: "Not found",
+      content: { "application/json": { schema: errorResponseSchema } },
+    },
   },
 });
 
@@ -64,8 +90,14 @@ const patchExamRoute = createRoute({
     },
   },
   responses: {
-    200: { description: "Updated exam" },
-    404: { description: "Not found" },
+    200: {
+      description: "Updated exam",
+      content: { "application/json": { schema: examRowSchema } },
+    },
+    404: {
+      description: "Not found",
+      content: { "application/json": { schema: errorResponseSchema } },
+    },
   },
 });
 
@@ -75,8 +107,14 @@ const deleteExamRoute = createRoute({
   tags: ["Exams"],
   request: { params: idParamsSchema },
   responses: {
-    200: { description: "Deleted" },
-    404: { description: "Not found" },
+    200: {
+      description: "Deleted",
+      content: { "application/json": { schema: okResponseSchema } },
+    },
+    404: {
+      description: "Not found",
+      content: { "application/json": { schema: errorResponseSchema } },
+    },
   },
 });
 
@@ -85,219 +123,196 @@ export const examsRouter = new OpenAPIHono<HonoEnv>();
 examsRouter.use(requireAuth);
 
 examsRouter.openapi(listExamsRoute, async (c) => {
-  try {
-    const db = createDb(c.env);
-    const rows = await db
-      .select({
-        id: exams.id,
-        userId: exams.userId,
-        subjectId: exams.subjectId,
-        name: exams.name,
-        examDate: exams.examDate,
-        difficulty: exams.difficulty,
-        materialSize: exams.materialSize,
-        notes: exams.notes,
-        createdAt: exams.createdAt,
-        subjectKey: subjects.key,
-      })
-      .from(exams)
-      .leftJoin(subjects, eq(exams.subjectId, subjects.id))
-      .where(eq(exams.userId, c.get("userId")));
-    return c.json(rows, 200);
-  } catch (err) {
-    console.error("GET /exams failed", err);
-    throw err;
-  }
+  const db = createDb(c.env);
+  const rows = await db
+    .select({
+      id: exams.id,
+      userId: exams.userId,
+      subjectId: exams.subjectId,
+      name: exams.name,
+      examDate: exams.examDate,
+      difficulty: exams.difficulty,
+      materialSize: exams.materialSize,
+      notes: exams.notes,
+      createdAt: exams.createdAt,
+      subjectKey: subjects.key,
+    })
+    .from(exams)
+    .leftJoin(subjects, eq(exams.subjectId, subjects.id))
+    .where(eq(exams.userId, c.get("userId")));
+  return c.json(rows, 200);
 });
 
 examsRouter.openapi(createExamRoute, async (c) => {
-  try {
-    const db = createDb(c.env);
-    const userId = c.get("userId");
-    const body = c.req.valid("json");
-    const today = new Date().toISOString().slice(0, 10);
+  const db = createDb(c.env);
+  const userId = c.get("userId");
+  const body = c.req.valid("json");
+  const today = new Date().toISOString().slice(0, 10);
 
-    const [subject] = await db
-      .select({ id: subjects.id })
-      .from(subjects)
-      .where(and(eq(subjects.id, body.subjectId), eq(subjects.userId, userId)));
-    if (!subject) return c.json({ error: "Subject not found" }, 404);
+  const [subject] = await db
+    .select({ id: subjects.id })
+    .from(subjects)
+    .where(and(eq(subjects.id, body.subjectId), eq(subjects.userId, userId)));
+  if (!subject) return c.json({ error: "Subject not found" }, 404);
 
-    const result = await db.transaction(async (tx) => {
-      const [exam] = await tx
-        .insert(exams)
-        .values({
-          userId,
-          subjectId: body.subjectId,
-          name: body.name,
-          examDate: body.examDate,
-          difficulty: body.difficulty,
-          materialSize: body.materialSize,
-          notes: body.notes,
-        })
-        .returning();
-
-      const createdTopics =
-        body.topicNames.length > 0
-          ? await tx
-              .insert(topics)
-              .values(
-                body.topicNames.map((name, i) => ({
-                  userId,
-                  subjectId: body.subjectId,
-                  examId: exam.id,
-                  name,
-                  position: i,
-                })),
-              )
-              .returning()
-          : [];
-
-      const availability = await tx
-        .select()
-        .from(userAvailability)
-        .where(eq(userAvailability.userId, userId));
-
-      const plannedSessions = generatePlan(
-        exam,
-        createdTopics,
-        availability,
-        today,
-        body.examDate,
-      );
-
-      const [run] = await tx
-        .insert(schedulerRuns)
-        .values({
-          userId,
-          examId: exam.id,
-          daysUntilExam: Math.max(
-            0,
-            Math.floor(
-              (new Date(body.examDate).getTime() - new Date(today).getTime()) /
-                86_400_000,
-            ),
-          ),
-          topicsCount: createdTopics.length,
-          dailyMinutes: availability.reduce(
-            (sum, a) => sum + a.availableMinutes,
-            0,
-          ),
-          sessionsCreated: plannedSessions.length,
-          planJson: plannedSessions,
-        })
-        .returning();
-
-      const createdSessions =
-        plannedSessions.length > 0
-          ? await tx
-              .insert(studySessions)
-              .values(
-                plannedSessions.map((s) => ({
-                  ...s,
-                  userId,
-                  examId: exam.id,
-                  schedulerRunId: run.id,
-                })),
-              )
-              .returning()
-          : [];
-
-      await tx.insert(notifications).values({
+  const result = await db.transaction(async (tx) => {
+    const [exam] = await tx
+      .insert(exams)
+      .values({
         userId,
-        type: "exam_created",
-        category: "exam",
-        priority: "medium",
-        title: "Zaplanowano sesje nauki",
-        description: `${createdSessions.length} ${createdSessions.length === 1 ? "sesja" : "sesje"} · ${body.name}`,
-        actionUrl: "/calendar",
-        sentAt: new Date(),
-        scheduledFor: null,
-      });
+        subjectId: body.subjectId,
+        name: body.name,
+        examDate: body.examDate,
+        difficulty: body.difficulty,
+        materialSize: body.materialSize,
+        notes: body.notes,
+      })
+      .returning();
 
-      return {
-        exam,
-        topics: createdTopics,
-        sessions: createdSessions,
-        schedulerRunId: run.id,
-      };
+    const createdTopics =
+      body.topicNames.length > 0
+        ? await tx
+            .insert(topics)
+            .values(
+              body.topicNames.map((name, i) => ({
+                userId,
+                subjectId: body.subjectId,
+                examId: exam.id,
+                name,
+                position: i,
+              })),
+            )
+            .returning()
+        : [];
+
+    const availability = await tx
+      .select()
+      .from(userAvailability)
+      .where(eq(userAvailability.userId, userId));
+
+    const plannedSessions = generatePlan(
+      exam,
+      createdTopics,
+      availability,
+      today,
+      body.examDate,
+    );
+
+    const [run] = await tx
+      .insert(schedulerRuns)
+      .values({
+        userId,
+        examId: exam.id,
+        daysUntilExam: Math.max(
+          0,
+          Math.floor(
+            (new Date(body.examDate).getTime() - new Date(today).getTime()) /
+              86_400_000,
+          ),
+        ),
+        topicsCount: createdTopics.length,
+        dailyMinutes: availability.reduce(
+          (sum, a) => sum + a.availableMinutes,
+          0,
+        ),
+        sessionsCreated: plannedSessions.length,
+        planJson: plannedSessions,
+      })
+      .returning();
+
+    const createdSessions =
+      plannedSessions.length > 0
+        ? await tx
+            .insert(studySessions)
+            .values(
+              plannedSessions.map((s) => ({
+                ...s,
+                userId,
+                examId: exam.id,
+                schedulerRunId: run.id,
+              })),
+            )
+            .returning()
+        : [];
+
+    await tx.insert(notifications).values({
+      userId,
+      type: "exam_created",
+      category: "exam",
+      priority: "medium",
+      title: "Zaplanowano sesje nauki",
+      description: `${createdSessions.length} ${createdSessions.length === 1 ? "sesja" : "sesje"} · ${body.name}`,
+      actionUrl: "/calendar",
+      sentAt: new Date(),
+      scheduledFor: null,
     });
 
-    return c.json(result, 201);
-  } catch (err) {
-    console.error("POST /exams failed", err);
-    throw err;
-  }
+    return {
+      exam,
+      topics: createdTopics,
+      sessions: createdSessions,
+      schedulerRunId: run.id,
+    };
+  });
+
+  return c.json(result, 201);
 });
 
 examsRouter.openapi(getExamRoute, async (c) => {
-  try {
-    const db = createDb(c.env);
-    const userId = c.get("userId");
-    const examId = c.req.valid("param").id;
+  const db = createDb(c.env);
+  const userId = c.get("userId");
+  const examId = c.req.valid("param").id;
 
-    const [exam] = await db
+  const [examRows, examTopics, sessions] = await Promise.all([
+    db
       .select()
       .from(exams)
-      .where(and(eq(exams.id, examId), eq(exams.userId, userId)));
-    if (!exam) return c.json({ error: "Not found" }, 404);
-
-    const examTopics = await db
+      .where(and(eq(exams.id, examId), eq(exams.userId, userId))),
+    db
       .select()
       .from(topics)
-      .where(and(eq(topics.examId, examId), eq(topics.userId, userId)));
-
-    const sessions = await db
+      .where(and(eq(topics.examId, examId), eq(topics.userId, userId))),
+    db
       .select()
       .from(studySessions)
       .where(
         and(eq(studySessions.examId, examId), eq(studySessions.userId, userId)),
-      );
+      ),
+  ]);
 
-    return c.json({ exam, topics: examTopics, sessions }, 200);
-  } catch (err) {
-    console.error("GET /exams/:id failed", err);
-    throw err;
-  }
+  const [exam] = examRows;
+  if (!exam) return c.json({ error: "Not found" }, 404);
+
+  return c.json({ exam, topics: examTopics, sessions }, 200);
 });
 
 examsRouter.openapi(patchExamRoute, async (c) => {
-  try {
-    const db = createDb(c.env);
-    const [row] = await db
-      .update(exams)
-      .set(c.req.valid("json"))
-      .where(
-        and(
-          eq(exams.id, c.req.valid("param").id),
-          eq(exams.userId, c.get("userId")),
-        ),
-      )
-      .returning();
-    if (!row) return c.json({ error: "Not found" }, 404);
-    return c.json(row, 200);
-  } catch (err) {
-    console.error("PATCH /exams/:id failed", err);
-    throw err;
-  }
+  const db = createDb(c.env);
+  const [row] = await db
+    .update(exams)
+    .set(c.req.valid("json"))
+    .where(
+      and(
+        eq(exams.id, c.req.valid("param").id),
+        eq(exams.userId, c.get("userId")),
+      ),
+    )
+    .returning();
+  if (!row) return c.json({ error: "Not found" }, 404);
+  return c.json(row, 200);
 });
 
 examsRouter.openapi(deleteExamRoute, async (c) => {
-  try {
-    const db = createDb(c.env);
-    const [row] = await db
-      .delete(exams)
-      .where(
-        and(
-          eq(exams.id, c.req.valid("param").id),
-          eq(exams.userId, c.get("userId")),
-        ),
-      )
-      .returning();
-    if (!row) return c.json({ error: "Not found" }, 404);
-    return c.json({ ok: true }, 200);
-  } catch (err) {
-    console.error("DELETE /exams/:id failed", err);
-    throw err;
-  }
+  const db = createDb(c.env);
+  const [row] = await db
+    .delete(exams)
+    .where(
+      and(
+        eq(exams.id, c.req.valid("param").id),
+        eq(exams.userId, c.get("userId")),
+      ),
+    )
+    .returning();
+  if (!row) return c.json({ error: "Not found" }, 404);
+  return c.json({ ok: true }, 200);
 });
