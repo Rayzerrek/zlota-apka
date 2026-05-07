@@ -473,15 +473,18 @@ export function TodayPage({ onStartSession }: Props) {
                   key={session.id}
                   type="button"
                   variant="ghost"
-                  className="justify-start rounded-sm border border-rule bg-paper px-4 py-4 text-left transition-all hover:-translate-y-px hover:bg-paper"
+                  className={cn(
+                    "group w-full justify-start rounded-sm border border-rule bg-paper text-left transition-all hover:-translate-y-px hover:bg-paper",
+                    isDone && "opacity-60",
+                  )}
                   onClick={() => !isDone && onStartSession(session.id)}
                 >
-                  <div className="grid w-full gap-3 min-[760px]:grid-cols-[auto_minmax(0,1fr)_auto] min-[760px]:items-center">
-                    <div className="flex items-start gap-3">
-                      <div className="grid h-10 w-10 place-items-center rounded-sm border border-rule bg-kumo-base mono text-[12px] text-ink-faint">
+                  <div className="flex w-full flex-col gap-4 p-4 sm:p-5 md:flex-row md:items-center md:gap-6">
+                    <div className="flex flex-1 items-start gap-3 md:min-w-0">
+                      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-sm border border-rule bg-kumo-base mono text-[12px] text-ink-faint">
                         {String(index + 1).padStart(2, "0")}
                       </div>
-                      <div>
+                      <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="mono text-[11px] uppercase tracking-[0.14em] text-ink-faint">
                             {session.subjectName ??
@@ -498,14 +501,14 @@ export function TodayPage({ onStartSession }: Props) {
                           {subjKey && (
                             <span
                               className={cn(
-                                "h-2 w-2 rounded-full shrink-0",
+                                "h-2 w-2 shrink-0 rounded-full",
                                 SUBJECT_BG[subjKey],
                               )}
                             />
                           )}
                           <span
                             className={cn(
-                              "display text-[21px] leading-[1.15]",
+                              "display text-[18px] leading-[1.25] sm:text-[21px]",
                               isDone
                                 ? "text-ink-faint line-through decoration-rule-strong"
                                 : "text-ink",
@@ -514,7 +517,7 @@ export function TodayPage({ onStartSession }: Props) {
                             {session.topicName ?? "Bez nazwy tematu"}
                           </span>
                         </div>
-                        <p className="mt-2 text-sm text-ink-muted">
+                        <p className="mt-2 text-sm leading-relaxed text-ink-muted">
                           {isDone
                             ? "Sesja ukończona — możesz przejść dalej."
                             : `Do zrobienia w około ${formatMinutes(session.plannedMinutes)}.`}
@@ -522,26 +525,31 @@ export function TodayPage({ onStartSession }: Props) {
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-2 text-sm text-ink-muted">
-                      <span className="rounded-sm border border-rule bg-kumo-base px-2.5 py-1 mono text-[11px] uppercase tracking-[0.14em] text-ink-faint">
-                        {formatMinutes(session.plannedMinutes)}
-                      </span>
-                      <span className="rounded-sm border border-rule bg-kumo-base px-2.5 py-1 mono text-[11px] uppercase tracking-[0.14em] text-ink-faint">
-                        {isDone ? "ukończona" : "gotowa do startu"}
-                      </span>
-                    </div>
+                    <div className="flex items-center justify-between gap-4 md:shrink-0 md:flex-col md:items-end md:gap-3 lg:flex-row lg:items-center">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="rounded-sm border border-rule bg-kumo-base px-2.5 py-1 mono text-[11px] uppercase tracking-[0.14em] text-ink-faint">
+                          {formatMinutes(session.plannedMinutes)}
+                        </span>
+                        <span className="rounded-sm border border-rule bg-kumo-base px-2.5 py-1 mono text-[11px] uppercase tracking-[0.14em] text-ink-faint">
+                          {isDone ? "ukończona" : "gotowa do startu"}
+                        </span>
+                      </div>
 
-                    <div className="flex items-center justify-between gap-3 min-[760px]:justify-end">
-                      <span className="mono text-[11px] uppercase tracking-[0.14em] text-ink-faint">
-                        {isDone ? "gotowe" : "kliknij, aby zacząć"}
-                      </span>
-                      <ArrowRightIcon
-                        size={18}
-                        className={cn(
-                          "shrink-0 transition-transform",
-                          isDone ? "text-ink-faint" : "text-amber",
-                        )}
-                      />
+                      <div className="flex items-center gap-2">
+                        <span className="hidden mono text-[11px] uppercase tracking-[0.14em] text-ink-faint sm:inline">
+                          {isDone ? "gotowe" : "kliknij, aby zacząć"}
+                        </span>
+                        <div
+                          className={cn(
+                            "grid h-8 w-8 shrink-0 place-items-center rounded-full border transition-colors",
+                            isDone
+                              ? "border-rule bg-kumo-base text-ink-faint"
+                              : "border-amber/25 bg-amber/10 text-amber group-hover:border-amber group-hover:bg-amber group-hover:text-paper",
+                          )}
+                        >
+                          <ArrowRightIcon size={16} weight="bold" />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </Button>
