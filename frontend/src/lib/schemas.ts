@@ -14,6 +14,15 @@ export const ApiTopicSchema = z.object({
   position: z.number(),
 });
 
+export const ApiTopicWithSubjectSchema = ApiTopicSchema.extend({
+  userId: z.string(),
+  subjectId: z.string(),
+  examId: z.string().nullable(),
+  createdAt: z.string(),
+  subjectName: z.string().nullable(),
+  examName: z.string().nullable(),
+});
+
 export const ApiSessionSchema = z.object({
   id: z.string(),
   topicId: z.string(),

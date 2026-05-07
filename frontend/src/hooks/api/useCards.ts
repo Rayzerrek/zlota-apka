@@ -80,6 +80,7 @@ export function useDeleteCard() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.cardsDue });
+      qc.invalidateQueries({ queryKey: queryKeys.allCards });
     },
   });
 }

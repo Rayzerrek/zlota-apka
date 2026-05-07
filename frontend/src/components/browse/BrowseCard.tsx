@@ -1,3 +1,6 @@
+import { Button } from "@cloudflare/kumo/components/button";
+import { TrashIcon } from "@phosphor-icons/react";
+
 import { cn } from "../../utils/cn";
 import { daysBetween } from "../../utils/date";
 import { SUBJECTS, SUBJECT_BG } from "../../utils/subjects";
@@ -24,9 +27,10 @@ function todayISO(): string {
 
 type Props = {
   card: Card;
+  onDelete?: () => void;
 };
 
-export function BrowseCard({ card }: Props) {
+export function BrowseCard({ card, onDelete }: Props) {
   const subj = SUBJECTS[card.subject];
   const dueDays = daysBetween(todayISO(), card.dueISO);
   const dueText =
@@ -55,14 +59,29 @@ export function BrowseCard({ card }: Props) {
           />
           {subj.name}
         </span>
-        <span
-          className={cn(
-            "px-1.5 py-[2px] border border-current rounded-[2px] leading-none",
-            STAGE_COLORS[card.stage],
+        <div className="flex items-center gap-2">
+          <span
+            className={cn(
+              "px-1.5 py-[2px] border border-current rounded-[2px] leading-none",
+              STAGE_COLORS[card.stage],
+            )}
+          >
+            {STAGE_LABELS[card.stage]}
+          </span>
+          {onDelete && (
+            <Button
+              variant="ghost"
+              size="xs"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete();
+              }}
+              className="text-ink-faint hover:text-rating-1 p-1"
+            >
+              <TrashIcon size={14} weight="bold" />
+            </Button>
           )}
-        >
-          {STAGE_LABELS[card.stage]}
-        </span>
+        </div>
       </div>
       <div className="display text-[21px] leading-[1.3] text-ink">
         {card.question}

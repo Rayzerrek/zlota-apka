@@ -195,6 +195,14 @@ export const topicRowSchema = z.object({
 });
 export const topicListResponseSchema = z.array(topicRowSchema);
 
+export const topicWithSubjectSchema = topicRowSchema.extend({
+  subjectName: z.string().nullable(),
+  examName: z.string().nullable(),
+});
+export const topicWithSubjectListResponseSchema = z.array(
+  topicWithSubjectSchema,
+);
+
 export const examRowSchema = z.object({
   id: z.string(),
   userId: z.string(),

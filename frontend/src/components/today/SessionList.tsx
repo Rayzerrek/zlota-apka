@@ -17,6 +17,7 @@ import type { ApiDashboardSession } from "../../types/api";
 type Props = {
   sessions: ApiDashboardSession[];
   onStartSession: (id: string) => void;
+  className?: string;
 };
 
 function toSubjectKey(k: string | null): SubjectKey | null {
@@ -25,12 +26,12 @@ function toSubjectKey(k: string | null): SubjectKey | null {
   return null;
 }
 
-export function SessionList({ sessions, onStartSession }: Props) {
+export function SessionList({ sessions, onStartSession, className }: Props) {
   const navigate = useNavigate();
 
   if (sessions.length === 0) {
     return (
-      <section className="mt-16">
+      <section className={cn("mt-16", className)}>
         <div className="flex items-baseline justify-between gap-3 mb-5 pb-3 border-b border-rule">
           <h2 className="display font-normal text-[25px] text-ink flex items-baseline gap-3">
             <span className="mono text-xs text-amber">01 —</span> Plan dnia
@@ -63,7 +64,7 @@ export function SessionList({ sessions, onStartSession }: Props) {
   }
 
   return (
-    <section className="mt-16">
+    <section className={cn("mt-16", className)}>
       <div className="flex items-baseline justify-between gap-3 mb-5 pb-3 border-b border-rule">
         <h2 className="display font-normal text-[25px] text-ink flex items-baseline gap-3">
           <span className="mono text-xs text-amber">01 —</span> Plan dnia

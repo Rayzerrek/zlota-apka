@@ -1,7 +1,7 @@
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import { and, eq } from "drizzle-orm";
 
-import { exams, topics } from "../db/schema";
+import { exams, subjects, topics } from "../db/schema";
 import { errorResponseSchema } from "../lib/constant";
 import { createDb } from "../lib/db";
 import { requireAuth } from "../middleware/auth";
@@ -13,9 +13,24 @@ import {
   topicListResponseSchema,
   topicPatchSchema,
   topicRowSchema,
+  topicWithSubjectListResponseSchema,
 } from "../types/schemas";
 
 import type { HonoEnv } from "../lib/factory";
+
+const allTopicsRoute = createRoute({
+  method: "get",
+  path: "/topics",
+  tags: ["Topics"],
+  responses: {
+    200: {
+      description: "All user topics with subject",
+      content: {
+        "application/json": { schema: topicWithSubjectListResponseSchema },
+      },
+    },
+  },
+});
 
 const listTopicsRoute = createRoute({
   method: "get",
@@ -96,6 +111,27 @@ const deleteTopicRoute = createRoute({
 export const topicsRouter = new OpenAPIHono<HonoEnv>();
 
 topicsRouter.use(requireAuth);
+
+topicsRouter.openapi(allTopicsRoute, async (c) => {
+  const db = createDb(c.env);
+  const rows = await db
+    .select({
+      id: topics.id,
+      userId: topics.userId,
+      subjectId: topics.subjectId,
+      examId: topics.examId,
+      name: topics.name,
+      position: topics.position,
+      createdAt: topics.createdAt,
+      subjectName: subjects.name,
+      examName: exams.name,
+    })
+    .from(topics)
+    .leftJoin(subjects, eq(topics.subjectId, subjects.id))
+    .leftJoin(exams, eq(topics.examId, exams.id))
+    .where(eq(topics.userId, c.get("userId")));
+  return c.json(rows, 200);
+});
 
 topicsRouter.openapi(listTopicsRoute, async (c) => {
   const db = createDb(c.env);

@@ -3,6 +3,7 @@ import {
   ArrowRightIcon,
   CalendarPlusIcon,
   ClockCountdownIcon,
+  LightningIcon,
   NotePencilIcon,
   WarningCircleIcon,
 } from "@phosphor-icons/react";
@@ -12,9 +13,10 @@ import { useState } from "react";
 
 import { AddExamModal } from "../components/exam/AddExamModal";
 import { PageHead } from "../components/layout/PageHead";
+import { SessionList } from "../components/today/SessionList";
 import { useDashboard } from "../hooks/api/useDashboard";
 import { cn } from "../utils/cn";
-import { dayLong, daysBetween, formatMinutes, longDate } from "../utils/date";
+import { dayLong, daysBetween, longDate } from "../utils/date";
 
 import type { ApiDashboardSession } from "../types/api";
 
@@ -69,14 +71,7 @@ export function TodayPage({ onStartSession }: Props) {
     (session) => session.status !== "completed",
   );
   const remainingSessions = pendingSessions.length;
-  const totalMinutes = todaySessions.reduce(
-    (sum, session) => sum + session.plannedMinutes,
-    0,
-  );
-  const pendingMinutes = pendingSessions.reduce(
-    (sum, session) => sum + session.plannedMinutes,
-    0,
-  );
+
   const nextSession = pendingSessions[0] ?? null;
   const examDays = nextExam ? daysBetween(today, nextExam.examDate) : null;
 
@@ -106,28 +101,6 @@ export function TodayPage({ onStartSession }: Props) {
     icon: typeof WarningCircleIcon;
     tone: "warning" | "info";
   }> = [];
-
-  if (overdueCount > 0) {
-    reminders.push({
-      id: "overdue",
-      title:
-        overdueCount === 1
-          ? "Masz 1 zaległą sesję"
-          : `Masz ${overdueCount} zaległe sesje`,
-      description:
-        "Zacznij od najstarszej pozycji. To najszybciej porządkuje plan i zmniejsza presję przed kolejnymi dniami.",
-      actionLabel: "Otwórz plan dnia",
-      onAction: () => {
-        if (nextSession) {
-          onStartSession(nextSession.id);
-          return;
-        }
-        navigate({ to: "/calendar" });
-      },
-      icon: WarningCircleIcon,
-      tone: "warning",
-    });
-  }
 
   if (nextExam && examDays !== null && examDays <= 3) {
     reminders.push({
@@ -240,6 +213,48 @@ export function TodayPage({ onStartSession }: Props) {
                 </div>
               </div>
 
+              {overdueCount > 0 && (
+                <div className="rounded-sm border border-amber/30 bg-[linear-gradient(180deg,rgba(242,184,48,0.12),rgba(242,184,48,0.04))] p-4 sm:p-5">
+                  <div className="flex flex-col gap-4 min-[720px]:flex-row min-[720px]:items-start min-[720px]:justify-between">
+                    <div className="flex items-start gap-3">
+                      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-sm border border-amber/25 bg-amber/12 text-amber">
+                        <WarningCircleIcon size={18} weight="fill" />
+                      </div>
+                      <div>
+                        <div className="mono text-[11px] uppercase tracking-[0.16em] text-ink-faint">
+                          Zaległe powtórki
+                        </div>
+                        <h3 className="mt-2 text-[18px] leading-6 text-ink">
+                          {overdueCount === 1
+                            ? "1 zaległa sesja"
+                            : `${overdueCount} zaległe sesje`}
+                        </h3>
+                        <p className="mt-1 text-sm leading-6 text-ink-muted">
+                          Zacznij od najstarszej pozycji. To najszybciej
+                          porządkuje plan i zmniejsza presję przed kolejnymi
+                          dniami.
+                        </p>
+                      </div>
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        if (nextSession) {
+                          onStartSession(nextSession.id);
+                          return;
+                        }
+                        navigate({ to: "/calendar" });
+                      }}
+                      className="shrink-0 rounded-sm"
+                    >
+                      Otwórz plan dnia
+                    </Button>
+                  </div>
+                </div>
+              )}
+
               {reminders.length > 0 && (
                 <div className="grid gap-3">
                   {reminders.map((reminder) => {
@@ -296,34 +311,11 @@ export function TodayPage({ onStartSession }: Props) {
               )}
             </div>
 
-            <div className="grid gap-3 min-[680px]:grid-cols-2">
-              <div className="rounded-sm border border-rule bg-paper px-4 py-4">
-                <div className="mono text-[11px] uppercase tracking-[0.14em] text-ink-faint">
-                  Kolejny start
-                </div>
-                <div className="mt-2 text-[18px] leading-6 text-ink">
-                  {nextSession?.topicName ?? "Wszystko gotowe"}
-                </div>
-                <div className="mt-1 text-sm text-ink-muted">
-                  {nextSession?.subjectName ??
-                    nextSession?.subjectKey ??
-                    "Możesz wrócić do materiałów albo zaplanować coś nowego."}
-                </div>
-              </div>
-
-              <div className="rounded-sm border border-rule bg-paper px-4 py-4">
-                <div className="mono text-[11px] uppercase tracking-[0.14em] text-ink-faint">
-                  Dziś zajmie Ci to
-                </div>
-                <div className="mt-2 text-[18px] leading-6 text-ink">
-                  {formatMinutes(totalMinutes)}
-                </div>
-                <div className="mt-1 text-sm text-ink-muted">
-                  całego planu, w tym {formatMinutes(pendingMinutes)} do
-                  zrobienia od teraz
-                </div>
-              </div>
-            </div>
+            <SessionList
+              sessions={todaySessions}
+              onStartSession={onStartSession}
+              className="mt-0"
+            />
           </div>
         </section>
 
@@ -338,73 +330,114 @@ export function TodayPage({ onStartSession }: Props) {
             </div>
           )}
 
-          <div className="rounded-sm border border-rule bg-[linear-gradient(180deg,rgba(242,184,48,0.08),transparent_65%),var(--color-paper-2)] p-6 sm:p-7">
-            <div className="mono text-[12px] uppercase tracking-[0.18em] text-amber">
-              Najbliższy sprawdzian
-            </div>
-
-            {nextExam && examDays !== null ? (
-              <>
-                <div className="mt-4 display text-[34px] leading-[1.02] text-ink sm:text-[40px]">
-                  {nextExam.name}
+          {!isLoading && !error && (
+            <>
+              <div className="rounded-sm border border-rule bg-paper-2 p-5">
+                <div className="mono text-[12px] uppercase tracking-[0.16em] text-ink-muted">
+                  Progres tygodnia
                 </div>
-                <div className="mt-3 text-base text-ink-muted">
-                  {nextExam.subjectName ??
-                    nextExam.subjectKey ??
-                    "Bez przedmiotu"}
-                  {" · "}
-                  {longDate(nextExam.examDate)}
-                </div>
-
-                <div className="mt-6 flex items-end gap-3 border-t border-dashed border-amber/20 pt-5">
-                  <span className="mono text-[72px] leading-[0.82] text-amber sm:text-[84px]">
-                    {examDays}
-                  </span>
-                  <span className="pb-2 mono text-[12px] uppercase tracking-[0.16em] text-ink-faint">
-                    dni do terminu
+                <div className="mt-4 flex items-center gap-3">
+                  <div className="flex-1 h-2 bg-kumo-base rounded-sm overflow-hidden">
+                    <div
+                      className="h-full rounded-sm bg-amber transition-all"
+                      style={{
+                        width: `${dashboard?.week.progressPercent ?? 0}%`,
+                      }}
+                    />
+                  </div>
+                  <span className="mono text-[14px] text-ink tabular-nums">
+                    {dashboard?.week.progressPercent ?? 0}%
                   </span>
                 </div>
-
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigate({ to: "/calendar" })}
-                  className="mt-5 rounded-sm bg-amber text-paper hover:bg-[#ffcc4a]"
-                >
-                  Otwórz plan
-                </Button>
-              </>
-            ) : (
-              <div className="mt-4 text-sm leading-6 text-ink-muted">
-                Brak aktywnego terminu. Dodaj sprawdzian, a planner sam rozpisze
-                powtórki.
+                <div className="mt-2 text-sm text-ink-muted">
+                  {dashboard?.week.completed ?? 0} /{" "}
+                  {dashboard?.week.total ?? 0} zaplanowanych sesji ukończonych
+                </div>
               </div>
-            )}
-          </div>
 
-          <div className="rounded-sm border border-rule bg-paper-2 p-5">
-            <div className="mono text-[12px] uppercase tracking-[0.16em] text-ink-muted">
-              Szybkie akcje
-            </div>
-            <div className="mt-4 grid gap-2.5">
-              <Button
-                variant="outline"
-                icon={CalendarPlusIcon}
-                onClick={() => setAddExamOpen(true)}
-                className="justify-start rounded-sm"
-              >
-                Dodaj sprawdzian
-              </Button>
-              <Button
-                variant="ghost"
-                icon={NotePencilIcon}
-                onClick={() => navigate({ to: "/browse" })}
-                className="justify-start rounded-sm"
-              >
-                Przejrzyj materiały
-              </Button>
-            </div>
-          </div>
+              <div className="rounded-sm border border-rule bg-[linear-gradient(180deg,rgba(242,184,48,0.08),transparent_65%),var(--color-paper-2)] p-6 sm:p-7">
+                <div className="mono text-[12px] uppercase tracking-[0.18em] text-amber">
+                  Najbliższy sprawdzian
+                </div>
+
+                {nextExam && examDays !== null ? (
+                  <>
+                    <div className="mt-4 display text-[34px] leading-[1.02] text-ink sm:text-[40px]">
+                      {nextExam.name}
+                    </div>
+                    <div className="mt-3 text-base text-ink-muted">
+                      {nextExam.subjectName ??
+                        nextExam.subjectKey ??
+                        "Bez przedmiotu"}
+                      {" · "}
+                      {longDate(nextExam.examDate)}
+                    </div>
+
+                    <div className="mt-6 flex items-end gap-3 border-t border-dashed border-amber/20 pt-5">
+                      <span className="mono text-[72px] leading-[0.82] text-amber sm:text-[84px]">
+                        {examDays}
+                      </span>
+                      <span className="pb-2 mono text-[12px] uppercase tracking-[0.16em] text-ink-faint">
+                        dni do terminu
+                      </span>
+                    </div>
+
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => navigate({ to: "/calendar" })}
+                      className="mt-5 rounded-sm bg-amber text-paper hover:bg-[#ffcc4a]"
+                    >
+                      Otwórz plan
+                    </Button>
+                  </>
+                ) : (
+                  <div className="mt-4 text-sm leading-6 text-ink-muted">
+                    Brak aktywnego terminu. Dodaj sprawdzian, a planner sam
+                    rozpisze powtórki.
+                  </div>
+                )}
+              </div>
+
+              <div className="rounded-sm border border-rule bg-paper-2 p-5">
+                <div className="mono text-[12px] uppercase tracking-[0.16em] text-ink-muted">
+                  Szybkie akcje
+                </div>
+                <div className="mt-4 grid gap-2.5">
+                  <Button
+                    size="lg"
+                    variant="ghost"
+                    icon={LightningIcon}
+                    onClick={() =>
+                      navigate({
+                        to: "/review/$sessionId",
+                        params: { sessionId: "today" },
+                      })
+                    }
+                    className="justify-center rounded-sm bg-amber text-paper hover:bg-[#ffcc4a] hover:-translate-y-px active:translate-y-0 transition-all font-semibold py-5"
+                  >
+                    Szybka powtórka
+                  </Button>
+                  <Button
+                    variant="outline"
+                    icon={CalendarPlusIcon}
+                    onClick={() => setAddExamOpen(true)}
+                    className="justify-start rounded-sm"
+                  >
+                    Dodaj sprawdzian
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    icon={NotePencilIcon}
+                    onClick={() => navigate({ to: "/browse" })}
+                    className="justify-start rounded-sm"
+                  >
+                    Przejrzyj materiały
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
         </aside>
       </div>
 

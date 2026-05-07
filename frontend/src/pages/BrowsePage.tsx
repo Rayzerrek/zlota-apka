@@ -1,14 +1,19 @@
+import { Button } from "@cloudflare/kumo/components/button";
+import { PlusIcon } from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
 
+import { AddCardModal } from "../components/browse/AddCardModal";
 import { BrowseCard } from "../components/browse/BrowseCard";
 import { BrowseFilters, type Filter } from "../components/browse/BrowseFilters";
 import { BrowseSearchBar } from "../components/browse/BrowseSearchBar";
 import { PageHead } from "../components/layout/PageHead";
-import { useAllCards } from "../hooks/api/useCards";
+import { useAllCards, useDeleteCard } from "../hooks/api/useCards";
 import { adaptApiCardToCard } from "../lib/adapters";
 
 export function BrowsePage() {
   const { data: apiCards, isLoading } = useAllCards();
+  const { mutate: deleteCard } = useDeleteCard();
+  const [addCardOpen, setAddCardOpen] = useState(false);
   const cards = useMemo(
     () => (apiCards ?? []).map(adaptApiCardToCard),
     [apiCards],
@@ -66,9 +71,24 @@ export function BrowsePage() {
         counts={counts}
       />
 
+      <div className="flex justify-end mb-4">
+        <Button
+          variant="outline"
+          icon={PlusIcon}
+          onClick={() => setAddCardOpen(true)}
+          className="rounded-sm"
+        >
+          Dodaj fiszkę
+        </Button>
+      </div>
+
       <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-3.5">
         {visible.map((card) => (
-          <BrowseCard key={card.id} card={card} />
+          <BrowseCard
+            key={card.id}
+            card={card}
+            onDelete={() => deleteCard(card.id)}
+          />
         ))}
       </div>
 
@@ -77,6 +97,8 @@ export function BrowsePage() {
           nic nie znaleziono.
         </div>
       )}
+
+      <AddCardModal open={addCardOpen} onClose={() => setAddCardOpen(false)} />
     </>
   );
 }
