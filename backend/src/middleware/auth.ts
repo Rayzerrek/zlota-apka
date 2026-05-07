@@ -9,7 +9,6 @@ import { factory } from "../lib/factory";
 export const requireAuth = factory.createMiddleware(async (c, next) => {
   const db = createDb(c.env);
 
-  // 1. Sprawdź czy przeglądarka ma już cookie gościa
   const guestId = getCookie(c, "guest_user_id");
   if (guestId) {
     const existing = await db
@@ -25,7 +24,6 @@ export const requireAuth = factory.createMiddleware(async (c, next) => {
     }
   }
 
-  // 2. Sprawdź czy jest aktywna sesja better-auth
   try {
     const auth = createAuth(c.env);
     const session = await auth.api.getSession({
@@ -40,7 +38,6 @@ export const requireAuth = factory.createMiddleware(async (c, next) => {
     console.warn("[auth] getSession failed, falling back to guest:", err);
   }
 
-  // 3. Utwórz nowe konto gościa
   const newGuestId = crypto.randomUUID();
   const now = new Date();
 
