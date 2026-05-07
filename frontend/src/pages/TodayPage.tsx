@@ -1,10 +1,8 @@
 import { Button } from "@cloudflare/kumo/components/button";
-import { Empty } from "@cloudflare/kumo/components/empty";
 import {
   ArrowRightIcon,
   CalendarPlusIcon,
   ClockCountdownIcon,
-  CoffeeIcon,
   NotePencilIcon,
   WarningCircleIcon,
 } from "@phosphor-icons/react";
@@ -17,20 +15,12 @@ import { PageHead } from "../components/layout/PageHead";
 import { useDashboard } from "../hooks/api/useDashboard";
 import { cn } from "../utils/cn";
 import { dayLong, daysBetween, formatMinutes, longDate } from "../utils/date";
-import { SUBJECT_BG } from "../utils/subjects";
 
-import type { SubjectKey } from "../types";
 import type { ApiDashboardSession } from "../types/api";
 
 type Props = {
   onStartSession: (id: string) => void;
 };
-
-function toSubjectKey(k: string | null): SubjectKey | null {
-  if (k === null) return null;
-  if (k in SUBJECT_BG) return k as SubjectKey;
-  return null;
-}
 
 function buildFocusCopy(args: {
   overdueCount: number;
@@ -75,9 +65,6 @@ export function TodayPage({ onStartSession }: Props) {
   const todaySessions = dashboard?.today ?? [];
   const nextExam = dashboard?.upcomingExams[0] ?? null;
   const overdueCount = dashboard?.overdueCount ?? 0;
-  const completedSessions = todaySessions.filter(
-    (session) => session.status === "completed",
-  ).length;
   const pendingSessions = todaySessions.filter(
     (session) => session.status !== "completed",
   );
@@ -420,144 +407,6 @@ export function TodayPage({ onStartSession }: Props) {
           </div>
         </aside>
       </div>
-
-      <section className="mt-6 rounded-sm border border-rule bg-paper-2 p-5 sm:p-6">
-        <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-rule pb-4">
-          <div>
-            <h2 className="display text-[25px] font-normal text-ink">
-              Plan krok po kroku
-            </h2>
-            <p className="mt-1 text-sm text-ink-muted">
-              Kliknij w pierwszą wolną sesję i nie zastanawiaj się nad resztą.
-            </p>
-          </div>
-          <span className="mono text-[12px] uppercase tracking-[0.16em] text-ink-faint">
-            {completedSessions} / {todaySessions.length} ukończone
-          </span>
-        </div>
-
-        {todaySessions.length === 0 ? (
-          <div className="pt-4">
-            <Empty
-              icon={<CoffeeIcon size={44} weight="duotone" />}
-              title="Brak sesji na dziś"
-              description="Nic na dziś w planie. Dodaj materiał albo ustaw nadchodzący sprawdzian — scheduler rozpisze powtórki."
-              contents={
-                <div className="flex flex-wrap justify-center gap-2.5">
-                  <Button
-                    variant="primary"
-                    icon={CalendarPlusIcon}
-                    onClick={() => navigate({ to: "/calendar" })}
-                  >
-                    Zaplanuj sprawdzian
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    onClick={() => navigate({ to: "/browse" })}
-                  >
-                    Przejrzyj karty
-                  </Button>
-                </div>
-              }
-            />
-          </div>
-        ) : (
-          <div className="mt-4 grid gap-3">
-            {todaySessions.map((session, index) => {
-              const isDone = session.status === "completed";
-              const isRecommended = !isDone && session.id === nextSession?.id;
-              const subjKey = toSubjectKey(session.subjectKey);
-
-              return (
-                <Button
-                  key={session.id}
-                  type="button"
-                  variant="ghost"
-                  className={cn(
-                    "group w-full justify-start rounded-sm border border-rule bg-paper text-left transition-all hover:-translate-y-px hover:bg-paper",
-                    isDone && "opacity-60",
-                  )}
-                  onClick={() => !isDone && onStartSession(session.id)}
-                >
-                  <div className="flex w-full flex-col gap-4 p-4 sm:p-5 md:flex-row md:items-center md:gap-6">
-                    <div className="flex flex-1 items-start gap-3 md:min-w-0">
-                      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-sm border border-rule bg-kumo-base mono text-[12px] text-ink-faint">
-                        {String(index + 1).padStart(2, "0")}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="mono text-[11px] uppercase tracking-[0.14em] text-ink-faint">
-                            {session.subjectName ??
-                              session.subjectKey ??
-                              "Bez przedmiotu"}
-                          </span>
-                          {isRecommended && (
-                            <span className="rounded-sm border border-amber/20 bg-amber/10 px-2 py-0.5 mono text-[10px] uppercase tracking-[0.14em] text-amber">
-                              Polecane teraz
-                            </span>
-                          )}
-                        </div>
-                        <div className="mt-1 flex items-center gap-2">
-                          {subjKey && (
-                            <span
-                              className={cn(
-                                "h-2 w-2 shrink-0 rounded-full",
-                                SUBJECT_BG[subjKey],
-                              )}
-                            />
-                          )}
-                          <span
-                            className={cn(
-                              "display text-[18px] leading-[1.25] sm:text-[21px]",
-                              isDone
-                                ? "text-ink-faint line-through decoration-rule-strong"
-                                : "text-ink",
-                            )}
-                          >
-                            {session.topicName ?? "Bez nazwy tematu"}
-                          </span>
-                        </div>
-                        <p className="mt-2 text-sm leading-relaxed text-ink-muted">
-                          {isDone
-                            ? "Sesja ukończona — możesz przejść dalej."
-                            : `Do zrobienia w około ${formatMinutes(session.plannedMinutes)}.`}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between gap-4 md:shrink-0 md:flex-col md:items-end md:gap-3 lg:flex-row lg:items-center">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="rounded-sm border border-rule bg-kumo-base px-2.5 py-1 mono text-[11px] uppercase tracking-[0.14em] text-ink-faint">
-                          {formatMinutes(session.plannedMinutes)}
-                        </span>
-                        <span className="rounded-sm border border-rule bg-kumo-base px-2.5 py-1 mono text-[11px] uppercase tracking-[0.14em] text-ink-faint">
-                          {isDone ? "ukończona" : "gotowa do startu"}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <span className="hidden mono text-[11px] uppercase tracking-[0.14em] text-ink-faint sm:inline">
-                          {isDone ? "gotowe" : "kliknij, aby zacząć"}
-                        </span>
-                        <div
-                          className={cn(
-                            "grid h-8 w-8 shrink-0 place-items-center rounded-full border transition-colors",
-                            isDone
-                              ? "border-rule bg-kumo-base text-ink-faint"
-                              : "border-amber/25 bg-amber/10 text-amber group-hover:border-amber group-hover:bg-amber group-hover:text-paper",
-                          )}
-                        >
-                          <ArrowRightIcon size={16} weight="bold" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Button>
-              );
-            })}
-          </div>
-        )}
-      </section>
 
       <AddExamModal open={addExamOpen} onClose={() => setAddExamOpen(false)} />
     </>
