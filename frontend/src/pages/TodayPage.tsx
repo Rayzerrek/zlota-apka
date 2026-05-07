@@ -23,7 +23,6 @@ import type { SubjectKey } from "../types";
 import type { ApiDashboardSession } from "../types/api";
 
 type Props = {
-  onStart: () => void;
   onStartSession: (id: string) => void;
 };
 
@@ -67,7 +66,7 @@ function buildFocusCopy(args: {
   return "Masz gotowy plan. Wystarczy odpalić pierwszą sesję i wejść w rytm.";
 }
 
-export function TodayPage({ onStart, onStartSession }: Props) {
+export function TodayPage({ onStartSession }: Props) {
   const today = format(new Date(), "yyyy-MM-dd");
   const [addExamOpen, setAddExamOpen] = useState(false);
   const navigate = useNavigate();
@@ -230,7 +229,12 @@ export function TodayPage({ onStart, onStartSession }: Props) {
                   <Button
                     size="lg"
                     variant="ghost"
-                    onClick={onStart}
+                    onClick={() =>
+                      navigate({
+                        to: "/review/$sessionId",
+                        params: { sessionId: "today" },
+                      })
+                    }
                     className="bg-amber text-paper rounded-sm hover:bg-[#ffcc4a] hover:-translate-y-px active:translate-y-0 transition-all font-semibold px-7 py-4"
                   >
                     {remainingSessions === 0

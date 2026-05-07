@@ -21,6 +21,7 @@ export const user = pgTable("user", {
   updatedAt: timestamp("updated_at").notNull(),
   grade: text("grade"),
   onboardingDone: boolean("onboarding_done").notNull().default(false),
+  isGuest: boolean("is_guest").notNull().default(false),
   settings: jsonb("settings").$type<Record<string, unknown>>(),
 });
 

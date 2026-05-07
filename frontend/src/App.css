@@ -34,8 +34,8 @@
   --color-rating-4: #7cc36b;
   --color-rating-5: #4ec6b5;
 
-  --font-display: "Geist Sans", system-ui, sans-serif;
-  --font-body: "Geist Sans", system-ui, sans-serif;
+  --font-display: "Outfit", "Geist", system-ui, sans-serif;
+  --font-body: "Geist", system-ui, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, monospace;
 
   --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
@@ -71,6 +71,16 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
   html,
   body,
   #root {
@@ -99,6 +109,21 @@
       ),
       var(--color-paper);
     background-attachment: fixed;
+  }
+
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  [data-mode="light"] body::after {
+    opacity: 0.035;
   }
 
   button,
@@ -229,6 +254,26 @@
       0 1px 0 rgba(255, 255, 255, 0.8) inset,
       0 20px 40px rgba(0, 0, 0, 0.12);
   }
+
+  .landing-header {
+    position: sticky;
+    top: 0;
+    height: 72px;
+    border-bottom: 1px solid transparent;
+    transition:
+      height 0.3s var(--ease-out),
+      background-color 0.3s var(--ease-out),
+      backdrop-filter 0.3s var(--ease-out),
+      border-color 0.3s var(--ease-out);
+  }
+
+  .landing-header.is-scrolled {
+    height: 60px;
+    background: color-mix(in srgb, var(--color-paper) 85%, transparent);
+    backdrop-filter: blur(12px) saturate(1.2);
+    -webkit-backdrop-filter: blur(12px) saturate(1.2);
+    border-bottom: 1px solid var(--color-rule);
+  }
 }
 
 @keyframes enter {
@@ -260,4 +305,75 @@
 .animate-month-expand {
   animation: month-expand 0.35s var(--ease-out, cubic-bezier(0.2, 0.7, 0.2, 1))
     both;
+}
+
+@layer base {
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  33% {
+    transform: translate(20px, -30px);
+  }
+  66% {
+    transform: translate(-10px, 15px);
+  }
+}
+
+.animate-float {
+  animation: float 8s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float 10s ease-in-out infinite;
+  animation-delay: -4s;
+}
+
+.enter {
+  opacity: 0;
+  animation: enter 0.6s var(--ease-out) forwards;
+}
+
+.enter-d1 {
+  animation-delay: 0.1s;
+}
+
+.enter-d2 {
+  animation-delay: 0.2s;
+}
+
+.enter-d3 {
+  animation-delay: 0.3s;
+}
+
+.enter-d4 {
+  animation-delay: 0.4s;
+}
+
+.enter-d5 {
+  animation-delay: 0.5s;
+}
+
+@utility gradient-text {
+  background: linear-gradient(
+    135deg,
+    var(--color-amber) 0%,
+    #ffea8a 50%,
+    var(--color-amber) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
