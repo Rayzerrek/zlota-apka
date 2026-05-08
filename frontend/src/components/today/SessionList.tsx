@@ -91,7 +91,7 @@ export function SessionList({ sessions, onStartSession, className }: Props) {
               type="button"
               disabled={isDone}
               className={cn(
-                "group relative w-full flex items-center justify-between text-left p-4 sm:p-5 rounded-xl border transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-amber/50",
+                "group relative w-full flex flex-col sm:flex-row items-start sm:items-center justify-between text-left p-4 sm:p-5 rounded-xl border transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-amber/50 gap-4 sm:gap-0",
                 isDone
                   ? "bg-paper-2/50 border-transparent opacity-60 cursor-default"
                   : "bg-paper border-rule hover:border-amber/40 hover:bg-amber/[0.02] hover:shadow-[0_4px_20px_-10px_rgba(242,184,48,0.15)] hover:-translate-y-[1px] cursor-pointer",
@@ -104,7 +104,7 @@ export function SessionList({ sessions, onStartSession, className }: Props) {
                 <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-amber/0 via-amber/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
               )}
 
-              <div className="flex flex-col gap-1.5 min-w-0 relative z-10 pr-4">
+              <div className="flex flex-col gap-1.5 min-w-0 w-full sm:w-auto relative z-10 pr-0 sm:pr-4">
                 <div className="flex items-center gap-2.5 mono text-[11px] tracking-wider uppercase text-ink-muted">
                   {subjKey && (
                     <span className="relative flex h-2 w-2">
@@ -145,7 +145,7 @@ export function SessionList({ sessions, onStartSession, className }: Props) {
                 </div>
               </div>
 
-              <div className="shrink-0 flex items-center gap-4 relative z-10">
+              <div className="shrink-0 flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto relative z-10">
                 <div
                   className={cn(
                     "mono text-[13px] sm:text-sm transition-colors duration-300",

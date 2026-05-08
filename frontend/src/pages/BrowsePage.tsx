@@ -126,21 +126,12 @@ export function BrowsePage() {
             perPage={perPage}
             totalCount={visible.length}
           >
-            <Pagination.Info>
-              {({ pageShowingRange }) => (
-                <span className="mono text-[13px] text-ink-muted">
-                  {pageShowingRange} z {visible.length}
-                </span>
-              )}
-            </Pagination.Info>
-            <Pagination.Separator />
             <Pagination.PageSize
               value={perPage}
               onChange={setPerPage}
               options={[12, 24, 48]}
               label="Na stronie:"
             />
-            <Pagination.Separator />
             <Pagination.Controls />
           </Pagination>
         </div>

@@ -12,6 +12,7 @@ import {
   type ScannerPageMode,
 } from "../components/ocr/ScannerPageViews";
 import { queryKeys } from "../hooks/api/keys";
+import { useMobile } from "../hooks/useMobile";
 import { apiPost } from "../lib/api";
 import { ScanResponseSchema } from "../lib/schemas";
 import { compressImage } from "../utils/image";
@@ -19,6 +20,7 @@ import { compressImage } from "../utils/image";
 type Mode = ScannerPageMode;
 
 export function ScannerPage() {
+  const isMobile = useMobile();
   const [mode, setMode] = useState<Mode>("camera");
   const [capturedFile, setCapturedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -96,37 +98,37 @@ export function ScannerPage() {
 
   return (
     <>
-      <div className="md:hidden">
-        {mode === "camera" ? (
+      {isMobile ? (
+        mode === "camera" ? (
           <MobileCameraView
             {...cameraViewProps}
             onSwitchToFile={() => switchMode("file")}
           />
         ) : (
           <MobileFileView onSwitchToCamera={() => switchMode("camera")} />
-        )}
-      </div>
+        )
+      ) : (
+        <>
+          <PageHead
+            eyebrow="Optyczne rozpoznawanie znaków"
+            title={
+              <>
+                <em>Skaner AI</em>
+              </>
+            }
+          />
 
-      <div className="hidden md:block">
-        <PageHead
-          eyebrow="Optyczne rozpoznawanie znaków"
-          title={
-            <>
-              <em>Skaner AI</em>
-            </>
-          }
-        />
+          <section className="enter enter-d1 flex max-w-[700px] flex-col gap-6">
+            <DesktopModeToggle mode={mode} onSwitchMode={switchMode} />
 
-        <section className="enter enter-d1 flex max-w-[700px] flex-col gap-6">
-          <DesktopModeToggle mode={mode} onSwitchMode={switchMode} />
-
-          {mode === "camera" ? (
-            <DesktopCameraView {...cameraViewProps} />
-          ) : (
-            <DesktopFileView />
-          )}
-        </section>
-      </div>
+            {mode === "camera" ? (
+              <DesktopCameraView {...cameraViewProps} />
+            ) : (
+              <DesktopFileView />
+            )}
+          </section>
+        </>
+      )}
     </>
   );
 }

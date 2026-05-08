@@ -466,23 +466,25 @@ export function TodayPage({ onStartSession }: Props) {
                         params: { sessionId: "today" },
                       })
                     }
-                    className="justify-center rounded-sm bg-amber text-paper hover:bg-[#ffcc4a] hover:-translate-y-px active:translate-y-0 transition-all font-semibold py-5"
+                    className="justify-start rounded-sm w-full bg-amber text-paper hover:bg-[#ffcc4a] hover:-translate-y-px active:translate-y-0 transition-all font-semibold"
                   >
                     Szybka powtórka
                   </Button>
                   <Button
+                    size="lg"
                     variant="outline"
                     icon={CalendarPlusIcon}
                     onClick={() => setAddExamOpen(true)}
-                    className="justify-start rounded-sm"
+                    className="justify-start rounded-sm w-full"
                   >
                     Dodaj sprawdzian
                   </Button>
                   <Button
-                    variant="ghost"
+                    size="lg"
+                    variant="outline"
                     icon={NotePencilIcon}
                     onClick={() => navigate({ to: "/browse" })}
-                    className="justify-start rounded-sm"
+                    className="justify-start rounded-sm w-full"
                   >
                     Przejrzyj materiały
                   </Button>
