@@ -45,7 +45,7 @@ export function ReviewCard({ card, flipped, onFlip }: Props) {
           </div>
         </div>
         <div className="mono text-[14px] uppercase text-ink-faint text-center">
-          Kliknij lub spacja, żeby odwrócić
+          Kliknij lub spacja, aby sprawdzić odpowiedź
         </div>
       </div>
 

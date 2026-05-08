@@ -1,5 +1,6 @@
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
-import { and, desc, eq, isNull } from "drizzle-orm";
+import { and, desc, eq, isNull, sql } from "drizzle-orm";
+import { z } from "zod";
 
 import { notifications } from "../db/schema";
 import { errorResponseSchema } from "../lib/constant";
@@ -8,22 +9,28 @@ import { requireAuth } from "../middleware/auth";
 import {
   idParamsSchema,
   notificationCreateSchema,
-  notificationListResponseSchema,
   notificationRowSchema,
   okResponseSchema,
+  paginatedNotificationsResponseSchema,
 } from "../types/schemas";
 
 import type { HonoEnv } from "../lib/factory";
+
+const paginationQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  perPage: z.coerce.number().int().min(1).max(100).default(20),
+});
 
 const listNotificationsRoute = createRoute({
   method: "get",
   path: "/",
   tags: ["Notifications"],
+  request: { query: paginationQuerySchema },
   responses: {
     200: {
       description: "List of notifications",
       content: {
-        "application/json": { schema: notificationListResponseSchema },
+        "application/json": { schema: paginatedNotificationsResponseSchema },
       },
     },
   },
@@ -95,15 +102,23 @@ notificationsRouter.use(requireAuth);
 notificationsRouter.openapi(listNotificationsRoute, async (c) => {
   const db = createDb(c.env);
   const userId = c.get("userId");
+  const { page, perPage } = c.req.valid("query");
+  const offset = (page - 1) * perPage;
 
   const rows = await db
     .select()
     .from(notifications)
     .where(eq(notifications.userId, userId))
     .orderBy(desc(notifications.createdAt))
-    .limit(100);
+    .limit(perPage)
+    .offset(offset);
 
-  return c.json(rows, 200);
+  const [{ count }] = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(notifications)
+    .where(eq(notifications.userId, userId));
+
+  return c.json({ rows, totalCount: Number(count) }, 200);
 });
 
 notificationsRouter.openapi(createNotificationRoute, async (c) => {

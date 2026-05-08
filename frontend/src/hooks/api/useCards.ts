@@ -13,7 +13,7 @@ export function useCardsDue() {
   return useQuery({
     queryKey: queryKeys.cardsDue,
     queryFn: async () => {
-      const res = await apiGet("/api/cards/due", ApiCardSchema.array());
+      const res = await apiGet("/api/cards/due", ApiExtendedCardSchema.array());
       if (!res.ok) throw new Error(res.message);
       return res.data;
     },

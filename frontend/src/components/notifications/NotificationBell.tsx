@@ -1,20 +1,25 @@
+import { Pagination } from "@cloudflare/kumo/components/pagination";
 import { Popover } from "@cloudflare/kumo/components/popover";
 import { BellIcon, BellRingingIcon } from "@phosphor-icons/react";
 import { useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 
-import { useNotifications } from "../../contexts/NotificationContext";
+import { useNotificationInbox } from "../../hooks/api/useNotifications";
 import { NotificationItem } from "./NotificationItem";
 
 export function NotificationBell() {
   const navigate = useNavigate();
+  const [page, setPage] = useState(1);
+  const perPage = 10;
   const {
     notifications,
     unreadCount,
+    totalCount,
     isFetched,
     markAsRead,
     markAllRead,
     clearAll,
-  } = useNotifications();
+  } = useNotificationInbox(page, perPage);
 
   return (
     <Popover>
@@ -50,11 +55,6 @@ export function NotificationBell() {
             <h3 className="text-[14px] font-semibold text-ink">
               Powiadomienia
             </h3>
-            {unreadCount > 0 && (
-              <span className="mono text-[11px] text-amber">
-                {unreadCount} nowe
-              </span>
-            )}
           </div>
           {notifications.length > 0 && (
             <div className="flex items-center gap-3">
@@ -109,6 +109,27 @@ export function NotificationBell() {
             </ul>
           )}
         </div>
+
+        {totalCount > perPage && (
+          <div className="px-3 py-2 border-t border-rule shrink-0">
+            <Pagination
+              page={page}
+              setPage={setPage}
+              perPage={perPage}
+              totalCount={totalCount}
+            >
+              <Pagination.Info>
+                {({ pageShowingRange }) => (
+                  <span className="mono text-[12px] text-ink-muted">
+                    {pageShowingRange}
+                  </span>
+                )}
+              </Pagination.Info>
+              <Pagination.Separator />
+              <Pagination.Controls controls="simple" />
+            </Pagination>
+          </div>
+        )}
       </Popover.Content>
     </Popover>
   );

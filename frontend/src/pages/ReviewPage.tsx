@@ -8,6 +8,7 @@ import { ReviewDoneScreen } from "../components/review/ReviewDoneScreen";
 import { ReviewHeader } from "../components/review/ReviewHeader";
 import { ReviewRatings } from "../components/review/ReviewRatings";
 import { useCardsByTopic, useCardsDue } from "../hooks/api/useCards";
+import { useDashboard } from "../hooks/api/useDashboard";
 import { useSession } from "../hooks/api/useSessions";
 import { adaptApiCardToCard } from "../lib/adapters";
 
@@ -28,18 +29,27 @@ export function ReviewPage() {
   const actualSessionId = isAllToday ? "" : sessionId;
 
   const { data: dueCards } = useCardsDue();
+  const { data: dashboard } = useDashboard();
   const { data: session } = useSession(actualSessionId);
   const { data: topicCards } = useCardsByTopic(session?.topicId ?? "");
 
+  const nextExam = dashboard?.upcomingExams[0] ?? null;
+  const reviewLabel =
+    isAllToday && nextExam ? `Powtórka przed: ${nextExam.name}` : null;
+
   const cards = useMemo(() => {
     if (isAllToday) {
-      return (dueCards ?? [])
-        .filter((c) => c.due.slice(0, 10) <= todayISO())
-        .map(adaptApiCardToCard);
+      let list = (dueCards ?? []).filter(
+        (c) => c.due.slice(0, 10) <= todayISO(),
+      );
+      if (nextExam?.subjectKey) {
+        list = list.filter((c) => c.subjectKey === nextExam.subjectKey);
+      }
+      return list.map(adaptApiCardToCard);
     }
     if (!session?.topicId) return [];
     return (topicCards ?? []).map(adaptApiCardToCard);
-  }, [isAllToday, dueCards, session?.topicId, topicCards]);
+  }, [isAllToday, dueCards, nextExam, session?.topicId, topicCards]);
 
   const [idx, setIdx] = useState(0);
   const [flipped, setFlipped] = useState(false);
@@ -108,6 +118,7 @@ export function ReviewPage() {
         total={cards.length}
         progress={progress}
         onExit={() => navigate({ to: "/today" })}
+        subtitle={reviewLabel}
       />
 
       <div className="flex-1 grid place-items-center p-6 [perspective:1800px]">

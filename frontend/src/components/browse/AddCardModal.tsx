@@ -1,12 +1,12 @@
 import { Button } from "@cloudflare/kumo/components/button";
 import { Label } from "@cloudflare/kumo/components/label";
-import { Select } from "@cloudflare/kumo/components/select";
 import { XIcon } from "@phosphor-icons/react";
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { useCreateCard } from "../../hooks/api/useCards";
 import { useAllTopics } from "../../hooks/api/useTopics";
+import { OptionPicker } from "../ui/OptionPicker";
 
 type Props = {
   open: boolean;
@@ -29,20 +29,22 @@ export function AddCardModal({ open, onClose }: Props) {
   const [front, setFront] = useState("");
   const [back, setBack] = useState("");
 
-  const topicOptions = useMemo(() => {
-    if (!topics) return [];
-    return topics.map((t) => ({
-      ...t,
-      displayName: `${t.subjectName ?? "Bez przedmiotu"} › ${t.name}`,
-    }));
-  }, [topics]);
+  const topicOptions = useMemo(
+    () =>
+      (topics ?? []).map((t) => ({
+        value: t.id,
+        label: t.name,
+        meta: t.subjectName ?? "Bez przedmiotu",
+      })),
+    [topics],
+  );
 
   useEffect(() => {
     if (!open) return;
-    if (topics && topics.length > 0 && !topicId) {
-      setTopicId(topics[0].id);
+    if (topicOptions.length > 0 && !topicId) {
+      setTopicId(topicOptions[0].value);
     }
-  }, [open, topics, topicId]);
+  }, [open, topicOptions, topicId]);
 
   useEffect(() => {
     if (open) return;
@@ -119,17 +121,14 @@ export function AddCardModal({ open, onClose }: Props) {
                   Brak tematów — dodaj najpierw sprawdzian z tematami.
                 </p>
               ) : (
-                <Select
+                <OptionPicker
                   value={topicId}
-                  onValueChange={(v) => setTopicId(v ?? "")}
-                  required
-                >
-                  {topicOptions.map((t) => (
-                    <Select.Option key={t.id} value={t.id}>
-                      {t.displayName}
-                    </Select.Option>
-                  ))}
-                </Select>
+                  onChange={setTopicId}
+                  options={topicOptions}
+                  ariaLabel="Wybierz temat"
+                  searchPlaceholder="Szukaj tematu..."
+                  emptyText="Brak tematów dla wpisanej frazy."
+                />
               )}
             </div>
 

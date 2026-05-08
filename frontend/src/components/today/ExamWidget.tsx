@@ -59,7 +59,7 @@ export function ExamWidget({ exam }: Props) {
             }
             className="text-ink-faint hover:text-amber hover:!bg-amber-wash"
           />
-          <ExamMenu examId={exam.id} />
+          <ExamMenu examId={exam.id} subjectKey={exam.subjectKey} />
         </div>
       </div>
     </div>

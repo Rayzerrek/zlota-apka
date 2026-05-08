@@ -7,9 +7,16 @@ type Props = {
   total: number;
   progress: number;
   onExit: () => void;
+  subtitle?: string | null;
 };
 
-export function ReviewHeader({ current, total, progress, onExit }: Props) {
+export function ReviewHeader({
+  current,
+  total,
+  progress,
+  onExit,
+  subtitle,
+}: Props) {
   return (
     <div className="flex items-center gap-5 px-6 py-4 border-b border-rule">
       <Button
@@ -22,7 +29,7 @@ export function ReviewHeader({ current, total, progress, onExit }: Props) {
       </Button>
       <div className="flex-1 min-w-0">
         <Meter
-          label="Postęp sesji"
+          label={subtitle ?? "Postęp powtórki"}
           value={Math.round(progress * 100)}
           customValue={`${current} / ${total}`}
           indicatorClassName="bg-amber"

@@ -1,7 +1,6 @@
 import { Button } from "@cloudflare/kumo/components/button";
 import { Input } from "@cloudflare/kumo/components/input";
 import { Label } from "@cloudflare/kumo/components/label";
-import { Select } from "@cloudflare/kumo/components/select";
 import { CheckIcon, PlusIcon, XIcon } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -10,6 +9,7 @@ import { useCreateExam } from "../../hooks/api/useExams";
 import { useSubjects } from "../../hooks/api/useSubjects";
 import { cn } from "../../utils/cn";
 import { dayLong, longDate } from "../../utils/date";
+import { OptionPicker } from "../ui/OptionPicker";
 
 import type { ApiSubject } from "../../types/api";
 
@@ -249,17 +249,18 @@ export function AddExamModal({ open, onClose }: Props) {
                     Brak przedmiotów — uzupełnij profil, żeby dodać sprawdzian.
                   </p>
                 ) : (
-                  <Select
+                  <OptionPicker
                     value={subjectId}
-                    onValueChange={(v) => setSubjectId(v ?? "")}
-                    required
-                  >
-                    {subjectList.map((s) => (
-                      <Select.Option key={s.id} value={s.id}>
-                        {s.name}
-                      </Select.Option>
-                    ))}
-                  </Select>
+                    onChange={setSubjectId}
+                    options={subjectList.map((s) => ({
+                      value: s.id,
+                      label: s.name,
+                      color: s.color,
+                    }))}
+                    ariaLabel="Wybierz przedmiot"
+                    searchPlaceholder="Szukaj przedmiotu..."
+                    emptyText="Brak wyników dla wpisanej frazy."
+                  />
                 )}
               </div>
 
@@ -416,7 +417,7 @@ export function AddExamModal({ open, onClose }: Props) {
               <Button
                 type="submit"
                 variant="primary"
-                disabled={submitting || subjectList.length === 0}
+                disabled={submitting || subjectList.length === 0 || !subjectId}
                 className="bg-amber border-amber text-paper hover:bg-[#ffcc4a] hover:border-[#ffcc4a] font-semibold disabled:opacity-50"
               >
                 {submitting ? "Planuję…" : "Zaplanuj"}

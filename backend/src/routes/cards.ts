@@ -39,7 +39,7 @@ const dueCardsRoute = createRoute({
   responses: {
     200: {
       description: "Due cards",
-      content: { "application/json": { schema: cardListResponseSchema } },
+      content: { "application/json": { schema: cardAllListResponseSchema } },
     },
   },
 });
@@ -172,8 +172,29 @@ cardsRouter.openapi(dueCardsRoute, async (c) => {
   const db = createDb(c.env);
   const now = new Date();
   const rows = await db
-    .select()
+    .select({
+      id: cards.id,
+      topicId: cards.topicId,
+      front: cards.front,
+      back: cards.back,
+      source: cards.source,
+      stability: cards.stability,
+      difficulty: cards.difficulty,
+      elapsedDays: cards.elapsedDays,
+      scheduledDays: cards.scheduledDays,
+      reps: cards.reps,
+      lapses: cards.lapses,
+      state: cards.state,
+      lastReview: cards.lastReview,
+      due: cards.due,
+      createdAt: cards.createdAt,
+      updatedAt: cards.updatedAt,
+      topicName: topics.name,
+      subjectKey: subjects.key,
+    })
     .from(cards)
+    .leftJoin(topics, eq(cards.topicId, topics.id))
+    .leftJoin(subjects, eq(topics.subjectId, subjects.id))
     .where(and(eq(cards.userId, c.get("userId")), lte(cards.due, now)))
     .limit(50);
   return c.json(rows, 200);

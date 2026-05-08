@@ -13,7 +13,6 @@ import { useState } from "react";
 
 import { AddExamModal } from "../components/exam/AddExamModal";
 import { PageHead } from "../components/layout/PageHead";
-import { SessionList } from "../components/today/SessionList";
 import { useDashboard } from "../hooks/api/useDashboard";
 import { cn } from "../utils/cn";
 import { dayLong, daysBetween, longDate } from "../utils/date";
@@ -311,11 +310,28 @@ export function TodayPage({ onStartSession }: Props) {
               )}
             </div>
 
-            <SessionList
-              sessions={todaySessions}
-              onStartSession={onStartSession}
-              className="mt-0"
-            />
+            <div className="rounded-sm border border-rule bg-paper p-5 sm:p-6">
+              <div className="flex items-start gap-3">
+                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-sm border border-rule bg-kumo-base text-ink-muted">
+                  <LightningIcon size={18} weight="fill" />
+                </div>
+                <div>
+                  <div className="mono text-[11px] uppercase tracking-[0.16em] text-ink-faint">
+                    Co to sesja
+                  </div>
+                  <h3 className="mt-2 text-[18px] leading-6 text-ink">
+                    Powtórka fiszek
+                  </h3>
+                  <p className="mt-1 text-sm leading-6 text-ink-muted">
+                    Sesja to krótka seria kart do nauki. Kliknij „Zacznij
+                    naukę", otrzymasz fiszkę z pytaniem, odwróć ją kliknięciem
+                    lub spacją, a potem oceń, jak dobrze znałeś odpowiedź.
+                    System sam zaplanuje kolejną powtórkę — trudne karty wrócą
+                    szybciej, łatwe — później.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 

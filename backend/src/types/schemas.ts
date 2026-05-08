@@ -317,6 +317,11 @@ export const notificationRowSchema = z.object({
 });
 export const notificationListResponseSchema = z.array(notificationRowSchema);
 
+export const paginatedNotificationsResponseSchema = z.object({
+  rows: notificationListResponseSchema,
+  totalCount: z.number().int(),
+});
+
 export const dashboardSessionSchema = z.object({
   id: z.string(),
   scheduledDate: z.string(),

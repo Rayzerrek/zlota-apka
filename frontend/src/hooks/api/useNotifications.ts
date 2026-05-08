@@ -3,7 +3,11 @@ import { useMemo } from "react";
 import { z } from "zod";
 
 import { apiDelete, apiGet, apiPatch, apiPost } from "../../lib/api";
-import { ApiNotificationSchema, OkResponseSchema } from "../../lib/schemas";
+import {
+  ApiNotificationSchema,
+  OkResponseSchema,
+  PaginatedNotificationsSchema,
+} from "../../lib/schemas";
 import { queryKeys } from "./keys";
 
 import type {
@@ -25,22 +29,15 @@ function mapNotification(notification: ApiNotification): AppNotification {
   };
 }
 
-function mergeCreatedAt(
-  notifications: ApiNotification[],
-  created: ApiNotification,
-): ApiNotification[] {
-  return [created, ...notifications.filter((n) => n.id !== created.id)];
-}
-
-export function useNotificationInbox() {
+export function useNotificationInbox(page = 1, perPage = 100) {
   const qc = useQueryClient();
 
   const notificationsQuery = useQuery({
-    queryKey: queryKeys.notifications,
+    queryKey: [...queryKeys.notifications, { page, perPage }],
     queryFn: async () => {
       const res = await apiGet(
-        "/api/notifications",
-        ApiNotificationSchema.array(),
+        `/api/notifications?page=${page}&perPage=${perPage}`,
+        PaginatedNotificationsSchema,
       );
       if (!res.ok) throw new Error(res.message);
       return res.data;
@@ -48,9 +45,10 @@ export function useNotificationInbox() {
   });
 
   const notifications = useMemo(
-    () => notificationsQuery.data?.map(mapNotification) ?? [],
+    () => notificationsQuery.data?.rows.map(mapNotification) ?? [],
     [notificationsQuery.data],
   );
+  const totalCount = notificationsQuery.data?.totalCount ?? 0;
   const unreadCount = useMemo(
     () => notifications.filter((notification) => !notification.read).length,
     [notifications],
@@ -64,10 +62,8 @@ export function useNotificationInbox() {
       if (!res.ok) throw new Error(res.message);
       return res.data;
     },
-    onSuccess: (created) => {
-      qc.setQueryData(queryKeys.notifications, (current?: ApiNotification[]) =>
-        mergeCreatedAt(current ?? [], created),
-      );
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.notifications });
     },
   });
 
@@ -81,17 +77,8 @@ export function useNotificationInbox() {
       if (!res.ok) throw new Error(res.message);
       return id;
     },
-    onSuccess: (id) => {
-      qc.setQueryData(queryKeys.notifications, (current?: ApiNotification[]) =>
-        (current ?? []).map((notification) =>
-          notification.id === id
-            ? {
-                ...notification,
-                readAt: notification.readAt ?? new Date().toISOString(),
-              }
-            : notification,
-        ),
-      );
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.notifications });
     },
   });
 
@@ -106,14 +93,7 @@ export function useNotificationInbox() {
       return true;
     },
     onSuccess: () => {
-      const now = new Date().toISOString();
-      qc.setQueryData(queryKeys.notifications, (current?: ApiNotification[]) =>
-        (current ?? []).map((notification) =>
-          notification.readAt === null
-            ? { ...notification, readAt: now }
-            : notification,
-        ),
-      );
+      qc.invalidateQueries({ queryKey: queryKeys.notifications });
     },
   });
 
@@ -124,13 +104,14 @@ export function useNotificationInbox() {
       return true;
     },
     onSuccess: () => {
-      qc.setQueryData(queryKeys.notifications, []);
+      qc.invalidateQueries({ queryKey: queryKeys.notifications });
     },
   });
 
   return {
     notifications,
     unreadCount,
+    totalCount,
     isLoading: notificationsQuery.isLoading,
     isFetched: notificationsQuery.isFetched,
     addNotification: addNotification.mutateAsync,

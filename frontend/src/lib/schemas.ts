@@ -156,6 +156,11 @@ export const ApiNotificationSchema = z.object({
   createdAt: z.string(),
 });
 
+export const PaginatedNotificationsSchema = z.object({
+  rows: z.array(ApiNotificationSchema),
+  totalCount: z.number().int(),
+});
+
 export const ApiReviewHistorySchema = z.object({
   id: z.string(),
   cardId: z.string(),

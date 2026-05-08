@@ -76,7 +76,7 @@ export function UpcomingExams({ exams }: Props) {
                   }
                   className="text-ink-faint hover:text-amber hover:!bg-amber-wash"
                 />
-                <ExamMenu examId={e.id} />
+                <ExamMenu examId={e.id} subjectKey={e.subject} />
               </div>
             </div>
           );
