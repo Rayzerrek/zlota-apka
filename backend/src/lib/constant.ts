@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const SCAN_MODEL_NAME = "gemini-2.5-flash";
 export const SCAN_MAX_IMAGES = 8;
-export const SCAN_ROUTE_PATH = "/";
+export const SCAN_ROUTE_PATH = "/scan";
 export const SCAN_ROUTE_TAGS = ["Scan"];
 
 export const SCAN_MIME_JPG = "image/jpg";

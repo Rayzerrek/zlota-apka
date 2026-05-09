@@ -18,7 +18,7 @@ import type { HonoEnv } from "../lib/factory";
 
 const listRoute = createRoute({
   method: "get",
-  path: "/",
+  path: "/subjects",
   tags: ["Subjects"],
   responses: {
     200: {
@@ -30,7 +30,7 @@ const listRoute = createRoute({
 
 const createSubjectRoute = createRoute({
   method: "post",
-  path: "/",
+  path: "/subjects",
   tags: ["Subjects"],
   request: {
     body: {
@@ -48,7 +48,7 @@ const createSubjectRoute = createRoute({
 
 const patchSubjectRoute = createRoute({
   method: "patch",
-  path: "/{id}",
+  path: "/subjects/{id}",
   tags: ["Subjects"],
   request: {
     params: idParamsSchema,
@@ -71,7 +71,7 @@ const patchSubjectRoute = createRoute({
 
 const deleteSubjectRoute = createRoute({
   method: "delete",
-  path: "/{id}",
+  path: "/subjects/{id}",
   tags: ["Subjects"],
   request: { params: idParamsSchema },
   responses: {

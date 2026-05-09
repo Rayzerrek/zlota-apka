@@ -14,7 +14,7 @@ function isoDate(d: Date) {
 
 const dashboardRoute = createRoute({
   method: "get",
-  path: "/",
+  path: "/dashboard",
   tags: ["Dashboard"],
   responses: {
     200: {

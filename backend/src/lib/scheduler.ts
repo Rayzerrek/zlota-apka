@@ -1,8 +1,8 @@
-const SESSION_MINUTES: Record<string, number> = {
+const SESSION_MINUTES = {
   small: 20,
   medium: 30,
   large: 45,
-};
+} as const;
 
 interface Availability {
   dayOfWeek: number;
@@ -14,7 +14,7 @@ interface Topic {
 }
 
 interface ExamInput {
-  materialSize: string;
+  materialSize: "small" | "medium" | "large";
   difficulty: number;
 }
 

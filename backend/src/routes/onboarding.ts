@@ -10,7 +10,7 @@ import type { HonoEnv } from "../lib/factory";
 
 const onboardingRoute = createRoute({
   method: "post",
-  path: "/",
+  path: "/onboarding",
   tags: ["Onboarding"],
   request: {
     body: {
