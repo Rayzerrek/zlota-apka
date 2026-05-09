@@ -1,7 +1,7 @@
 import { Button } from "@cloudflare/kumo/components/button";
 import { DownloadSimpleIcon } from "@phosphor-icons/react";
 import Papa from "papaparse";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
 import { useNotifications } from "../../contexts/NotificationContext";
 import { useAllCards } from "../../hooks/api/useCards";
@@ -37,19 +37,50 @@ export function ProfileDataExport() {
   const { data: apiSessions } = useAllSessions();
   const { data: apiHistory } = useReviewHistory();
 
-  const cards = (apiCards ?? []).map(adaptApiCardToCard);
-  const exams = apiExams ?? [];
-  const sessions = (apiSessions ?? []).map(adaptApiSessionToStudySession);
-  const history = (apiHistory ?? []).map(adaptApiReviewHistoryToEntry);
+  const cards = useMemo(
+    () => (apiCards ?? []).map(adaptApiCardToCard),
+    [apiCards],
+  );
+  const exams = useMemo(() => apiExams ?? [], [apiExams]);
+  const sessions = useMemo(
+    () => (apiSessions ?? []).map(adaptApiSessionToStudySession),
+    [apiSessions],
+  );
+  const history = useMemo(
+    () => (apiHistory ?? []).map(adaptApiReviewHistoryToEntry),
+    [apiHistory],
+  );
 
-  const isLoading =
-    apiCards === undefined ||
-    apiExams === undefined ||
-    apiSessions === undefined ||
-    apiHistory === undefined;
+  const isLoading = [apiCards, apiExams, apiSessions, apiHistory].some(
+    (data) => data === undefined,
+  );
+
+  const exportFile = useCallback(
+    ({
+      filename,
+      content,
+      mime,
+      notificationTitle,
+    }: {
+      filename: string;
+      content: string;
+      mime: string;
+      notificationTitle: string;
+    }) => {
+      if (isLoading) return;
+
+      download(filename, content, mime);
+      addNotification({
+        type: "data_exported",
+        title: notificationTitle,
+        description: filename,
+      });
+    },
+    [addNotification, isLoading],
+  );
 
   const handleJSON = useCallback(() => {
-    if (isLoading) return;
+    const filename = `powtorki-${todayStamp()}.json`;
     const payload = {
       exportedAtISO: new Date().toISOString(),
       cards,
@@ -57,31 +88,23 @@ export function ProfileDataExport() {
       exams,
       history,
     };
-    download(
-      `powtorki-${todayStamp()}.json`,
-      JSON.stringify(payload, null, 2),
-      "application/json",
-    );
-    addNotification({
-      type: "data_exported",
-      title: "Wyeksportowano dane",
-      description: `powtorki-${todayStamp()}.json`,
+    exportFile({
+      filename,
+      content: JSON.stringify(payload, null, 2),
+      mime: "application/json",
+      notificationTitle: "Wyeksportowano dane",
     });
-  }, [addNotification, cards, exams, history, isLoading, sessions]);
+  }, [cards, exams, exportFile, history, sessions]);
 
   const handleCSV = useCallback(() => {
-    if (isLoading) return;
-    download(
-      `powtorki-history-${todayStamp()}.csv`,
-      Papa.unparse(history),
-      "text/csv",
-    );
-    addNotification({
-      type: "data_exported",
-      title: "Wyeksportowano historię",
-      description: `powtorki-history-${todayStamp()}.csv`,
+    const filename = `powtorki-history-${todayStamp()}.csv`;
+    exportFile({
+      filename,
+      content: Papa.unparse(history),
+      mime: "text/csv",
+      notificationTitle: "Wyeksportowano historię",
     });
-  }, [addNotification, history, isLoading]);
+  }, [exportFile, history]);
 
   return (
     <section className="enter enter-d3 flex flex-col gap-3 pt-2">
