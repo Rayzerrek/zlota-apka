@@ -23,13 +23,16 @@ import {
   examRowSchema,
   idParamsSchema,
   okResponseSchema,
+  topicCreateSchema,
+  topicListResponseSchema,
+  topicRowSchema,
 } from "../types/schemas";
 
 import type { HonoEnv } from "../lib/factory";
 
 const listExamsRoute = createRoute({
   method: "get",
-  path: "/exams",
+  path: "/",
   tags: ["Exams"],
   responses: {
     200: {
@@ -41,7 +44,7 @@ const listExamsRoute = createRoute({
 
 const createExamRoute = createRoute({
   method: "post",
-  path: "/exams",
+  path: "/",
   tags: ["Exams"],
   request: {
     body: {
@@ -63,7 +66,7 @@ const createExamRoute = createRoute({
 
 const getExamRoute = createRoute({
   method: "get",
-  path: "/exams/{id}",
+  path: "/{id}",
   tags: ["Exams"],
   request: { params: idParamsSchema },
   responses: {
@@ -80,7 +83,7 @@ const getExamRoute = createRoute({
 
 const patchExamRoute = createRoute({
   method: "patch",
-  path: "/exams/{id}",
+  path: "/{id}",
   tags: ["Exams"],
   request: {
     params: idParamsSchema,
@@ -103,7 +106,7 @@ const patchExamRoute = createRoute({
 
 const deleteExamRoute = createRoute({
   method: "delete",
-  path: "/exams/{id}",
+  path: "/{id}",
   tags: ["Exams"],
   request: { params: idParamsSchema },
   responses: {
@@ -113,6 +116,42 @@ const deleteExamRoute = createRoute({
     },
     404: {
       description: "Not found",
+      content: { "application/json": { schema: errorResponseSchema } },
+    },
+  },
+});
+
+const listExamTopicsRoute = createRoute({
+  method: "get",
+  path: "/{id}/topics",
+  tags: ["Topics"],
+  request: { params: idParamsSchema },
+  responses: {
+    200: {
+      description: "Topics for exam",
+      content: { "application/json": { schema: topicListResponseSchema } },
+    },
+  },
+});
+
+const createExamTopicRoute = createRoute({
+  method: "post",
+  path: "/{id}/topics",
+  tags: ["Topics"],
+  request: {
+    params: idParamsSchema,
+    body: {
+      content: { "application/json": { schema: topicCreateSchema } },
+      required: true,
+    },
+  },
+  responses: {
+    201: {
+      description: "Created topic",
+      content: { "application/json": { schema: topicRowSchema } },
+    },
+    404: {
+      description: "Exam not found",
       content: { "application/json": { schema: errorResponseSchema } },
     },
   },
@@ -315,4 +354,37 @@ examsRouter.openapi(deleteExamRoute, async (c) => {
     .returning();
   if (!row) return c.json({ error: "Not found" }, 404);
   return c.json({ ok: true }, 200);
+});
+
+examsRouter.openapi(listExamTopicsRoute, async (c) => {
+  const db = createDb(c.env);
+  const rows = await db
+    .select()
+    .from(topics)
+    .where(
+      and(
+        eq(topics.examId, c.req.valid("param").id),
+        eq(topics.userId, c.get("userId")),
+      ),
+    );
+  return c.json(rows, 200);
+});
+
+examsRouter.openapi(createExamTopicRoute, async (c) => {
+  const db = createDb(c.env);
+  const userId = c.get("userId");
+  const examId = c.req.valid("param").id;
+  const body = c.req.valid("json");
+
+  const [exam] = await db
+    .select({ id: exams.id })
+    .from(exams)
+    .where(and(eq(exams.id, examId), eq(exams.userId, userId)));
+  if (!exam) return c.json({ error: "Exam not found" }, 404);
+
+  const [row] = await db
+    .insert(topics)
+    .values({ ...body, userId, examId })
+    .returning();
+  return c.json(row, 201);
 });

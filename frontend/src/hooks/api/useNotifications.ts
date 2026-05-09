@@ -56,6 +56,7 @@ export function useNotificationInbox(page = 1, perPage = 100) {
 
   const addNotification = useMutation({
     mutationFn: async (input: NotificationCreateInput) => {
+      if (localStorage.getItem("settings.notifications") === "false") return;
       const res = await apiPost("/api/notifications", ApiNotificationSchema, {
         ...input,
       });

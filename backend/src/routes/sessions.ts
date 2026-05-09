@@ -18,7 +18,7 @@ import type { HonoEnv } from "../lib/factory";
 
 const listSessionsRoute = createRoute({
   method: "get",
-  path: "/sessions",
+  path: "/",
   tags: ["Sessions"],
   request: { query: sessionDateQuerySchema },
   responses: {
@@ -31,7 +31,7 @@ const listSessionsRoute = createRoute({
 
 const completeSessionRoute = createRoute({
   method: "patch",
-  path: "/sessions/{id}/complete",
+  path: "/{id}/complete",
   tags: ["Sessions"],
   request: {
     params: idParamsSchema,
@@ -54,7 +54,7 @@ const completeSessionRoute = createRoute({
 
 const skipSessionRoute = createRoute({
   method: "patch",
-  path: "/sessions/{id}/skip",
+  path: "/{id}/skip",
   tags: ["Sessions"],
   request: { params: idParamsSchema },
   responses: {
@@ -71,7 +71,7 @@ const skipSessionRoute = createRoute({
 
 const getSessionRoute = createRoute({
   method: "get",
-  path: "/sessions/{id}",
+  path: "/{id}",
   tags: ["Sessions"],
   request: { params: idParamsSchema },
   responses: {

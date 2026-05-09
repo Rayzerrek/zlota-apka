@@ -8,7 +8,6 @@ import {
   SCAN_MIME_JPG,
   SCAN_MODEL_NAME,
   SCAN_PROMPT,
-  SCAN_ROUTE_PATH,
   SCAN_ROUTE_TAGS,
   type ScanImage,
   errorResponseSchema,
@@ -22,7 +21,7 @@ import type { HonoEnv } from "../lib/factory";
 
 const scanRoute = createRoute({
   method: "post",
-  path: SCAN_ROUTE_PATH,
+  path: "/",
   tags: SCAN_ROUTE_TAGS,
   request: {
     body: {

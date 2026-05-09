@@ -23,7 +23,7 @@ const paginationQuerySchema = z.object({
 
 const listNotificationsRoute = createRoute({
   method: "get",
-  path: "/notifications",
+  path: "/",
   tags: ["Notifications"],
   request: { query: paginationQuerySchema },
   responses: {
@@ -38,7 +38,7 @@ const listNotificationsRoute = createRoute({
 
 const createNotificationRoute = createRoute({
   method: "post",
-  path: "/notifications",
+  path: "/",
   tags: ["Notifications"],
   request: {
     body: {
@@ -56,7 +56,7 @@ const createNotificationRoute = createRoute({
 
 const markReadRoute = createRoute({
   method: "patch",
-  path: "/notifications/{id}/read",
+  path: "/{id}/read",
   tags: ["Notifications"],
   request: { params: idParamsSchema },
   responses: {
@@ -73,7 +73,7 @@ const markReadRoute = createRoute({
 
 const markAllReadRoute = createRoute({
   method: "patch",
-  path: "/notifications/read-all",
+  path: "/read-all",
   tags: ["Notifications"],
   responses: {
     200: {
@@ -85,7 +85,7 @@ const markAllReadRoute = createRoute({
 
 const clearAllRoute = createRoute({
   method: "delete",
-  path: "/notifications",
+  path: "/",
   tags: ["Notifications"],
   responses: {
     200: {

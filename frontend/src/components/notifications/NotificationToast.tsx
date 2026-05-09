@@ -1,7 +1,7 @@
 import { useKumoToastManager } from "@cloudflare/kumo/components/toast";
 import { useEffect, useRef } from "react";
 
-import { useNotifications } from "../../contexts/NotificationContext";
+import { useNotificationInbox } from "../../hooks/api/useNotifications";
 
 type ToastVariant = "default" | "success" | "error" | "warning" | "info";
 
@@ -18,7 +18,7 @@ const variantMap: Record<string, ToastVariant> = {
 
 export function NotificationToast() {
   const { add } = useKumoToastManager();
-  const { notifications, isFetched } = useNotifications();
+  const { notifications, isFetched } = useNotificationInbox();
   const shown = useRef<Set<string>>(new Set());
   const seeded = useRef(false);
 

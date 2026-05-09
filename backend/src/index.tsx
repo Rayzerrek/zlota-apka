@@ -41,17 +41,17 @@ app.use("/api/*", async (c, next) => {
   return corsMiddleware(c, next);
 });
 
-app.route("/api", notesRouter);
-app.route("/api", scanRouter);
-app.route("/api", onboardingRouter);
-app.route("/api", usersRouter);
-app.route("/api", subjectsRouter);
-app.route("/api", examsRouter);
-app.route("/api", notificationsRouter);
-app.route("/api", dashboardRouter);
-app.route("/api", sessionsRouter);
-app.route("/api", topicsRouter);
-app.route("/api", cardsRouter);
+app.route("/api/notes", notesRouter);
+app.route("/api/scan", scanRouter);
+app.route("/api/onboarding", onboardingRouter);
+app.route("/api/users", usersRouter);
+app.route("/api/subjects", subjectsRouter);
+app.route("/api/exams", examsRouter);
+app.route("/api/notifications", notificationsRouter);
+app.route("/api/dashboard", dashboardRouter);
+app.route("/api/sessions", sessionsRouter);
+app.route("/api/topics", topicsRouter);
+app.route("/api/cards", cardsRouter);
 
 app.doc("/api/doc", {
   openapi: "3.0.0",

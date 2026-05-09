@@ -3,10 +3,10 @@ import { DownloadSimpleIcon } from "@phosphor-icons/react";
 import Papa from "papaparse";
 import { useCallback, useMemo } from "react";
 
-import { useNotifications } from "../../contexts/NotificationContext";
 import { useAllCards } from "../../hooks/api/useCards";
 import { useReviewHistory } from "../../hooks/api/useCards";
 import { useAllExams } from "../../hooks/api/useExams";
+import { useNotificationInbox } from "../../hooks/api/useNotifications";
 import { useAllSessions } from "../../hooks/api/useSessions";
 import {
   adaptApiCardToCard,
@@ -31,7 +31,7 @@ function todayStamp(): string {
 }
 
 export function ProfileDataExport() {
-  const { addNotification } = useNotifications();
+  const { addNotification } = useNotificationInbox();
   const { data: apiCards } = useAllCards();
   const { data: apiExams } = useAllExams();
   const { data: apiSessions } = useAllSessions();

@@ -1,16 +1,16 @@
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import { and, eq } from "drizzle-orm";
 
-import { exams, subjects, topics } from "../db/schema";
+import { cards, exams, subjects, topics } from "../db/schema";
 import { errorResponseSchema } from "../lib/constant";
 import { createDb } from "../lib/db";
 import { requireAuth } from "../middleware/auth";
 import {
-  examIdParamsSchema,
+  cardCreateSchema,
+  cardListResponseSchema,
+  cardRowSchema,
   idParamsSchema,
   okResponseSchema,
-  topicCreateSchema,
-  topicListResponseSchema,
   topicPatchSchema,
   topicRowSchema,
   topicWithSubjectListResponseSchema,
@@ -20,7 +20,7 @@ import type { HonoEnv } from "../lib/factory";
 
 const allTopicsRoute = createRoute({
   method: "get",
-  path: "/topics",
+  path: "/",
   tags: ["Topics"],
   responses: {
     200: {
@@ -32,37 +32,37 @@ const allTopicsRoute = createRoute({
   },
 });
 
-const listTopicsRoute = createRoute({
+const listTopicCardsRoute = createRoute({
   method: "get",
-  path: "/exams/{examId}/topics",
-  tags: ["Topics"],
-  request: { params: examIdParamsSchema },
+  path: "/{id}/cards",
+  tags: ["Cards"],
+  request: { params: idParamsSchema },
   responses: {
     200: {
-      description: "Topics for exam",
-      content: { "application/json": { schema: topicListResponseSchema } },
+      description: "Cards for topic",
+      content: { "application/json": { schema: cardListResponseSchema } },
     },
   },
 });
 
-const createTopicRoute = createRoute({
+const createTopicCardRoute = createRoute({
   method: "post",
-  path: "/exams/{examId}/topics",
-  tags: ["Topics"],
+  path: "/{id}/cards",
+  tags: ["Cards"],
   request: {
-    params: examIdParamsSchema,
+    params: idParamsSchema,
     body: {
-      content: { "application/json": { schema: topicCreateSchema } },
+      content: { "application/json": { schema: cardCreateSchema } },
       required: true,
     },
   },
   responses: {
     201: {
-      description: "Created topic",
-      content: { "application/json": { schema: topicRowSchema } },
+      description: "Created card",
+      content: { "application/json": { schema: cardRowSchema } },
     },
     404: {
-      description: "Exam not found",
+      description: "Topic not found",
       content: { "application/json": { schema: errorResponseSchema } },
     },
   },
@@ -70,7 +70,7 @@ const createTopicRoute = createRoute({
 
 const patchTopicRoute = createRoute({
   method: "patch",
-  path: "/topics/{id}",
+  path: "/{id}",
   tags: ["Topics"],
   request: {
     params: idParamsSchema,
@@ -93,7 +93,7 @@ const patchTopicRoute = createRoute({
 
 const deleteTopicRoute = createRoute({
   method: "delete",
-  path: "/topics/{id}",
+  path: "/{id}",
   tags: ["Topics"],
   request: { params: idParamsSchema },
   responses: {
@@ -133,35 +133,38 @@ topicsRouter.openapi(allTopicsRoute, async (c) => {
   return c.json(rows, 200);
 });
 
-topicsRouter.openapi(listTopicsRoute, async (c) => {
+topicsRouter.openapi(listTopicCardsRoute, async (c) => {
   const db = createDb(c.env);
   const rows = await db
     .select()
-    .from(topics)
+    .from(cards)
     .where(
       and(
-        eq(topics.examId, c.req.valid("param").examId),
-        eq(topics.userId, c.get("userId")),
+        eq(cards.topicId, c.req.valid("param").id),
+        eq(cards.userId, c.get("userId")),
       ),
     );
   return c.json(rows, 200);
 });
 
-topicsRouter.openapi(createTopicRoute, async (c) => {
+topicsRouter.openapi(createTopicCardRoute, async (c) => {
   const db = createDb(c.env);
   const userId = c.get("userId");
-  const examId = c.req.valid("param").examId;
-  const body = c.req.valid("json");
+  const topicId = c.req.valid("param").id;
 
-  const [exam] = await db
-    .select({ id: exams.id })
-    .from(exams)
-    .where(and(eq(exams.id, examId), eq(exams.userId, userId)));
-  if (!exam) return c.json({ error: "Exam not found" }, 404);
+  const [topic] = await db
+    .select({ id: topics.id })
+    .from(topics)
+    .where(and(eq(topics.id, topicId), eq(topics.userId, userId)));
+  if (!topic) return c.json({ error: "Topic not found" }, 404);
 
   const [row] = await db
-    .insert(topics)
-    .values({ ...body, userId, examId })
+    .insert(cards)
+    .values({
+      ...c.req.valid("json"),
+      userId,
+      topicId,
+    })
     .returning();
   return c.json(row, 201);
 });
