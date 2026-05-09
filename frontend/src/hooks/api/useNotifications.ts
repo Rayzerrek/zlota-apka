@@ -49,9 +49,9 @@ export function useNotificationInbox(page = 1, perPage = 100) {
     [notificationsQuery.data],
   );
   const totalCount = notificationsQuery.data?.totalCount ?? 0;
-  const unreadCount = useMemo(
-    () => notifications.filter((notification) => !notification.read).length,
-    [notifications],
+  const unreadCount = notifications.reduce(
+    (acc, notification) => acc + (notification.read ? 0 : 1),
+    0,
   );
 
   const addNotification = useMutation({

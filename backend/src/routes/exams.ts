@@ -12,7 +12,7 @@ import {
 } from "../db/schema";
 import { errorResponseSchema } from "../lib/constant";
 import { createDb } from "../lib/db";
-import { generatePlan } from "../lib/scheduler";
+import { createStudySessions, generateExamPlan } from "../lib/helpers";
 import { requireAuth } from "../middleware/auth";
 import {
   examCreateResponseSchema,
@@ -229,7 +229,7 @@ examsRouter.openapi(createExamRoute, async (c) => {
       .from(userAvailability)
       .where(eq(userAvailability.userId, userId));
 
-    const plannedSessions = generatePlan(
+    const { plannedSessions, daysUntilExam, dailyMinutes } = generateExamPlan(
       exam,
       createdTopics,
       availability,
@@ -242,36 +242,23 @@ examsRouter.openapi(createExamRoute, async (c) => {
       .values({
         userId,
         examId: exam.id,
-        daysUntilExam: Math.max(
-          0,
-          Math.floor(
-            (new Date(body.examDate).getTime() - new Date(today).getTime()) /
-              86_400_000,
-          ),
-        ),
+        daysUntilExam,
         topicsCount: createdTopics.length,
-        dailyMinutes: availability.reduce(
-          (sum, a) => sum + a.availableMinutes,
-          0,
-        ),
+        dailyMinutes,
         sessionsCreated: plannedSessions.length,
         planJson: plannedSessions,
       })
       .returning();
 
+    const sessionValues = createStudySessions(plannedSessions, {
+      userId,
+      examId: exam.id,
+      schedulerRunId: run.id,
+    });
+
     const createdSessions =
-      plannedSessions.length > 0
-        ? await tx
-            .insert(studySessions)
-            .values(
-              plannedSessions.map((s) => ({
-                ...s,
-                userId,
-                examId: exam.id,
-                schedulerRunId: run.id,
-              })),
-            )
-            .returning()
+      sessionValues.length > 0
+        ? await tx.insert(studySessions).values(sessionValues).returning()
         : [];
 
     await tx.insert(notifications).values({

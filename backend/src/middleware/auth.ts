@@ -8,8 +8,6 @@ import { factory } from "../lib/factory";
 
 import type { CookieOptions } from "hono/utils/cookie";
 
-const DEMO_GUEST_ID = "demo-guest";
-
 const guestCookieOptions = (env: {
   BETTER_AUTH_URL?: string;
 }): CookieOptions => ({
@@ -55,20 +53,23 @@ export const requireAuth = factory.createMiddleware(async (c, next) => {
     console.warn("[auth] getSession failed, falling back to guest:", err);
   }
 
-  try {
-    const demoGuest = await db
-      .select({ id: user.id, isGuest: user.isGuest })
-      .from(user)
-      .where(eq(user.id, DEMO_GUEST_ID))
-      .limit(1);
-    if (demoGuest.length > 0 && demoGuest[0].isGuest) {
-      setCookie(c, "guest_user_id", DEMO_GUEST_ID, guestCookieOptions(c.env));
-      c.set("userId", DEMO_GUEST_ID);
-      await next();
-      return;
+  const demoGuestId = c.env.DEMO_GUEST_ID?.trim();
+  if (demoGuestId) {
+    try {
+      const demoGuest = await db
+        .select({ id: user.id, isGuest: user.isGuest })
+        .from(user)
+        .where(eq(user.id, demoGuestId))
+        .limit(1);
+      if (demoGuest.length > 0 && demoGuest[0].isGuest) {
+        setCookie(c, "guest_user_id", demoGuestId, guestCookieOptions(c.env));
+        c.set("userId", demoGuestId);
+        await next();
+        return;
+      }
+    } catch (err) {
+      console.error("[auth] failed to look up demo guest:", err);
     }
-  } catch (err) {
-    console.error("[auth] failed to look up demo guest:", err);
   }
 
   const newGuestId = crypto.randomUUID();
