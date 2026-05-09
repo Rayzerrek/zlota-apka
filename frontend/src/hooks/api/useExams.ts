@@ -11,7 +11,7 @@ import {
 } from "../../lib/schemas";
 import { queryKeys } from "./keys";
 
-import type { ExamCreateResponse } from "../../types/api";
+import type { ExamCreateResponse } from "../../lib/schema-types";
 
 export function useExams() {
   return useQuery({

@@ -1,18 +1,8 @@
 import { z } from "zod";
 
-import type { ApiResult } from "../types/api";
-
-export type { ApiResult } from "../types/api";
-export type {
-  ApiDashboard,
-  ApiDashboardExam,
-  ApiDashboardSession,
-  ApiExam,
-  ApiSession,
-  ApiSubject,
-  ApiTopic,
-  ExamCreateResponse,
-} from "../types/api";
+type ApiOk<T> = { ok: true; data: T };
+type ApiErr = { ok: false; status: number; message: string };
+export type ApiResult<T> = ApiOk<T> | ApiErr;
 
 const apiUrlSchema = z.string().url().optional();
 const parsedApiUrl = apiUrlSchema.safeParse(import.meta.env.VITE_API_URL);
@@ -72,7 +62,6 @@ async function request<TSchema extends z.ZodType>(
     const data = schema.parse(raw);
     return { ok: true, data };
   } catch (err) {
-    // Cancellations bubble up so React Query treats them as cancelled, not errored.
     if (err instanceof DOMException && err.name === "AbortError") {
       throw err;
     }

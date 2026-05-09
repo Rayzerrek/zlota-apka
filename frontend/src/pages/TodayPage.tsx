@@ -19,7 +19,7 @@ import { useDashboard } from "../hooks/api/useDashboard";
 import { cn } from "../utils/cn";
 import { dayLong, daysBetween, longDate } from "../utils/date";
 
-import type { ApiDashboardSession } from "../types/api";
+import type { ApiDashboardSession } from "../lib/schema-types";
 
 type Props = {
   onStartSession: (id: string) => void;
@@ -89,7 +89,6 @@ export function TodayPage({ onStartSession }: Props) {
   const { data: dashboard, isLoading, error } = useDashboard();
 
   const todaySessions = dashboard?.today ?? [];
-  // Defensive: only treat exam as "next" if it hasn't passed yet.
   const upcomingExam = (dashboard?.upcomingExams ?? []).find(
     (e) => daysBetween(today, e.examDate) >= 0,
   );

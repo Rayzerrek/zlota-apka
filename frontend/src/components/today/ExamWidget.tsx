@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { daysBetween, longDate } from "../../utils/date";
 import { ExamMenu } from "../exam/ExamMenu";
 
-import type { ApiDashboardExam } from "../../types/api";
+import type { ApiDashboardExam } from "../../lib/schema-types";
 
 type Props = {
   exam: ApiDashboardExam;

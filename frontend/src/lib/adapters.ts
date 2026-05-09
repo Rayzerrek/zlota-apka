@@ -6,13 +6,13 @@ import type {
   StudySession,
   SubjectKey,
 } from "../types";
-import type { ApiCard } from "../types/api";
 import type {
+  ApiCard,
   ApiExtendedCard,
   ApiExtendedExam,
   ApiExtendedSession,
   ApiReviewHistory,
-} from "../types/api-infers";
+} from "./schema-types";
 
 const SUBJECT_KEYS = new Set<string>([
   "mat",
