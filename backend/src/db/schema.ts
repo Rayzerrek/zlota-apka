@@ -11,6 +11,8 @@ import {
   timestamp,
 } from "drizzle-orm/pg-core";
 
+import type { CardState } from "../lib/fsrs";
+
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
@@ -182,7 +184,7 @@ export const cards = pgTable(
     scheduledDays: integer("scheduled_days").notNull().default(0),
     reps: integer("reps").notNull().default(0),
     lapses: integer("lapses").notNull().default(0),
-    state: smallint("state").notNull().default(0),
+    state: smallint("state").$type<CardState>().notNull().default(0),
     lastReview: timestamp("last_review"),
     due: timestamp("due").notNull().defaultNow(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -266,7 +268,7 @@ export const reviewHistory = pgTable(
       onDelete: "set null",
     }),
     rating: smallint("rating").notNull(),
-    stateBefore: smallint("state_before").notNull(),
+    stateBefore: smallint("state_before").$type<CardState>().notNull(),
     stabilityBefore: real("stability_before").notNull(),
     difficultyBefore: real("difficulty_before").notNull(),
     scheduledDays: integer("scheduled_days").notNull(),
