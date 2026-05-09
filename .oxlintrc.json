@@ -25,5 +25,11 @@
       }
     ]
   },
-  "ignorePatterns": ["**/env.d.ts"]
+  "ignorePatterns": [
+    "**/env.d.ts",
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/.vite/**",
+    "**/.wrangler/**"
+  ]
 }
