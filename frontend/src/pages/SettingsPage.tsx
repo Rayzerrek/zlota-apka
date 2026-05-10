@@ -7,13 +7,10 @@ import { useState } from "react";
 import { PageHead } from "../components/layout/PageHead";
 import { ProfileAppearanceSection } from "../components/profile/ProfileAppearanceSection";
 import { useSavedFeedback } from "../hooks/useSavedFeedback";
+import { useTheme } from "../hooks/useTheme";
 
-type Props = {
-  theme: "dark" | "light";
-  onThemeChange: (t: "dark" | "light") => void;
-};
-
-export function SettingsPage({ theme, onThemeChange }: Props) {
+export function SettingsPage() {
+  const { theme, setTheme } = useTheme();
   const [notifications, setNotifications] = useState(
     () => localStorage.getItem("settings.notifications") !== "false",
   );
@@ -120,7 +117,7 @@ export function SettingsPage({ theme, onThemeChange }: Props) {
           </Label>
         </section>
 
-        <ProfileAppearanceSection theme={theme} onThemeChange={onThemeChange} />
+        <ProfileAppearanceSection theme={theme} onThemeChange={setTheme} />
 
         <section className="enter enter-d2 flex flex-col gap-4">
           <div className="pb-3 border-b border-rule flex items-baseline gap-3">

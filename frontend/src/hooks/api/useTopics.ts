@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { apiGet } from "../../lib/api";
+import { ApiErrorException } from "../../lib/error";
 import { ApiTopicSchema, ApiTopicWithSubjectSchema } from "../../lib/schemas";
 import { queryKeys } from "./keys";
 
@@ -12,7 +13,7 @@ export function useAllTopics() {
         "/api/topics",
         ApiTopicWithSubjectSchema.array(),
       );
-      if (!res.ok) throw new Error(res.message);
+      if (!res.ok) throw new ApiErrorException(res.error);
       return res.data;
     },
   });
@@ -26,7 +27,7 @@ export function useTopicsByExam(examId: string) {
         `/api/exams/${examId}/topics`,
         ApiTopicSchema.array(),
       );
-      if (!res.ok) throw new Error(res.message);
+      if (!res.ok) throw new ApiErrorException(res.error);
       return res.data;
     },
     enabled: Boolean(examId),

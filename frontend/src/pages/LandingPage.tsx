@@ -13,11 +13,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { type ReactNode, useEffect, useRef } from "react";
 
 import { ThemeButton } from "../components/ui/ThemeButton";
-
-type Props = {
-  theme: "dark" | "light";
-  onToggleTheme: () => void;
-};
+import { useTheme } from "../hooks/useTheme";
 
 function BentoCard({
   icon: Icon,
@@ -51,7 +47,8 @@ function BentoCard({
   );
 }
 
-export function LandingPage({ theme, onToggleTheme }: Props) {
+export function LandingPage() {
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const headerRef = useRef<HTMLElement>(null);
 
@@ -86,7 +83,7 @@ export function LandingPage({ theme, onToggleTheme }: Props) {
         </span>
 
         <nav className="flex items-center gap-3">
-          <ThemeButton theme={theme} onToggleTheme={onToggleTheme} />
+          <ThemeButton theme={theme} onToggleTheme={toggleTheme} />
           <Button
             variant="ghost"
             onClick={() => navigate({ to: "/today" })}

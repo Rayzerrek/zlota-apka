@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { z } from "zod";
 
 import { apiDelete, apiGet, apiPatch, apiPost } from "../../lib/api";
+import { ApiErrorException } from "../../lib/error";
 import {
   ApiNotificationSchema,
   OkResponseSchema,
@@ -39,7 +40,7 @@ export function useNotificationInbox(page = 1, perPage = 100) {
         `/api/notifications?page=${page}&perPage=${perPage}`,
         PaginatedNotificationsSchema,
       );
-      if (!res.ok) throw new Error(res.message);
+      if (!res.ok) throw new ApiErrorException(res.error);
       return res.data;
     },
   });
@@ -60,7 +61,7 @@ export function useNotificationInbox(page = 1, perPage = 100) {
       const res = await apiPost("/api/notifications", ApiNotificationSchema, {
         ...input,
       });
-      if (!res.ok) throw new Error(res.message);
+      if (!res.ok) throw new ApiErrorException(res.error);
       return res.data;
     },
     onSuccess: () => {
@@ -75,7 +76,7 @@ export function useNotificationInbox(page = 1, perPage = 100) {
         OkResponseSchema,
         {},
       );
-      if (!res.ok) throw new Error(res.message);
+      if (!res.ok) throw new ApiErrorException(res.error);
       return id;
     },
     onSuccess: () => {
@@ -90,7 +91,7 @@ export function useNotificationInbox(page = 1, perPage = 100) {
         OkResponseSchema,
         {},
       );
-      if (!res.ok) throw new Error(res.message);
+      if (!res.ok) throw new ApiErrorException(res.error);
       return true;
     },
     onSuccess: () => {
@@ -101,7 +102,7 @@ export function useNotificationInbox(page = 1, perPage = 100) {
   const clearAll = useMutation({
     mutationFn: async () => {
       const res = await apiDelete("/api/notifications", OkResponseSchema);
-      if (!res.ok) throw new Error(res.message);
+      if (!res.ok) throw new ApiErrorException(res.error);
       return true;
     },
     onSuccess: () => {

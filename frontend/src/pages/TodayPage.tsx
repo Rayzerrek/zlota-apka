@@ -16,6 +16,8 @@ import { PageHead } from "../components/layout/PageHead";
 import { TodayHeroSkeleton } from "../components/today/HeroSkeleton";
 import { TodayReminderCard } from "../components/today/ReminderCard";
 import { SessionList } from "../components/today/SessionList";
+import { ErrorState } from "../components/ui/ErrorState";
+import { useStudySession } from "../contexts/StudySessionContext";
 import { useDashboard } from "../hooks/api/useDashboard";
 import { dayLong, daysBetween, longDate } from "../utils/date";
 
@@ -24,15 +26,12 @@ import type {
   ApiDashboardSession,
 } from "../lib/schema-types";
 
-type Props = {
-  onStartSession: (id: string) => void;
-};
-
 type TodayReminder = ComponentProps<typeof TodayReminderCard> & {
   id: string;
 };
 
-export function TodayPage({ onStartSession }: Props) {
+export function TodayPage() {
+  const { startSession: onStartSession } = useStudySession();
   const today = format(new Date(), "yyyy-MM-dd");
   const [addExamOpen, setAddExamOpen] = useState(false);
   const navigate = useNavigate();
@@ -145,14 +144,7 @@ export function TodayPage({ onStartSession }: Props) {
           />
 
           <div className="relative flex flex-col gap-6">
-            {error && (
-              <div
-                role="alert"
-                className="rounded-sm border border-rating-1/25 bg-rating-1/8 p-4 text-[15px] text-rating-1"
-              >
-                {error.message}
-              </div>
-            )}
+            {error && <ErrorState error={error} />}
 
             {isLoading ? (
               <TodayHeroSkeleton />

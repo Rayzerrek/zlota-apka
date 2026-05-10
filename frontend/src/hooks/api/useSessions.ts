@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { apiGet, apiPatch } from "../../lib/api";
+import { ApiErrorException } from "../../lib/error";
 import { ApiExtendedSessionSchema, ApiSessionSchema } from "../../lib/schemas";
 import { queryKeys } from "./keys";
 
@@ -21,7 +22,7 @@ export function useSessions(params?: {
     queryKey: queryKeys.sessions(params),
     queryFn: async () => {
       const res = await apiGet(path, ApiSessionSchema.array());
-      if (!res.ok) throw new Error(res.message);
+      if (!res.ok) throw new ApiErrorException(res.error);
       return res.data;
     },
   });
@@ -50,7 +51,7 @@ export function useCompleteSession() {
         ApiSessionSchema,
         body,
       );
-      if (!res.ok) throw new Error(res.message);
+      if (!res.ok) throw new ApiErrorException(res.error);
       return res.data;
     },
     onSuccess: () => {
@@ -71,7 +72,7 @@ export function useSkipSession() {
         ApiSessionSchema,
         {},
       );
-      if (!res.ok) throw new Error(res.message);
+      if (!res.ok) throw new ApiErrorException(res.error);
       return res.data;
     },
     onSuccess: () => {
@@ -89,7 +90,7 @@ export function useAllSessions() {
         "/api/sessions",
         ApiExtendedSessionSchema.array(),
       );
-      if (!res.ok) throw new Error(res.message);
+      if (!res.ok) throw new ApiErrorException(res.error);
       return res.data;
     },
   });
@@ -100,7 +101,7 @@ export function useSession(id: string) {
     queryKey: queryKeys.session(id),
     queryFn: async () => {
       const res = await apiGet(`/api/sessions/${id}`, ApiExtendedSessionSchema);
-      if (!res.ok) throw new Error(res.message);
+      if (!res.ok) throw new ApiErrorException(res.error);
       return res.data;
     },
     enabled: Boolean(id),

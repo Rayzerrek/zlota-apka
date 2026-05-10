@@ -1,7 +1,9 @@
 import { z } from "zod";
 
+import { type ApiError, apiErrorMessage } from "./error";
+
 type ApiOk<T> = { ok: true; data: T };
-type ApiErr = { ok: false; status: number; message: string };
+type ApiErr = { ok: false; error: ApiError };
 export type ApiResult<T> = ApiOk<T> | ApiErr;
 
 const GuestSessionSchema = z.object({
@@ -92,8 +94,11 @@ async function request<TSchema extends z.ZodType>(
       const body = (await res.json().catch(() => ({}))) as { error?: string };
       return {
         ok: false,
-        status: res.status,
-        message: body.error ?? res.statusText,
+        error: {
+          tag: "http",
+          status: res.status,
+          message: body.error ?? res.statusText,
+        },
       };
     }
     const raw = await res.json();
@@ -104,20 +109,12 @@ async function request<TSchema extends z.ZodType>(
       throw err;
     }
     if (err instanceof z.ZodError) {
-      return {
-        ok: false,
-        status: 0,
-        message: `Błąd walidacji odpowiedzi: ${err.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`).join(", ")}`,
-      };
+      return { ok: false, error: { tag: "validation", issues: err.issues } };
     }
     if (err instanceof SyntaxError) {
-      return {
-        ok: false,
-        status: 0,
-        message: "Nieprawidłowy format odpowiedzi serwera",
-      };
+      return { ok: false, error: { tag: "invalid_response" } };
     }
-    return { ok: false, status: 0, message: "Błąd połączenia z serwerem" };
+    return { ok: false, error: { tag: "network" } };
   }
 }
 
@@ -161,4 +158,12 @@ export function apiDelete<TSchema extends z.ZodType>(
   options?: RequestOptions,
 ): Promise<ApiResult<z.infer<TSchema>>> {
   return request(path, schema, { method: "DELETE", signal: options?.signal });
+}
+
+/**
+ * Backwards-compatible accessor: legacy callers used `res.message`. New code
+ * should match on `res.error.tag` instead.
+ */
+export function apiResultMessage<T>(res: ApiResult<T>): string | null {
+  return res.ok ? null : apiErrorMessage(res.error);
 }

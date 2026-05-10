@@ -7,8 +7,10 @@ import { ProfileAccountSection } from "../components/profile/ProfileAccountSecti
 import { ProfileDangerZone } from "../components/profile/ProfileDangerZone";
 import { ProfileDataExport } from "../components/profile/ProfileDataExport";
 import { ProfileHeader } from "../components/profile/ProfileHeader";
+import { ErrorState } from "../components/ui/ErrorState";
 import { useSavedFeedback } from "../hooks/useSavedFeedback";
 import { apiDelete } from "../lib/api";
+import { type ApiError } from "../lib/error";
 import { OkResponseSchema } from "../lib/schemas";
 // import { authClient } from "../lib/auth";
 
@@ -28,6 +30,7 @@ export function ProfilePage() {
     () => localStorage.getItem("profile.timezone") ?? "Europe/Warsaw",
   );
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleteError, setDeleteError] = useState<ApiError | null>(null);
   const { saved, markSaved } = useSavedFeedback(2200);
 
   const handleSave = () => {
@@ -37,9 +40,10 @@ export function ProfilePage() {
   };
 
   const handleDelete = async () => {
+    setDeleteError(null);
     const res = await apiDelete("/api/users/me", OkResponseSchema);
     if (!res.ok) {
-      alert("Nie udało się usunąć konta.");
+      setDeleteError(res.error);
       return;
     }
     // Auth disabled temporarily
@@ -93,6 +97,8 @@ export function ProfilePage() {
           setConfirmDelete={setConfirmDelete}
           onDelete={handleDelete}
         />
+
+        {deleteError && <ErrorState error={deleteError} />}
       </div>
     </>
   );
