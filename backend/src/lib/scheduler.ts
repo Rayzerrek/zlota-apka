@@ -37,7 +37,6 @@ export function generatePlan(
 
   const minutesPerSession = SESSION_MINUTES[exam.materialSize] ?? 30;
 
-  // Build list of available dates between today and exam day (exclusive)
   const slots: string[] = [];
   const cursor = new Date(todayIso);
   const examDay = new Date(examDateIso);
@@ -52,7 +51,6 @@ export function generatePlan(
   }
 
   if (slots.length === 0) {
-    // No availability configured — fall back to spreading across all days
     const fallback: PlannedSession[] = topics.map((topic, i) => {
       const d = new Date(todayIso);
       d.setDate(d.getDate() + i);
@@ -67,7 +65,6 @@ export function generatePlan(
     return fallback;
   }
 
-  // Spread topics evenly across slots; repeat slots if needed
   return topics.map((topic, i) => ({
     topicId: topic.id,
     scheduledDate: slots[i % slots.length],

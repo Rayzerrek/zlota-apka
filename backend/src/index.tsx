@@ -5,6 +5,7 @@ import { cors } from "hono/cors";
 import { type Env } from "./lib/auth";
 import { createDb } from "./lib/db";
 import { generateScheduledNotifications } from "./lib/scheduled-notifications";
+import { authRouter } from "./routes/auth";
 import { cardsRouter } from "./routes/cards";
 import { dashboardRouter } from "./routes/dashboard";
 import { examsRouter } from "./routes/exams";
@@ -42,6 +43,7 @@ export function createApp() {
     return corsMiddleware(c, next);
   });
 
+  app.route("/api/auth", authRouter);
   app.route("/api/notes", notesRouter);
   app.route("/api/scan", scanRouter);
   app.route("/api/onboarding", onboardingRouter);

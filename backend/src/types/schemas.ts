@@ -1,11 +1,22 @@
 import { z } from "zod";
 
+import { SUBJECT_KEYS, normalizeSubjectKey } from "../lib/subjects";
+
 export const idParamsSchema = z.object({ id: z.string() });
 export const examIdParamsSchema = z.object({ examId: z.string() });
 export const topicIdParamsSchema = z.object({ topicId: z.string() });
 
+const canonicalSubjectKeySchema = z.enum(SUBJECT_KEYS);
+
+const subjectKeyInputSchema = z
+  .string()
+  .min(1)
+  .max(64)
+  .transform((raw) => normalizeSubjectKey(raw))
+  .pipe(canonicalSubjectKeySchema);
+
 export const subjectCreateSchema = z.object({
-  key: z.string().min(1).max(64),
+  key: subjectKeyInputSchema,
   name: z.string().min(1).max(128),
   color: z.string().regex(/^#[0-9a-f]{6}$/i),
   difficulty: z.number().int().min(1).max(5),
@@ -161,23 +172,20 @@ export const userExportResponseSchema = z.object({
 });
 
 export const okResponseSchema = z.object({
-  // boolean (nie literal(true)) — handlery z wieloma branchami (200 + 404)
-  // unionują typy zwracane, co rozszerza literal `true` do `boolean` po stronie TS.
   ok: z.boolean(),
 });
 
-// ---------------------------------------------------------------------------
-// Response schemas (kształty zwracane przez handlery — używane w OpenAPI doc)
-// Konwencja timestampów: Drizzle zwraca Date, JSON serializuje do string —
-// schemat akceptuje obie formy, identycznie jak userMeResponseSchema powyżej.
-// ---------------------------------------------------------------------------
+export const guestSessionResponseSchema = z.object({
+  userId: z.string().min(1),
+  isGuest: z.boolean(),
+});
 
 const dbTimestamp = z.union([z.string(), z.date()]);
 
 export const subjectRowSchema = z.object({
   id: z.string(),
   userId: z.string(),
-  key: z.string(),
+  key: canonicalSubjectKeySchema,
   name: z.string(),
   color: z.string(),
   difficulty: z.number().int(),
@@ -276,7 +284,6 @@ export const cardRowSchema = z.object({
 });
 export const cardListResponseSchema = z.array(cardRowSchema);
 
-// allCardsRoute robi explicit select bez userId, z dołączonymi topicName/subjectKey
 export const cardWithJoinSchema = cardRowSchema.omit({ userId: true }).extend({
   topicName: z.string().nullable(),
   subjectKey: z.string().nullable(),

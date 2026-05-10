@@ -32,4 +32,32 @@ describe("auth middleware", () => {
     );
     expect(await response.json()).toEqual([]);
   });
+
+  it("bootstraps one guest session and persists the cookie", async () => {
+    setSession(null);
+    let insertedUserId = "";
+
+    setDb(({ kind, table, values }) => {
+      if (kind === "insert" && table === user) {
+        insertedUserId = String((values as { id: string }).id);
+        return [];
+      }
+      return [];
+    });
+
+    const response = await app.request(
+      "/api/auth/guest",
+      { method: "POST" },
+      createEnv(),
+    );
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({
+      userId: insertedUserId,
+      isGuest: true,
+    });
+    expect(response.headers.get("set-cookie")).toContain(
+      `guest_user_id=${insertedUserId}`,
+    );
+  });
 });

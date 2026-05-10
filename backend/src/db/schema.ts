@@ -74,7 +74,11 @@ export const subjects = pgTable("subjects", {
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  key: text("key").notNull(),
+  key: text("key", {
+    enum: ["mat", "bio", "hist", "pol", "chem", "fiz", "ang", "other"],
+  })
+    .notNull()
+    .default("other"),
   name: text("name").notNull(),
   color: text("color").notNull(),
   difficulty: smallint("difficulty").notNull().default(3),

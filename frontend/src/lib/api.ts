@@ -4,6 +4,14 @@ type ApiOk<T> = { ok: true; data: T };
 type ApiErr = { ok: false; status: number; message: string };
 export type ApiResult<T> = ApiOk<T> | ApiErr;
 
+const GuestSessionSchema = z.object({
+  userId: z.string().min(1),
+  isGuest: z.boolean(),
+});
+
+let guestSessionReady = false;
+let guestSessionPromise: Promise<void> | null = null;
+
 const apiUrlSchema = z.string().url().optional();
 const parsedApiUrl = apiUrlSchema.safeParse(import.meta.env.VITE_API_URL);
 if (!parsedApiUrl.success) {
@@ -39,12 +47,42 @@ function buildHeaders(init?: RequestInit): Headers {
   return headers;
 }
 
+async function ensureGuestSession() {
+  if (guestSessionReady || typeof window === "undefined") {
+    return;
+  }
+
+  if (!guestSessionPromise) {
+    guestSessionPromise = (async () => {
+      const response = await fetch(`${BASE}/api/auth/guest`, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error("Nie udało się zainicjalizować sesji gościa");
+      }
+
+      GuestSessionSchema.parse(await response.json());
+      guestSessionReady = true;
+    })().finally(() => {
+      guestSessionPromise = null;
+    });
+  }
+
+  await guestSessionPromise;
+}
+
 async function request<TSchema extends z.ZodType>(
   path: string,
   schema: TSchema,
   init?: RequestInit,
 ): Promise<ApiResult<z.infer<TSchema>>> {
   try {
+    if (path !== "/api/auth/guest") {
+      await ensureGuestSession();
+    }
+
     const res = await fetch(`${BASE}${path}`, {
       credentials: "include",
       ...init,
