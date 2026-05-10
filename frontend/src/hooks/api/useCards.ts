@@ -121,7 +121,7 @@ export function useReviewHistory() {
     queryKey: queryKeys.reviewHistory,
     queryFn: async () => {
       const res = await apiGet(
-        "/api/review-history",
+        "/api/cards/review-history",
         ApiReviewHistorySchema.array(),
       );
       if (!res.ok) throw new Error(res.message);

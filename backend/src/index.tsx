@@ -17,8 +17,6 @@ import { subjectsRouter } from "./routes/subjects";
 import { topicsRouter } from "./routes/topics";
 import { usersRouter } from "./routes/users";
 
-const app = new OpenAPIHono<{ Bindings: Env }>();
-
 function createCorsMiddleware(origins: string[]) {
   return cors({
     origin: (origin) => {
@@ -31,48 +29,56 @@ function createCorsMiddleware(origins: string[]) {
   });
 }
 
-app.use("/api/*", async (c, next) => {
-  const origins = (c.env.FRONTEND_URL ?? "")
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
+export function createApp() {
+  const app = new OpenAPIHono<{ Bindings: Env }>();
 
-  const corsMiddleware = createCorsMiddleware(origins);
-  return corsMiddleware(c, next);
-});
+  app.use("/api/*", async (c, next) => {
+    const origins = (c.env.FRONTEND_URL ?? "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
 
-app.route("/api/notes", notesRouter);
-app.route("/api/scan", scanRouter);
-app.route("/api/onboarding", onboardingRouter);
-app.route("/api/users", usersRouter);
-app.route("/api/subjects", subjectsRouter);
-app.route("/api/exams", examsRouter);
-app.route("/api/notifications", notificationsRouter);
-app.route("/api/dashboard", dashboardRouter);
-app.route("/api/sessions", sessionsRouter);
-app.route("/api/topics", topicsRouter);
-app.route("/api/cards", cardsRouter);
-
-app.doc("/api/doc", {
-  openapi: "3.0.0",
-  info: { title: "API", version: "1.0.0" },
-});
-
-app.get("/", (c) => {
-  return c.text("Działa");
-});
-
-app.get("/api/reference", Scalar({ url: "/api/doc" }));
-
-app.onError((err, c) => {
-  console.error("Unhandled app error", {
-    path: c.req.path,
-    method: c.req.method,
-    message: err instanceof Error ? err.message : String(err),
-    stack: err instanceof Error ? err.stack : undefined,
+    const corsMiddleware = createCorsMiddleware(origins);
+    return corsMiddleware(c, next);
   });
-  return c.json({ error: "Internal server error" }, 500);
-});
+
+  app.route("/api/notes", notesRouter);
+  app.route("/api/scan", scanRouter);
+  app.route("/api/onboarding", onboardingRouter);
+  app.route("/api/users", usersRouter);
+  app.route("/api/subjects", subjectsRouter);
+  app.route("/api/exams", examsRouter);
+  app.route("/api/notifications", notificationsRouter);
+  app.route("/api/dashboard", dashboardRouter);
+  app.route("/api/sessions", sessionsRouter);
+  app.route("/api/topics", topicsRouter);
+  app.route("/api/cards", cardsRouter);
+
+  app.doc("/api/doc", {
+    openapi: "3.0.0",
+    info: { title: "API", version: "1.0.0" },
+  });
+
+  app.get("/", (c) => {
+    return c.text("Działa");
+  });
+
+  app.get("/api/reference", Scalar({ url: "/api/doc" }));
+
+  app.onError((err, c) => {
+    console.error("Unhandled app error", {
+      path: c.req.path,
+      method: c.req.method,
+      message: err instanceof Error ? err.message : String(err),
+      stack: err instanceof Error ? err.stack : undefined,
+    });
+    return c.json({ error: "Internal server error" }, 500);
+  });
+
+  return app;
+}
+
+export const app = createApp();
 
 export default {
   fetch: app.fetch,

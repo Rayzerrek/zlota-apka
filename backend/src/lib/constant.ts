@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const SCAN_MODEL_NAME = "gemini-2.5-flash";
 export const SCAN_MAX_IMAGES = 8;
+export const SCAN_MAX_BASE64_BYTES = 5 * 1024 * 1024;
 export const SCAN_ROUTE_PATH = "/scan";
 export const SCAN_ROUTE_TAGS = ["Scan"];
 
@@ -63,8 +64,32 @@ Najważniejsze wzory w czytelnym formacie.
 ## Częste pułapki
 Typowe błędy i nieporozumienia związane z tym tematem.`;
 
+function normalizeBase64Payload(data: string): string {
+  const commaIndex = data.indexOf(",");
+  return (commaIndex >= 0 ? data.slice(commaIndex + 1) : data).replace(
+    /\s+/g,
+    "",
+  );
+}
+
+function estimateBase64Bytes(data: string): number {
+  const normalized = normalizeBase64Payload(data);
+  const padding = normalized.endsWith("==")
+    ? 2
+    : normalized.endsWith("=")
+      ? 1
+      : 0;
+  return Math.floor((normalized.length * 3) / 4) - padding;
+}
+
 export const imageSchema = z.object({
-  data: z.string().min(1),
+  data: z
+    .string()
+    .min(1)
+    .refine(
+      (value) => estimateBase64Bytes(value) <= SCAN_MAX_BASE64_BYTES,
+      `Image payload must be at most ${SCAN_MAX_BASE64_BYTES} bytes after base64 decoding`,
+    ),
   mimeType: z.string().min(1).default(SCAN_MIME_FALLBACK),
 });
 

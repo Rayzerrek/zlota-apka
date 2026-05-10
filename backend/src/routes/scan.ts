@@ -1,6 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
-import { z } from "zod";
 
 import { notifications } from "../db/schema";
 import {
@@ -80,7 +79,7 @@ scanRouter.openapi(scanRoute, async (c) => {
     return c.json({ error: "Missing GEMINI_API_KEY" }, 500);
   }
 
-  const { images } = c.req.valid("json") as z.infer<typeof scanRequestSchema>;
+  const { images } = c.req.valid("json");
   const genAI = new GoogleGenerativeAI(currentKey);
   const model = genAI.getGenerativeModel({ model: SCAN_MODEL_NAME });
 

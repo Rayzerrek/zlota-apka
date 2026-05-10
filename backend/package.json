@@ -13,7 +13,8 @@
     "lint": "oxlint -c ../.oxlintrc.json",
     "lint:fix": "oxlint -c ../.oxlintrc.json --fix",
     "fmt": "oxfmt -c ../.oxfmtrc.json",
-    "fmt:check": "oxfmt -c ../.oxfmtrc.json --check"
+    "fmt:check": "oxfmt -c ../.oxfmtrc.json --check",
+    "test": "vitest run"
   },
   "dependencies": {
     "@better-auth/infra": "^0.2.5",
@@ -38,6 +39,7 @@
     "typescript": "^6.0.3",
     "vite": "^8.0.9",
     "vite-ssr-components": "^0.5.2",
+    "vitest": "^4.1.5",
     "wrangler": "^4.83.0"
   },
   "lint-staged": {
