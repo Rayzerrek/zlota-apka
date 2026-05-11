@@ -1,10 +1,5 @@
 import { z } from "zod";
 
-/**
- * Tagged union representing every expected failure path of the HTTP layer.
- * Components/hooks can pattern-match on `tag` for behaviour and use
- * `apiErrorMessage` for a user-facing string.
- */
 export type ApiError =
   | { tag: "network" }
   | { tag: "http"; status: number; message: string }
@@ -26,12 +21,6 @@ export function apiErrorMessage(error: ApiError): string {
   }
 }
 
-/**
- * Bridge between Result-style return values and TanStack Query, which expects
- * thrown rejections. The structured `apiError` is preserved so consumers can
- * still match on `tag`; `message` keeps existing `error.message` consumers
- * working without changes.
- */
 export class ApiErrorException extends Error {
   readonly apiError: ApiError;
 

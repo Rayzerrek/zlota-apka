@@ -21,10 +21,6 @@ import { PageSkeleton } from "./components/layout/PageSkeleton";
 import { Shell } from "./components/layout/Shell";
 import { useTheme } from "./hooks/useTheme";
 
-/**
- * Wraps a (lazy) page component in <Suspense>. Replaces the per-page wrapper
- * functions that used to inject the same fallback into every route.
- */
 function withSuspense<P extends object>(
   Component: ComponentType<P>,
 ): FunctionComponent<P> {

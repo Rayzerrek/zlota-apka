@@ -10,11 +10,6 @@ type Props = {
 
 type State = { error: Error | null };
 
-/**
- * Root-level error boundary. Catches render-time errors so a single broken
- * component doesn't take down the whole app. Route-level errors are still
- * handled by TanStack Router's `errorComponent`.
- */
 export class ErrorBoundary extends Component<Props, State> {
   state: State = { error: null };
 
@@ -56,10 +51,6 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 }
 
-/**
- * Default `errorComponent` for TanStack Router routes. Keeps the layout
- * mounted while showing a focused error in the page slot.
- */
 export function RouteErrorFallback({
   error,
   reset,

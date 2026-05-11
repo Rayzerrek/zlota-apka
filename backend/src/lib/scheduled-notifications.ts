@@ -12,7 +12,6 @@ export async function generateScheduledNotifications(
   const users = await db.select({ id: user.id }).from(user);
 
   for (const u of users) {
-    // Overdue sessions
     const [overdueRow] = await db
       .select({ count: sql<number>`count(*)` })
       .from(studySessions)
@@ -58,7 +57,6 @@ export async function generateScheduledNotifications(
       }
     }
 
-    // Upcoming exam reminder (<= 3 days)
     const [nextExam] = await db
       .select({ id: exams.id, name: exams.name, examDate: exams.examDate })
       .from(exams)

@@ -14,7 +14,7 @@ const GuestSessionSchema = z.object({
 let guestSessionReady = false;
 let guestSessionPromise: Promise<void> | null = null;
 
-const apiUrlSchema = z.string().url().optional();
+const apiUrlSchema = z.url().optional();
 const parsedApiUrl = apiUrlSchema.safeParse(import.meta.env.VITE_API_URL);
 if (!parsedApiUrl.success) {
   console.error(
@@ -160,10 +160,6 @@ export function apiDelete<TSchema extends z.ZodType>(
   return request(path, schema, { method: "DELETE", signal: options?.signal });
 }
 
-/**
- * Backwards-compatible accessor: legacy callers used `res.message`. New code
- * should match on `res.error.tag` instead.
- */
 export function apiResultMessage<T>(res: ApiResult<T>): string | null {
   return res.ok ? null : apiErrorMessage(res.error);
 }

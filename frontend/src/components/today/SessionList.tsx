@@ -99,7 +99,6 @@ export function SessionList({ sessions, onStartSession, className }: Props) {
               style={{ animationDelay: `${idx * 50}ms` }}
               onClick={() => !isDone && onStartSession(s.id)}
             >
-              {/* Background gradient effect on hover */}
               {!isDone && (
                 <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-amber/0 via-amber/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
               )}

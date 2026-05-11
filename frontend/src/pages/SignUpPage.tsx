@@ -7,7 +7,6 @@ import { useState } from "react";
 
 import { LoginHeader } from "../components/ui/LoginHeader";
 import { useTheme } from "../hooks/useTheme";
-// import { authClient, authErrorMessage } from "../lib/auth";
 
 export function SignUpPage() {
   const { theme, toggleTheme } = useTheme();
@@ -33,17 +32,7 @@ export function SignUpPage() {
     }
     setError("");
     setLoading(true);
-    // Auth disabled temporarily
-    // const { error: authError } = await authClient.signUp.email({
-    //   name,
-    //   email,
-    //   password,
-    // });
     setLoading(false);
-    // if (authError) {
-    //   setError(authErrorMessage(authError, "signup"));
-    //   return;
-    // }
     navigate({ to: "/today" });
   }
 

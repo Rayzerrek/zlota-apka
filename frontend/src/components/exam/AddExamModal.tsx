@@ -140,7 +140,6 @@ export function AddExamModal({ open, onClose }: Props) {
       />
 
       <div className="relative w-full sm:max-w-[520px] bg-paper-2 border border-rule rounded-t-[6px] sm:rounded-[4px] shadow-[0_24px_64px_rgba(0,0,0,0.55)] flex flex-col max-h-[92dvh] sm:max-h-[85dvh]">
-        {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-rule shrink-0">
           <div>
             <p className="eyebrow">Sprawdzian</p>

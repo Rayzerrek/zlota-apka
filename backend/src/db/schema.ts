@@ -181,7 +181,6 @@ export const cards = pgTable(
     source: text("source", { enum: ["manual", "ai"] })
       .notNull()
       .default("manual"),
-    // FSRS fields
     stability: real("stability").notNull().default(0),
     difficulty: real("difficulty").notNull().default(5),
     elapsedDays: integer("elapsed_days").notNull().default(0),

@@ -14,10 +14,6 @@ function resolveMessage(error: Props["error"]): string {
   return apiErrorMessage(error);
 }
 
-/**
- * Single shared error display. Replaces ad-hoc red banners scattered across
- * pages so error UX stays consistent.
- */
 export function ErrorState({ error, tone = "banner", className }: Props) {
   const message = resolveMessage(error);
 

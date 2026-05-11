@@ -7,7 +7,6 @@ import { useState } from "react";
 
 import { LoginHeader } from "../components/ui/LoginHeader";
 import { useTheme } from "../hooks/useTheme";
-// import { authClient, authErrorMessage } from "../lib/auth";
 
 export function LoginPage() {
   const { theme, toggleTheme } = useTheme();
@@ -22,31 +21,13 @@ export function LoginPage() {
     e.preventDefault();
     setError("");
     setLoading(true);
-    // Auth disabled temporarily
-    // const { error: authError } = await authClient.signIn.email({
-    //   email,
-    //   password,
-    // });
     setLoading(false);
-    // if (authError) {
-    //   setError(authErrorMessage(authError, "login"));
-    //   return;
-    // }
     navigate({ to: "/today" });
   }
 
   async function handleGoogle() {
     setError("");
     setLoading(true);
-    // Auth disabled temporarily
-    // const { error: authError } = await authClient.signIn.social({
-    //   provider: "google",
-    //   callbackURL: `${window.location.origin}/onboarding`,
-    // });
-    // if (authError) {
-    //   setError("Nie udało się zalogować przez Google. Spróbuj ponownie.");
-    //   setLoading(false);
-    // }
     setLoading(false);
     navigate({ to: "/today" });
   }

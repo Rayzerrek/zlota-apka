@@ -12,13 +12,8 @@ import { useSavedFeedback } from "../hooks/useSavedFeedback";
 import { apiDelete } from "../lib/api";
 import { type ApiError } from "../lib/error";
 import { OkResponseSchema } from "../lib/schemas";
-// import { authClient } from "../lib/auth";
 
 export function ProfilePage() {
-  // Auth disabled temporarily
-  // const { data: session } = authClient.useSession();
-  // const user = session?.user;
-
   const name = "Użytkownik";
   const email = "";
   const initial = (name[0] || email[0] || "?").toUpperCase();
@@ -46,8 +41,6 @@ export function ProfilePage() {
       setDeleteError(res.error);
       return;
     }
-    // Auth disabled temporarily
-    // await authClient.signOut();
     window.location.href = "/today";
   };
 

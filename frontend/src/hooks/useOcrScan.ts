@@ -13,11 +13,6 @@ export type OcrState =
   | { status: "success"; text: string }
   | { status: "error"; error: ApiError };
 
-/**
- * Single source of truth for OCR scanning logic. Used by both the dropzone
- * Scanner component and the camera-based ScannerPage. Keeps image compression
- * and the `/api/scan` call in one place.
- */
 export function useOcrScan() {
   const qc = useQueryClient();
   const [state, setState] = useState<OcrState>({ status: "idle" });
@@ -50,7 +45,6 @@ export function useOcrScan() {
           setState({ status: "error", error: err.apiError });
           return;
         }
-        // compressImage throws on file/canvas failures; surface as network-shaped error.
         const message =
           err instanceof Error
             ? err.message

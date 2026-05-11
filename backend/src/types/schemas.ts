@@ -313,8 +313,6 @@ export const notificationRowSchema = z.object({
   title: z.string(),
   description: z.string().nullable(),
   actionUrl: z.string().nullable(),
-  // payload: jsonb w Drizzle bez $type<> — może być null lub dowolny JSON.
-  // z.unknown() obejmuje null po stronie TS; klient i tak parsuje payload sam.
   payload: z.unknown(),
   scheduledFor: dbTimestamp.nullable(),
   sentAt: dbTimestamp.nullable(),

@@ -19,7 +19,6 @@ import {
   ChartBarIcon,
   GearSixIcon,
   MoonIcon,
-  // SignOutIcon,
   SunIcon,
   UserCircleIcon,
 } from "@phosphor-icons/react";
@@ -49,11 +48,8 @@ type Props = {
 export function Shell({ children, theme, onToggleTheme }: Props) {
   const navigate = useNavigate();
   const location = useLocation();
-  // Auth disabled temporarily
-  // const { data: session } = authClient.useSession();
   const [isMobileProfileMenuOpen, setIsMobileProfileMenuOpen] = useState(false);
 
-  // const user = session?.user;
   const name = "Użytkownik";
   const email = "";
   const initial = (name[0] || email[0] || "?").toUpperCase();
@@ -61,13 +57,6 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
   useEffect(() => {
     setIsMobileProfileMenuOpen(false);
   }, [location.pathname]);
-
-  // Auth disabled temporarily
-  // const handleLogout = async () => {
-  //   setIsMobileProfileMenuOpen(false);
-  //   await authClient.signOut();
-  //   navigate({ to: "/login" });
-  // };
 
   const handleMobileProfileClick = (event: MouseEvent<HTMLButtonElement>) => {
     if (location.pathname === "/profile") {
@@ -169,16 +158,6 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
                         <GearSixIcon size={16} />
                         Ustawienia
                       </DropdownMenu.Item>
-                      {/* Auth disabled temporarily
-                      <div className="h-px bg-rule my-1" />
-                      <DropdownMenu.Item
-                        className="flex items-center gap-2.5 w-full px-2.5 py-2 bg-transparent border-0 rounded-sm text-rating-1 text-sm text-left cursor-pointer transition-all duration-150 hover:bg-rating-1/8 hover:text-rating-1 focus-visible:bg-rating-1/8 focus-visible:text-rating-1 focus-visible:outline-none"
-                        onClick={handleLogout}
-                      >
-                        <SignOutIcon size={16} />
-                        Wyloguj
-                      </DropdownMenu.Item>
-                      */}
                     </DropdownMenu.Content>
                   </DropdownMenu.Portal>
                 </DropdownMenu>
@@ -247,18 +226,6 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
                   <GearSixIcon size={16} />
                   Ustawienia
                 </Button>
-                {/* Auth disabled temporarily
-                <div className="h-px bg-rule my-1" />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-sm text-rating-1 text-sm text-left transition-all duration-150 hover:bg-rating-1/8 hover:text-rating-1 justify-start"
-                  onClick={handleLogout}
-                >
-                  <SignOutIcon size={16} />
-                  Wyloguj
-                </Button>
-                */}
               </div>
             )}
             <button
