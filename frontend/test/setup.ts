@@ -33,7 +33,7 @@ Object.defineProperty(globalWindow, "scrollTo", {
 });
 
 afterEach(() => {
-  vi.restoreAllMocks();
+  vi.clearAllMocks();
 
   if (typeof document !== "undefined") {
     document.body.innerHTML = "";
