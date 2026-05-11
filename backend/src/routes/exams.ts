@@ -12,7 +12,7 @@ import {
 } from "../db/schema";
 import { errorResponseSchema } from "../lib/constant";
 import { createDb } from "../lib/db";
-import { generatePlan } from "../lib/scheduler";
+import { createStudySessions, generateExamPlan } from "../lib/helpers";
 import { requireAuth } from "../middleware/auth";
 import {
   examCreateResponseSchema,
@@ -23,6 +23,9 @@ import {
   examRowSchema,
   idParamsSchema,
   okResponseSchema,
+  topicCreateSchema,
+  topicListResponseSchema,
+  topicRowSchema,
 } from "../types/schemas";
 
 import type { HonoEnv } from "../lib/factory";
@@ -118,6 +121,42 @@ const deleteExamRoute = createRoute({
   },
 });
 
+const listExamTopicsRoute = createRoute({
+  method: "get",
+  path: "/{id}/topics",
+  tags: ["Topics"],
+  request: { params: idParamsSchema },
+  responses: {
+    200: {
+      description: "Topics for exam",
+      content: { "application/json": { schema: topicListResponseSchema } },
+    },
+  },
+});
+
+const createExamTopicRoute = createRoute({
+  method: "post",
+  path: "/{id}/topics",
+  tags: ["Topics"],
+  request: {
+    params: idParamsSchema,
+    body: {
+      content: { "application/json": { schema: topicCreateSchema } },
+      required: true,
+    },
+  },
+  responses: {
+    201: {
+      description: "Created topic",
+      content: { "application/json": { schema: topicRowSchema } },
+    },
+    404: {
+      description: "Exam not found",
+      content: { "application/json": { schema: errorResponseSchema } },
+    },
+  },
+});
+
 export const examsRouter = new OpenAPIHono<HonoEnv>();
 
 examsRouter.use(requireAuth);
@@ -190,7 +229,7 @@ examsRouter.openapi(createExamRoute, async (c) => {
       .from(userAvailability)
       .where(eq(userAvailability.userId, userId));
 
-    const plannedSessions = generatePlan(
+    const { plannedSessions, daysUntilExam, dailyMinutes } = generateExamPlan(
       exam,
       createdTopics,
       availability,
@@ -203,36 +242,23 @@ examsRouter.openapi(createExamRoute, async (c) => {
       .values({
         userId,
         examId: exam.id,
-        daysUntilExam: Math.max(
-          0,
-          Math.floor(
-            (new Date(body.examDate).getTime() - new Date(today).getTime()) /
-              86_400_000,
-          ),
-        ),
+        daysUntilExam,
         topicsCount: createdTopics.length,
-        dailyMinutes: availability.reduce(
-          (sum, a) => sum + a.availableMinutes,
-          0,
-        ),
+        dailyMinutes,
         sessionsCreated: plannedSessions.length,
         planJson: plannedSessions,
       })
       .returning();
 
+    const sessionValues = createStudySessions(plannedSessions, {
+      userId,
+      examId: exam.id,
+      schedulerRunId: run.id,
+    });
+
     const createdSessions =
-      plannedSessions.length > 0
-        ? await tx
-            .insert(studySessions)
-            .values(
-              plannedSessions.map((s) => ({
-                ...s,
-                userId,
-                examId: exam.id,
-                schedulerRunId: run.id,
-              })),
-            )
-            .returning()
+      sessionValues.length > 0
+        ? await tx.insert(studySessions).values(sessionValues).returning()
         : [];
 
     await tx.insert(notifications).values({
@@ -315,4 +341,37 @@ examsRouter.openapi(deleteExamRoute, async (c) => {
     .returning();
   if (!row) return c.json({ error: "Not found" }, 404);
   return c.json({ ok: true }, 200);
+});
+
+examsRouter.openapi(listExamTopicsRoute, async (c) => {
+  const db = createDb(c.env);
+  const rows = await db
+    .select()
+    .from(topics)
+    .where(
+      and(
+        eq(topics.examId, c.req.valid("param").id),
+        eq(topics.userId, c.get("userId")),
+      ),
+    );
+  return c.json(rows, 200);
+});
+
+examsRouter.openapi(createExamTopicRoute, async (c) => {
+  const db = createDb(c.env);
+  const userId = c.get("userId");
+  const examId = c.req.valid("param").id;
+  const body = c.req.valid("json");
+
+  const [exam] = await db
+    .select({ id: exams.id })
+    .from(exams)
+    .where(and(eq(exams.id, examId), eq(exams.userId, userId)));
+  if (!exam) return c.json({ error: "Exam not found" }, 404);
+
+  const [row] = await db
+    .insert(topics)
+    .values({ ...body, userId, examId })
+    .returning();
+  return c.json(row, 201);
 });

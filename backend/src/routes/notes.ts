@@ -18,7 +18,7 @@ import type { HonoEnv } from "../lib/factory";
 
 const generateNoteRoute = createRoute({
   method: "post",
-  path: "/notes",
+  path: "/",
   tags: ["Notes"],
   request: {
     body: {
@@ -50,7 +50,7 @@ const generateNoteRoute = createRoute({
 
 const getNoteRoute = createRoute({
   method: "get",
-  path: "/notes/{id}",
+  path: "/{id}",
   tags: ["Notes"],
   request: {
     params: z.object({ id: z.string().min(1) }),

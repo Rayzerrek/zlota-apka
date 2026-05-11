@@ -3,6 +3,7 @@ import { useMemo } from "react";
 
 import { adaptApiExamToExam } from "../../lib/adapters";
 import { apiDelete, apiGet, apiPost } from "../../lib/api";
+import { ApiErrorException } from "../../lib/error";
 import {
   ApiExtendedExamSchema,
   ExamCreateResponseSchema,
@@ -11,14 +12,14 @@ import {
 } from "../../lib/schemas";
 import { queryKeys } from "./keys";
 
-import type { ExamCreateResponse } from "../../types/api";
+import type { ExamCreateResponse } from "../../lib/schema-types";
 
 export function useExams() {
   return useQuery({
     queryKey: queryKeys.exams,
     queryFn: async () => {
       const res = await apiGet("/api/exams", ApiExtendedExamSchema.array());
-      if (!res.ok) throw new Error(res.message);
+      if (!res.ok) throw new ApiErrorException(res.error);
       return res.data;
     },
   });
@@ -29,7 +30,7 @@ export function useExam(id: string) {
     queryKey: queryKeys.exam(id),
     queryFn: async () => {
       const res = await apiGet(`/api/exams/${id}`, UseExamDataSchema);
-      if (!res.ok) throw new Error(res.message);
+      if (!res.ok) throw new ApiErrorException(res.error);
       return res.data;
     },
     enabled: Boolean(id),
@@ -52,7 +53,7 @@ export function useCreateExam() {
   return useMutation<ExamCreateResponse, Error, ExamCreateBody>({
     mutationFn: async (body) => {
       const res = await apiPost("/api/exams", ExamCreateResponseSchema, body);
-      if (!res.ok) throw new Error(res.message);
+      if (!res.ok) throw new ApiErrorException(res.error);
       return res.data;
     },
     onSuccess: () => {
@@ -69,7 +70,7 @@ export function useDeleteExam() {
   return useMutation({
     mutationFn: async (id: string) => {
       const res = await apiDelete(`/api/exams/${id}`, OkResponseSchema);
-      if (!res.ok) throw new Error(res.message);
+      if (!res.ok) throw new ApiErrorException(res.error);
       return res.data;
     },
     onSuccess: () => {

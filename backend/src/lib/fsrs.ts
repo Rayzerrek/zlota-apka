@@ -1,5 +1,12 @@
 export type Rating = 1 | 2 | 3 | 4;
 
+export enum CardState {
+  New = 0,
+  Learning = 1,
+  Review = 2,
+  Relearning = 3,
+}
+
 export interface CardSchedule {
   stability: number;
   difficulty: number;
@@ -7,7 +14,7 @@ export interface CardSchedule {
   scheduledDays: number;
   reps: number;
   lapses: number;
-  state: number; // 0=New 1=Learning 2=Review 3=Relearning
+  state: CardState;
   lastReview: Date;
   due: Date;
 }
@@ -18,7 +25,7 @@ export function scheduleReview(
     difficulty: number;
     reps: number;
     lapses: number;
-    state: number;
+    state: CardState;
     lastReview: Date | null;
   },
   rating: Rating,
@@ -30,46 +37,45 @@ export function scheduleReview(
 
   let { stability, difficulty, reps, lapses } = card;
   let scheduledDays: number;
-  let nextState: number;
+  let nextState: CardState;
 
-  if (card.state === 0) {
+  if (card.state === CardState.New) {
     if (rating === 1) {
       stability = 0.5;
       difficulty = Math.min(10, difficulty + 1);
       scheduledDays = 0;
-      nextState = 1;
+      nextState = CardState.Learning;
     } else if (rating === 2) {
       stability = 1;
       difficulty = Math.min(10, difficulty + 0.5);
       scheduledDays = 1;
-      nextState = 1;
+      nextState = CardState.Learning;
     } else if (rating === 3) {
       stability = 1.5;
       scheduledDays = 1;
-      nextState = 2;
+      nextState = CardState.Review;
     } else {
       stability = 3;
       difficulty = Math.max(1, difficulty - 1);
       scheduledDays = 4;
-      nextState = 2;
+      nextState = CardState.Review;
     }
     reps = 1;
-  } else if (card.state === 2) {
-    // Review
+  } else if (card.state === CardState.Review) {
     reps += 1;
     if (rating === 1) {
       lapses += 1;
       stability = Math.max(0.5, stability * 0.2);
       difficulty = Math.min(10, difficulty + 1.5);
       scheduledDays = 1;
-      nextState = 3;
+      nextState = CardState.Relearning;
     } else {
       const factor = rating === 2 ? 1.2 : rating === 3 ? 2.0 : 2.8;
       const mod = rating === 2 ? 0.9 : rating === 4 ? 1.1 : 1.0;
       scheduledDays = Math.max(1, Math.round(stability * factor));
       stability = stability * factor * mod;
       if (rating === 4) difficulty = Math.max(1, difficulty - 0.5);
-      nextState = 2;
+      nextState = CardState.Review;
     }
   } else {
     if (rating === 1) {
@@ -78,7 +84,7 @@ export function scheduleReview(
       nextState = card.state;
     } else if (rating >= 3) {
       scheduledDays = Math.max(1, Math.round(stability));
-      nextState = 2;
+      nextState = CardState.Review;
       reps += 1;
     } else {
       scheduledDays = 1;

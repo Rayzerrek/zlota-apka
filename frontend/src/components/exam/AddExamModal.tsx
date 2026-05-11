@@ -11,7 +11,7 @@ import { cn } from "../../utils/cn";
 import { dayLong, longDate } from "../../utils/date";
 import { OptionPicker } from "../ui/OptionPicker";
 
-import type { ApiSubject } from "../../types/api";
+import type { ApiSubject } from "../../lib/schema-types";
 
 type MaterialSize = "small" | "medium" | "large";
 

@@ -1,5 +1,4 @@
 import { Button } from "@cloudflare/kumo/components/button";
-import { SkeletonLine } from "@cloudflare/kumo/components/loader";
 import {
   ArrowRightIcon,
   CalendarPlusIcon,
@@ -10,90 +9,39 @@ import {
 } from "@phosphor-icons/react";
 import { useNavigate } from "@tanstack/react-router";
 import { format } from "date-fns";
-import { useState } from "react";
+import { type ComponentProps, useState } from "react";
 
 import { AddExamModal } from "../components/exam/AddExamModal";
 import { PageHead } from "../components/layout/PageHead";
+import { TodayHeroSkeleton } from "../components/today/HeroSkeleton";
+import { TodayReminderCard } from "../components/today/ReminderCard";
 import { SessionList } from "../components/today/SessionList";
+import { ErrorState } from "../components/ui/ErrorState";
+import { useStudySession } from "../contexts/StudySessionContext";
 import { useDashboard } from "../hooks/api/useDashboard";
-import { cn } from "../utils/cn";
 import { dayLong, daysBetween, longDate } from "../utils/date";
 
-import type { ApiDashboardSession } from "../types/api";
+import type {
+  ApiDashboardExam,
+  ApiDashboardSession,
+} from "../lib/schema-types";
 
-type Props = {
-  onStartSession: (id: string) => void;
+type TodayReminder = ComponentProps<typeof TodayReminderCard> & {
+  id: string;
 };
 
-function buildFocusCopy(args: {
-  overdueCount: number;
-  nextSession: ApiDashboardSession | null;
-  nextExamName: string | null;
-  examDays: number | null;
-  remainingSessions: number;
-  totalSessions: number;
-}) {
-  const {
-    overdueCount,
-    nextSession,
-    nextExamName,
-    examDays,
-    remainingSessions,
-    totalSessions,
-  } = args;
-
-  if (totalSessions === 0) {
-    return "Na dziś nie masz nic w planie. Dodaj sprawdzian albo zajrzyj do materiałów — scheduler rozpisze powtórki sam.";
-  }
-
-  if (remainingSessions === 0) {
-    return "Na dziś masz już wszystko domknięte. Możesz spokojnie wrócić do materiałów albo zaplanować kolejny termin.";
-  }
-
-  if (overdueCount > 0) {
-    return `Masz ${overdueCount} zaległe ${overdueCount === 1 ? "powtórkę" : "powtórki"}. Najlepiej odzyskać rytm właśnie od nich, a potem wejść w dzisiejsze sesje.`;
-  }
-
-  if (nextExamName && examDays !== null && examDays <= 7) {
-    return `Najbliżej jest ${nextExamName}. Dzisiaj warto dowieźć choć jedną sesję, żeby wejść w końcówkę bez stresu.`;
-  }
-
-  if (nextSession?.topicName) {
-    return `Zacznij od ${nextSession.topicName}. To najprostszy sposób, żeby ruszyć z planem bez analizowania statystyk.`;
-  }
-
-  return "Masz gotowy plan. Wystarczy odpalić pierwszą sesję i wejść w rytm.";
-}
-
-function HeroSkeleton() {
-  return (
-    <div className="rounded-sm border border-rule bg-paper p-5 sm:p-6">
-      <div className="flex flex-col gap-4">
-        <SkeletonLine minWidth={20} maxWidth={28} blockHeight="0.75rem" />
-        <SkeletonLine minWidth={70} maxWidth={92} blockHeight="2.25rem" />
-        <SkeletonLine minWidth={80} maxWidth={100} blockHeight="0.875rem" />
-        <SkeletonLine minWidth={50} maxWidth={70} blockHeight="0.875rem" />
-        <div className="mt-3 flex gap-2.5">
-          <SkeletonLine minWidth={32} maxWidth={42} blockHeight="3rem" />
-          <SkeletonLine minWidth={28} maxWidth={36} blockHeight="3rem" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export function TodayPage({ onStartSession }: Props) {
+export function TodayPage() {
+  const { startSession: onStartSession } = useStudySession();
   const today = format(new Date(), "yyyy-MM-dd");
   const [addExamOpen, setAddExamOpen] = useState(false);
   const navigate = useNavigate();
   const { data: dashboard, isLoading, error } = useDashboard();
 
   const todaySessions = dashboard?.today ?? [];
-  // Defensive: only treat exam as "next" if it hasn't passed yet.
-  const upcomingExam = (dashboard?.upcomingExams ?? []).find(
-    (e) => daysBetween(today, e.examDate) >= 0,
-  );
-  const nextExam = upcomingExam ?? null;
+  const nextExam =
+    (dashboard?.upcomingExams ?? []).find(
+      (exam) => daysBetween(today, exam.examDate) >= 0,
+    ) ?? null;
   const overdueCount = dashboard?.overdueCount ?? 0;
   const pendingSessions = todaySessions.filter(
     (session) => session.status !== "completed",
@@ -103,73 +51,79 @@ export function TodayPage({ onStartSession }: Props) {
   const remainingSessions = pendingSessions.length;
   const todayProgressPercent =
     totalToday > 0 ? Math.round((completedToday / totalToday) * 100) : 0;
-
   const nextSession = pendingSessions[0] ?? null;
   const examDays = nextExam ? daysBetween(today, nextExam.examDate) : null;
 
-  const focusTitle =
-    totalToday === 0
-      ? "Wolny dzień"
-      : remainingSessions === 0
-        ? "Plan na dziś domknięty"
-        : overdueCount > 0
-          ? "Najpierw odzyskaj zaległości"
-          : nextSession
-            ? "To jest Twój kolejny krok"
-            : "Masz gotowy plan na dziś";
-
-  const focusCopy = buildFocusCopy({
+  const hero = getTodayHeroContent({
+    totalSessions: totalToday,
+    remainingSessions,
     overdueCount,
     nextSession,
     nextExamName: nextExam?.name ?? null,
     examDays,
-    remainingSessions,
-    totalSessions: totalToday,
   });
 
-  const reminders: Array<{
-    id: string;
-    title: string;
-    description: string;
-    actionLabel: string;
-    onAction: () => void;
-    icon: typeof WarningCircleIcon;
-    tone: "warning" | "info";
-  }> = [];
+  const openCalendar = () => navigate({ to: "/calendar" });
+  const openQuickReview = () =>
+    navigate({
+      to: "/review/$sessionId",
+      params: { sessionId: "today" },
+    });
+  const startNextSession = () => {
+    if (nextSession) {
+      onStartSession(nextSession.id);
+      return;
+    }
 
-  if (nextExam && examDays !== null && examDays <= 3) {
+    openCalendar();
+  };
+
+  const handlePrimaryCta = () => {
+    if (remainingSessions > 0 && nextSession) {
+      onStartSession(nextSession.id);
+      return;
+    }
+
+    openQuickReview();
+  };
+
+  const reminders: TodayReminder[] = [];
+
+  if (overdueCount > 0) {
     reminders.push({
-      id: "exam",
+      id: "overdue",
+      eyebrow: "Zaległe powtórki",
       title:
-        examDays === 0
-          ? `${nextExam.name} jest dziś`
-          : examDays === 1
-            ? `${nextExam.name} jest jutro`
-            : `${nextExam.name} za ${examDays} dni`,
+        overdueCount === 1
+          ? "1 zaległa sesja"
+          : `${overdueCount} zaległe sesje`,
       description:
-        remainingSessions > 0
-          ? `Zostało jeszcze ${remainingSessions} ${remainingSessions === 1 ? "sesja" : "sesje"} na dziś. Dobrze domknąć przynajmniej pierwszą od razu.`
-          : "Dzisiejszy plan jest już gotowy. Możesz wejść w szybką powtórkę albo sprawdzić cały harmonogram.",
-      actionLabel:
-        remainingSessions > 0 ? "Zacznij pierwszą sesję" : "Zobacz plan",
-      onAction: () => {
-        if (remainingSessions > 0 && nextSession) {
-          onStartSession(nextSession.id);
-          return;
-        }
-        navigate({ to: "/calendar" });
-      },
-      icon: ClockCountdownIcon,
-      tone: "info",
+        "Zacznij od najstarszej pozycji. To najszybciej porządkuje plan i zmniejsza presję przed kolejnymi dniami.",
+      actionLabel: nextSession ? "Zacznij pierwszą sesję" : "Otwórz kalendarz",
+      onAction: startNextSession,
+      icon: WarningCircleIcon,
+      tone: "warning",
     });
   }
 
-  const primaryCtaLabel =
-    totalToday === 0
-      ? "Powtórz materiał"
-      : remainingSessions === 0
-        ? "Powtórz materiał"
-        : "Zacznij naukę";
+  const examReminder = getExamReminder({
+    nextExam,
+    examDays,
+    remainingSessions,
+    nextSession,
+    onStartSession,
+    onOpenCalendar: openCalendar,
+  });
+
+  if (examReminder) {
+    reminders.push(examReminder);
+  }
+
+  const weekProgress = dashboard?.week ?? {
+    completed: 0,
+    total: 0,
+    progressPercent: 0,
+  };
 
   return (
     <>
@@ -190,180 +144,28 @@ export function TodayPage({ onStartSession }: Props) {
           />
 
           <div className="relative flex flex-col gap-6">
-            {error && (
-              <div
-                role="alert"
-                className="rounded-sm border border-rating-1/25 bg-rating-1/8 p-4 text-[15px] text-rating-1"
-              >
-                {error.message}
-              </div>
-            )}
+            {error && <ErrorState error={error} />}
 
             {isLoading ? (
-              <HeroSkeleton />
+              <TodayHeroSkeleton />
             ) : (
               <div className="grid gap-4">
-                <div className="rounded-sm border border-rule bg-paper p-5 sm:p-6">
-                  <div className="max-w-[40rem]">
-                    <div className="mono text-[12px] uppercase tracking-[0.16em] text-amber">
-                      Co teraz
-                    </div>
-                    <h2 className="mt-3 display text-[30px] leading-[1.05] text-ink sm:text-[36px]">
-                      {focusTitle}
-                    </h2>
-                    <p className="mt-3 text-sm leading-6 text-ink-muted sm:text-[15px]">
-                      {focusCopy}
-                    </p>
-                  </div>
-
-                  {totalToday > 0 && (
-                    <div className="mt-5 max-w-[28rem]">
-                      <div className="mb-2 flex items-baseline justify-between gap-2 mono text-[11px] uppercase tracking-[0.16em] text-ink-faint">
-                        <span>Postęp dzisiejszych sesji</span>
-                        <span className="text-ink tabular-nums">
-                          {completedToday} / {totalToday}
-                        </span>
-                      </div>
-                      <div className="h-1.5 w-full overflow-hidden rounded-sm bg-kumo-base">
-                        <div
-                          className="h-full rounded-sm bg-amber transition-all"
-                          style={{ width: `${todayProgressPercent}%` }}
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="mt-5 flex flex-wrap gap-2.5">
-                    <Button
-                      size="lg"
-                      variant="ghost"
-                      onClick={() => {
-                        if (remainingSessions > 0 && nextSession) {
-                          onStartSession(nextSession.id);
-                          return;
-                        }
-                        navigate({
-                          to: "/review/$sessionId",
-                          params: { sessionId: "today" },
-                        });
-                      }}
-                      className="bg-amber text-paper rounded-sm hover:bg-[#ffcc4a] hover:-translate-y-px active:translate-y-0 transition-all font-semibold px-7 py-4"
-                    >
-                      {primaryCtaLabel}
-                      <ArrowRightIcon
-                        size={18}
-                        weight="bold"
-                        className="ml-1"
-                      />
-                    </Button>
-                    {totalToday === 0 && (
-                      <Button
-                        size="lg"
-                        variant="outline"
-                        icon={CalendarPlusIcon}
-                        onClick={() => setAddExamOpen(true)}
-                        className="rounded-sm"
-                      >
-                        Dodaj sprawdzian
-                      </Button>
-                    )}
-                  </div>
-                </div>
-
-                {overdueCount > 0 && (
-                  <div className="rounded-sm border border-amber/30 bg-[linear-gradient(180deg,rgba(242,184,48,0.12),rgba(242,184,48,0.04))] p-4 sm:p-5">
-                    <div className="flex flex-col gap-4 min-[720px]:flex-row min-[720px]:items-start min-[720px]:justify-between">
-                      <div className="flex items-start gap-3">
-                        <div className="grid h-10 w-10 shrink-0 place-items-center rounded-sm border border-amber/25 bg-amber/12 text-amber">
-                          <WarningCircleIcon size={18} weight="fill" />
-                        </div>
-                        <div>
-                          <div className="mono text-[11px] uppercase tracking-[0.16em] text-ink-faint">
-                            Zaległe powtórki
-                          </div>
-                          <h3 className="mt-2 text-[18px] leading-6 text-ink">
-                            {overdueCount === 1
-                              ? "1 zaległa sesja"
-                              : `${overdueCount} zaległe sesje`}
-                          </h3>
-                          <p className="mt-1 text-sm leading-6 text-ink-muted">
-                            Zacznij od najstarszej pozycji. To najszybciej
-                            porządkuje plan i zmniejsza presję przed kolejnymi
-                            dniami.
-                          </p>
-                        </div>
-                      </div>
-
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          if (nextSession) {
-                            onStartSession(nextSession.id);
-                            return;
-                          }
-                          navigate({ to: "/calendar" });
-                        }}
-                        className="shrink-0 rounded-sm"
-                      >
-                        Otwórz kalendarz
-                      </Button>
-                    </div>
-                  </div>
-                )}
+                <TodayHeroCard
+                  title={hero.title}
+                  copy={hero.copy}
+                  primaryCtaLabel={hero.primaryCtaLabel}
+                  onPrimaryCta={handlePrimaryCta}
+                  completedToday={completedToday}
+                  totalToday={totalToday}
+                  todayProgressPercent={todayProgressPercent}
+                  onAddExam={() => setAddExamOpen(true)}
+                />
 
                 {reminders.length > 0 && (
                   <div className="grid gap-3">
-                    {reminders.map((reminder) => {
-                      const Icon = reminder.icon;
-
-                      return (
-                        <div
-                          key={reminder.id}
-                          className={cn(
-                            "rounded-sm border p-4 sm:p-5",
-                            reminder.tone === "warning"
-                              ? "border-amber/30 bg-[linear-gradient(180deg,rgba(242,184,48,0.12),rgba(242,184,48,0.04))]"
-                              : "border-rule bg-paper",
-                          )}
-                        >
-                          <div className="flex flex-col gap-4 min-[720px]:flex-row min-[720px]:items-start min-[720px]:justify-between">
-                            <div className="flex items-start gap-3">
-                              <div
-                                className={cn(
-                                  "grid h-10 w-10 shrink-0 place-items-center rounded-sm border",
-                                  reminder.tone === "warning"
-                                    ? "border-amber/25 bg-amber/12 text-amber"
-                                    : "border-rule bg-kumo-base text-ink-muted",
-                                )}
-                              >
-                                <Icon size={18} weight="fill" />
-                              </div>
-                              <div>
-                                <div className="mono text-[11px] uppercase tracking-[0.16em] text-ink-faint">
-                                  Dziś pilnuj tego
-                                </div>
-                                <h3 className="mt-2 text-[18px] leading-6 text-ink">
-                                  {reminder.title}
-                                </h3>
-                                <p className="mt-1 text-sm leading-6 text-ink-muted">
-                                  {reminder.description}
-                                </p>
-                              </div>
-                            </div>
-
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={reminder.onAction}
-                              className="shrink-0 rounded-sm"
-                            >
-                              {reminder.actionLabel}
-                            </Button>
-                          </div>
-                        </div>
-                      );
-                    })}
+                    {reminders.map(({ id, ...reminder }) => (
+                      <TodayReminderCard key={id} {...reminder} />
+                    ))}
                   </div>
                 )}
 
@@ -384,112 +186,23 @@ export function TodayPage({ onStartSession }: Props) {
 
           {!isLoading && !error && (
             <>
-              <div className="rounded-sm border border-rule bg-paper-2 p-5">
-                <div className="mono text-[12px] uppercase tracking-[0.16em] text-ink-muted">
-                  Progres tygodnia
-                </div>
-                <div className="mt-4 flex items-center gap-3">
-                  <div className="flex-1 h-2 bg-kumo-base rounded-sm overflow-hidden">
-                    <div
-                      className="h-full rounded-sm bg-amber transition-all"
-                      style={{
-                        width: `${dashboard?.week.progressPercent ?? 0}%`,
-                      }}
-                    />
-                  </div>
-                  <span className="mono text-[14px] text-ink tabular-nums">
-                    {dashboard?.week.progressPercent ?? 0}%
-                  </span>
-                </div>
-                <div className="mt-2 text-sm text-ink-muted">
-                  {dashboard?.week.completed ?? 0} /{" "}
-                  {dashboard?.week.total ?? 0} zaplanowanych sesji ukończonych
-                </div>
-              </div>
+              <TodayWeekProgressCard
+                completed={weekProgress.completed}
+                total={weekProgress.total}
+                progressPercent={weekProgress.progressPercent}
+              />
 
-              <div className="rounded-sm border border-rule bg-[linear-gradient(180deg,rgba(242,184,48,0.08),transparent_65%),var(--color-paper-2)] p-6 sm:p-7">
-                <div className="mono text-[12px] uppercase tracking-[0.18em] text-amber">
-                  Najbliższy sprawdzian
-                </div>
+              <TodayExamCard
+                nextExam={nextExam}
+                examDays={examDays}
+                onOpenCalendar={openCalendar}
+              />
 
-                {nextExam && examDays !== null ? (
-                  <>
-                    <div className="mt-4 display text-[34px] leading-[1.02] text-ink sm:text-[40px]">
-                      {nextExam.name}
-                    </div>
-                    <div className="mt-3 text-base text-ink-muted">
-                      {nextExam.subjectName ??
-                        nextExam.subjectKey ??
-                        "Bez przedmiotu"}
-                      {" · "}
-                      {longDate(nextExam.examDate)}
-                    </div>
-
-                    <div className="mt-6 flex items-end gap-3 border-t border-dashed border-amber/20 pt-5">
-                      <span className="mono text-[72px] leading-[0.82] text-amber sm:text-[84px]">
-                        {examDays}
-                      </span>
-                      <span className="pb-2 mono text-[12px] uppercase tracking-[0.16em] text-ink-faint">
-                        {examDays === 1 ? "dzień" : "dni"} do terminu
-                      </span>
-                    </div>
-
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => navigate({ to: "/calendar" })}
-                      className="mt-5 rounded-sm bg-amber text-paper hover:bg-[#ffcc4a]"
-                    >
-                      Otwórz kalendarz
-                    </Button>
-                  </>
-                ) : (
-                  <div className="mt-4 text-sm leading-6 text-ink-muted">
-                    Brak aktywnego terminu. Dodaj sprawdzian, a planner sam
-                    rozpisze powtórki.
-                  </div>
-                )}
-              </div>
-
-              <div className="rounded-sm border border-rule bg-paper-2 p-5">
-                <div className="mono text-[12px] uppercase tracking-[0.16em] text-ink-muted">
-                  Szybkie akcje
-                </div>
-                <div className="mt-4 grid gap-2.5">
-                  <Button
-                    size="lg"
-                    variant="ghost"
-                    icon={LightningIcon}
-                    onClick={() =>
-                      navigate({
-                        to: "/review/$sessionId",
-                        params: { sessionId: "today" },
-                      })
-                    }
-                    className="justify-start rounded-sm w-full bg-amber text-paper hover:bg-[#ffcc4a] hover:-translate-y-px active:translate-y-0 transition-all font-semibold"
-                  >
-                    Szybka powtórka
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    icon={CalendarPlusIcon}
-                    onClick={() => setAddExamOpen(true)}
-                    className="justify-start rounded-sm w-full"
-                  >
-                    Dodaj sprawdzian
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    icon={NotePencilIcon}
-                    onClick={() => navigate({ to: "/browse" })}
-                    className="justify-start rounded-sm w-full"
-                  >
-                    Przejrzyj materiały
-                  </Button>
-                </div>
-              </div>
+              <TodayQuickActionsCard
+                onQuickReview={openQuickReview}
+                onAddExam={() => setAddExamOpen(true)}
+                onBrowseMaterials={() => navigate({ to: "/browse" })}
+              />
             </>
           )}
         </aside>
@@ -498,4 +211,322 @@ export function TodayPage({ onStartSession }: Props) {
       <AddExamModal open={addExamOpen} onClose={() => setAddExamOpen(false)} />
     </>
   );
+}
+
+function TodayHeroCard(props: {
+  title: string;
+  copy: string;
+  primaryCtaLabel: string;
+  onPrimaryCta: () => void;
+  completedToday: number;
+  totalToday: number;
+  todayProgressPercent: number;
+  onAddExam: () => void;
+}) {
+  const {
+    title,
+    copy,
+    primaryCtaLabel,
+    onPrimaryCta,
+    completedToday,
+    totalToday,
+    todayProgressPercent,
+    onAddExam,
+  } = props;
+
+  return (
+    <div className="rounded-sm border border-rule bg-paper p-5 sm:p-6">
+      <div className="max-w-[40rem]">
+        <div className="mono text-[12px] uppercase tracking-[0.16em] text-amber">
+          Co teraz
+        </div>
+        <h2 className="mt-3 display text-[30px] leading-[1.05] text-ink sm:text-[36px]">
+          {title}
+        </h2>
+        <p className="mt-3 text-sm leading-6 text-ink-muted sm:text-[15px]">
+          {copy}
+        </p>
+      </div>
+
+      {totalToday > 0 && (
+        <div className="mt-5 max-w-[28rem]">
+          <div className="mb-2 flex items-baseline justify-between gap-2 mono text-[11px] uppercase tracking-[0.16em] text-ink-faint">
+            <span>Postęp dzisiejszych sesji</span>
+            <span className="text-ink tabular-nums">
+              {completedToday} / {totalToday}
+            </span>
+          </div>
+          <div className="h-1.5 w-full overflow-hidden rounded-sm bg-kumo-base">
+            <div
+              className="h-full rounded-sm bg-amber transition-all"
+              style={{ width: `${todayProgressPercent}%` }}
+            />
+          </div>
+        </div>
+      )}
+
+      <div className="mt-5 flex flex-wrap gap-2.5">
+        <Button
+          size="lg"
+          variant="ghost"
+          onClick={onPrimaryCta}
+          className="rounded-sm bg-amber px-7 py-4 font-semibold text-paper transition-all hover:-translate-y-px hover:bg-[#ffcc4a] active:translate-y-0"
+        >
+          {primaryCtaLabel}
+          <ArrowRightIcon size={18} weight="bold" className="ml-1" />
+        </Button>
+        {totalToday === 0 && (
+          <Button
+            size="lg"
+            variant="outline"
+            icon={CalendarPlusIcon}
+            onClick={onAddExam}
+            className="rounded-sm"
+          >
+            Dodaj sprawdzian
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function TodayWeekProgressCard(props: {
+  completed: number;
+  total: number;
+  progressPercent: number;
+}) {
+  const { completed, total, progressPercent } = props;
+
+  return (
+    <div className="rounded-sm border border-rule bg-paper-2 p-5">
+      <div className="mono text-[12px] uppercase tracking-[0.16em] text-ink-muted">
+        Progres tygodnia
+      </div>
+      <div className="mt-4 flex items-center gap-3">
+        <div className="h-2 flex-1 overflow-hidden rounded-sm bg-kumo-base">
+          <div
+            className="h-full rounded-sm bg-amber transition-all"
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
+        <span className="mono tabular-nums text-[14px] text-ink">
+          {progressPercent}%
+        </span>
+      </div>
+      <div className="mt-2 text-sm text-ink-muted">
+        {completed} / {total} zaplanowanych sesji ukończonych
+      </div>
+    </div>
+  );
+}
+
+function TodayExamCard(props: {
+  nextExam: ApiDashboardExam | null;
+  examDays: number | null;
+  onOpenCalendar: () => void;
+}) {
+  const { nextExam, examDays, onOpenCalendar } = props;
+
+  return (
+    <div className="rounded-sm border border-rule bg-[linear-gradient(180deg,rgba(242,184,48,0.08),transparent_65%),var(--color-paper-2)] p-6 sm:p-7">
+      <div className="mono text-[12px] uppercase tracking-[0.18em] text-amber">
+        Najbliższy sprawdzian
+      </div>
+
+      {nextExam && examDays !== null ? (
+        <>
+          <div className="mt-4 display text-[34px] leading-[1.02] text-ink sm:text-[40px]">
+            {nextExam.name}
+          </div>
+          <div className="mt-3 text-base text-ink-muted">
+            {nextExam.subjectName ?? nextExam.subjectKey ?? "Bez przedmiotu"}
+            {" · "}
+            {longDate(nextExam.examDate)}
+          </div>
+
+          <div className="mt-6 flex items-end gap-3 border-t border-dashed border-amber/20 pt-5">
+            <span className="mono text-[72px] leading-[0.82] text-amber sm:text-[84px]">
+              {examDays}
+            </span>
+            <span className="pb-2 mono text-[12px] uppercase tracking-[0.16em] text-ink-faint">
+              {examDays === 1 ? "dzień" : "dni"} do terminu
+            </span>
+          </div>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onOpenCalendar}
+            className="mt-5 rounded-sm bg-amber text-paper hover:bg-[#ffcc4a]"
+          >
+            Otwórz kalendarz
+          </Button>
+        </>
+      ) : (
+        <div className="mt-4 text-sm leading-6 text-ink-muted">
+          Brak aktywnego terminu. Dodaj sprawdzian, a planner sam rozpisze
+          powtórki.
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TodayQuickActionsCard(props: {
+  onQuickReview: () => void;
+  onAddExam: () => void;
+  onBrowseMaterials: () => void;
+}) {
+  const { onQuickReview, onAddExam, onBrowseMaterials } = props;
+
+  return (
+    <div className="rounded-sm border border-rule bg-paper-2 p-5">
+      <div className="mono text-[12px] uppercase tracking-[0.16em] text-ink-muted">
+        Szybkie akcje
+      </div>
+      <div className="mt-4 grid gap-2.5">
+        <Button
+          size="lg"
+          variant="ghost"
+          icon={LightningIcon}
+          onClick={onQuickReview}
+          className="w-full justify-start rounded-sm bg-amber font-semibold text-paper transition-all hover:-translate-y-px hover:bg-[#ffcc4a] active:translate-y-0"
+        >
+          Szybka powtórka
+        </Button>
+        <Button
+          size="lg"
+          variant="outline"
+          icon={CalendarPlusIcon}
+          onClick={onAddExam}
+          className="w-full justify-start rounded-sm"
+        >
+          Dodaj sprawdzian
+        </Button>
+        <Button
+          size="lg"
+          variant="outline"
+          icon={NotePencilIcon}
+          onClick={onBrowseMaterials}
+          className="w-full justify-start rounded-sm"
+        >
+          Przejrzyj materiały
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function getTodayHeroContent(args: {
+  totalSessions: number;
+  remainingSessions: number;
+  overdueCount: number;
+  nextSession: ApiDashboardSession | null;
+  nextExamName: string | null;
+  examDays: number | null;
+}) {
+  const {
+    totalSessions,
+    remainingSessions,
+    overdueCount,
+    nextSession,
+    nextExamName,
+    examDays,
+  } = args;
+
+  if (totalSessions === 0) {
+    return {
+      title: "Wolny dzień",
+      copy: "Na dziś nie masz nic w planie. Dodaj sprawdzian albo zajrzyj do materiałów, a scheduler rozpisze powtórki sam.",
+      primaryCtaLabel: "Powtórz materiał",
+    };
+  }
+
+  if (remainingSessions === 0) {
+    return {
+      title: "Plan na dziś domknięty",
+      copy: "Na dziś masz już wszystko zrobione. Możesz spokojnie wrócić do materiałów albo zaplanować kolejny termin.",
+      primaryCtaLabel: "Powtórz materiał",
+    };
+  }
+
+  if (overdueCount > 0) {
+    return {
+      title: "Najpierw odzyskaj zaległości",
+      copy: `Masz ${overdueCount} zaległe ${overdueCount === 1 ? "powtórkę" : "powtórki"}. Najszybciej wrócisz do rytmu, jeśli zaczniesz właśnie od nich.`,
+      primaryCtaLabel: "Zacznij naukę",
+    };
+  }
+
+  if (nextExamName && examDays !== null && examDays <= 7) {
+    return {
+      title: "To jest Twój kolejny krok",
+      copy: `Najbliżej jest ${nextExamName}. Warto dziś domknąć choć jedną sesję, żeby wejść w końcówkę bez stresu.`,
+      primaryCtaLabel: "Zacznij naukę",
+    };
+  }
+
+  if (nextSession?.topicName) {
+    return {
+      title: "To jest Twój kolejny krok",
+      copy: `Zacznij od ${nextSession.topicName}. To najprostszy sposób, żeby ruszyć z planem bez analizowania statystyk.`,
+      primaryCtaLabel: "Zacznij naukę",
+    };
+  }
+
+  return {
+    title: "Masz gotowy plan na dziś",
+    copy: "Masz gotowy plan. Wystarczy odpalić pierwszą sesję i wejść w rytm.",
+    primaryCtaLabel: "Zacznij naukę",
+  };
+}
+
+function getExamReminder(args: {
+  nextExam: ApiDashboardExam | null;
+  examDays: number | null;
+  remainingSessions: number;
+  nextSession: ApiDashboardSession | null;
+  onStartSession: (id: string) => void;
+  onOpenCalendar: () => void;
+}): TodayReminder | null {
+  const {
+    nextExam,
+    examDays,
+    remainingSessions,
+    nextSession,
+    onStartSession,
+    onOpenCalendar,
+  } = args;
+
+  if (!nextExam || examDays === null || examDays > 3) {
+    return null;
+  }
+
+  return {
+    id: "exam",
+    eyebrow: "Dziś pilnuj tego",
+    title:
+      examDays === 0
+        ? `${nextExam.name} jest dziś`
+        : examDays === 1
+          ? `${nextExam.name} jest jutro`
+          : `${nextExam.name} za ${examDays} dni`,
+    description:
+      remainingSessions > 0
+        ? `Zostało jeszcze ${remainingSessions} ${remainingSessions === 1 ? "sesja" : "sesje"} na dziś. Dobrze domknąć przynajmniej pierwszą od razu.`
+        : "Dzisiejszy plan jest już gotowy. Możesz wejść w szybką powtórkę albo sprawdzić cały harmonogram.",
+    actionLabel:
+      remainingSessions > 0 ? "Zacznij pierwszą sesję" : "Zobacz plan",
+    onAction: () => {
+      if (remainingSessions > 0 && nextSession) {
+        onStartSession(nextSession.id);
+        return;
+      }
+
+      onOpenCalendar();
+    },
+    icon: ClockCountdownIcon,
+    tone: "info",
+  };
 }

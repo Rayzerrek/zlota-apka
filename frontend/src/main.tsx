@@ -6,7 +6,6 @@ import { createRoot } from "react-dom/client";
 import { registerSW } from "virtual:pwa-register";
 
 import "./i18n";
-import { NotificationProvider } from "./contexts/NotificationContext.tsx";
 import { StudySessionProvider } from "./contexts/StudySessionContext.tsx";
 import { queryClient } from "./lib/queryClient.ts";
 import { router } from "./router.tsx";
@@ -19,13 +18,11 @@ if (!rootElement) throw new Error("Root element not found");
 createRoot(rootElement).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <NotificationProvider>
-        <Toasty>
-          <StudySessionProvider>
-            <RouterProvider router={router} />
-          </StudySessionProvider>
-        </Toasty>
-      </NotificationProvider>
+      <Toasty>
+        <StudySessionProvider>
+          <RouterProvider router={router} />
+        </StudySessionProvider>
+      </Toasty>
     </QueryClientProvider>
   </StrictMode>,
 );

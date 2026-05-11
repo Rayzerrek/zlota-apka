@@ -16,6 +16,7 @@ export type Env = {
   RESEND_API_KEY: string;
   FRONTEND_URL?: string;
   GEMINI_API_KEY?: string;
+  DEMO_GUEST_ID?: string;
   GOOGLE_CLIENT_ID: string;
   GOOGLE_CLIENT_SECRET: string;
 };

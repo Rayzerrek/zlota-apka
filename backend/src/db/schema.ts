@@ -11,6 +11,8 @@ import {
   timestamp,
 } from "drizzle-orm/pg-core";
 
+import type { CardState } from "../lib/fsrs";
+
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
@@ -72,7 +74,11 @@ export const subjects = pgTable("subjects", {
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  key: text("key").notNull(),
+  key: text("key", {
+    enum: ["mat", "bio", "hist", "pol", "chem", "fiz", "ang", "other"],
+  })
+    .notNull()
+    .default("other"),
   name: text("name").notNull(),
   color: text("color").notNull(),
   difficulty: smallint("difficulty").notNull().default(3),
@@ -182,7 +188,7 @@ export const cards = pgTable(
     scheduledDays: integer("scheduled_days").notNull().default(0),
     reps: integer("reps").notNull().default(0),
     lapses: integer("lapses").notNull().default(0),
-    state: smallint("state").notNull().default(0),
+    state: smallint("state").$type<CardState>().notNull().default(0),
     lastReview: timestamp("last_review"),
     due: timestamp("due").notNull().defaultNow(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -266,7 +272,7 @@ export const reviewHistory = pgTable(
       onDelete: "set null",
     }),
     rating: smallint("rating").notNull(),
-    stateBefore: smallint("state_before").notNull(),
+    stateBefore: smallint("state_before").$type<CardState>().notNull(),
     stabilityBefore: real("stability_before").notNull(),
     difficultyBefore: real("difficulty_before").notNull(),
     scheduledDays: integer("scheduled_days").notNull(),

@@ -6,27 +6,46 @@ import type {
   StudySession,
   SubjectKey,
 } from "../types";
-import type { ApiCard } from "../types/api";
 import type {
+  ApiCard,
   ApiExtendedCard,
   ApiExtendedExam,
   ApiExtendedSession,
   ApiReviewHistory,
-} from "../types/api-infers";
+} from "./schema-types";
 
-const SUBJECT_KEYS = new Set<string>([
-  "mat",
-  "bio",
-  "hist",
-  "pol",
-  "chem",
-  "fiz",
-  "ang",
-]);
+const SUBJECT_ALIASES: Record<string, SubjectKey> = {
+  mat: "mat",
+  math: "mat",
+  matematyka: "mat",
+  bio: "bio",
+  biology: "bio",
+  biologia: "bio",
+  hist: "hist",
+  history: "hist",
+  historia: "hist",
+  pol: "pol",
+  polish: "pol",
+  polski: "pol",
+  chem: "chem",
+  chemistry: "chem",
+  chemia: "chem",
+  fiz: "fiz",
+  physics: "fiz",
+  fizyka: "fiz",
+  ang: "ang",
+  english: "ang",
+  angielski: "ang",
+  other: "other",
+  inne: "other",
+  unknown: "other",
+};
 
-function toSubjectKey(key: string | null): SubjectKey | null {
-  if (key && SUBJECT_KEYS.has(key)) return key as SubjectKey;
-  return null;
+export function toSubjectKey(key: string | null): SubjectKey {
+  if (!key) return "other";
+
+  const normalizedKey = key.trim().toLowerCase();
+  return SUBJECT_ALIASES[normalizedKey] ?? "other";
 }
 
 function isoDate(d: Date): string {
@@ -50,7 +69,7 @@ export function adaptApiCardToCard(apiCard: ApiExtendedCard | ApiCard): Card {
   const extended = apiCard as ApiExtendedCard;
   return {
     id: apiCard.id,
-    subject: toSubjectKey(extended.subjectKey) ?? "mat",
+    subject: toSubjectKey(extended.subjectKey),
     topic: extended.topicName ?? "",
     question: apiCard.front,
     answer: apiCard.back,
@@ -70,7 +89,7 @@ export function adaptApiSessionToStudySession(
     id: apiSession.id,
     dateISO: apiSession.scheduledDate,
     timeOfDay: "",
-    subject: toSubjectKey(apiSession.subjectKey) ?? "mat",
+    subject: toSubjectKey(apiSession.subjectKey),
     topic: apiSession.topicName ?? "",
     cardIds: [],
     estimateMinutes: apiSession.plannedMinutes,
@@ -82,7 +101,7 @@ export function adaptApiExamToExam(apiExam: ApiExtendedExam): Exam {
   return {
     id: apiExam.id,
     name: apiExam.name,
-    subject: toSubjectKey(apiExam.subjectKey) ?? "mat",
+    subject: toSubjectKey(apiExam.subjectKey),
     dateISO: apiExam.examDate,
   };
 }

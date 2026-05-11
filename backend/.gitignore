@@ -21,6 +21,7 @@ node_modules/
 .env.production
 .dev.vars
 *.sql
+!drizzle/0001_subject_key_normalization.sql
 
 # logs
 logs/

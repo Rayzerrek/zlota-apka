@@ -6,14 +6,11 @@ import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { LoginHeader } from "../components/ui/LoginHeader";
+import { useTheme } from "../hooks/useTheme";
 // import { authClient, authErrorMessage } from "../lib/auth";
 
-type Props = {
-  theme: "dark" | "light";
-  onToggleTheme: () => void;
-};
-
-export function SignUpPage({ theme, onToggleTheme }: Props) {
+export function SignUpPage() {
+  const { theme, toggleTheme } = useTheme();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [name, setName] = useState("");
@@ -54,7 +51,7 @@ export function SignUpPage({ theme, onToggleTheme }: Props) {
     <div className="min-h-dvh flex flex-col bg-kumo-base overflow-y-auto">
       <LoginHeader
         theme={theme}
-        onToggleTheme={onToggleTheme}
+        onToggleTheme={toggleTheme}
         actionTo="/login"
         actionLabel="Zaloguj się"
       />

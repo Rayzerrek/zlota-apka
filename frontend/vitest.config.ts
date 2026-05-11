@@ -6,7 +6,7 @@ export default mergeConfig(
   viteConfig,
   defineConfig({
     test: {
-      setupFiles: ["./src/test/setup.ts"],
+      setupFiles: ["./test/setup.ts"],
     },
   }),
 );

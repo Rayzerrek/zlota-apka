@@ -1,7 +1,7 @@
 import { cn } from "../../utils/cn";
 import { timeAgo } from "../../utils/date";
 
-import type { AppNotification } from "../../contexts/NotificationContext";
+import type { AppNotification } from "../../types/notifications";
 
 export function NotificationItem({
   notification,

@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { apiGet } from "../../lib/api";
+import { ApiErrorException } from "../../lib/error";
 import { UseExamDataSchema } from "../../lib/schemas";
 import { queryKeys } from "./keys";
 
@@ -9,7 +10,7 @@ export function useExam(id: string) {
     queryKey: queryKeys.exam(id),
     queryFn: async () => {
       const res = await apiGet(`/api/exams/${id}`, UseExamDataSchema);
-      if (!res.ok) throw new Error(res.message);
+      if (!res.ok) throw new ApiErrorException(res.error);
       return res.data;
     },
     enabled: Boolean(id),

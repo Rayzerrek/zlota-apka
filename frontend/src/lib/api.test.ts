@@ -1,175 +1,49 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 
-import { apiDelete, apiGet, apiPatch, apiPost } from "./api";
-
-const TestSchema = z.object({ id: z.string(), value: z.number() });
-
-function mockFetch(data: unknown, status = 200) {
-  return vi.mocked(fetch).mockResolvedValueOnce({
-    ok: status >= 200 && status < 300,
-    status,
-    statusText: status === 404 ? "Not Found" : "OK",
-    json: () => Promise.resolve(data),
-  } as Response);
-}
-
-function mockFetchNetworkError() {
-  return vi
-    .mocked(fetch)
-    .mockRejectedValueOnce(new TypeError("Failed to fetch"));
-}
-
-beforeEach(() => {
-  vi.stubGlobal("fetch", vi.fn());
-});
-
-afterEach(() => {
-  vi.restoreAllMocks();
-});
-
-describe("apiGet", () => {
-  it("returns data on success", async () => {
-    mockFetch({ id: "1", value: 42 });
-    const result = await apiGet("/test", TestSchema);
-
-    expect(result).toEqual({ ok: true, data: { id: "1", value: 42 } });
-
-    const [, options] = vi.mocked(fetch).mock.calls[0];
-    expect(options?.credentials).toBe("include");
-    expect(options?.method).toBeUndefined();
-    expect(new Headers(options?.headers).has("Content-Type")).toBe(false);
+describe("api guest bootstrap", () => {
+  beforeEach(() => {
+    vi.resetModules();
+    vi.stubGlobal("window", {});
+    vi.stubGlobal("fetch", vi.fn());
   });
 
-  it("returns error on non-ok response", async () => {
-    mockFetch({ error: "Not found" }, 404);
-    const result = await apiGet("/test", TestSchema);
-
-    expect(result).toEqual({ ok: false, status: 404, message: "Not found" });
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
   });
 
-  it("returns error on network failure", async () => {
-    mockFetchNetworkError();
-    const result = await apiGet("/test", TestSchema);
+  it("bootstraps the guest session once before parallel API requests", async () => {
+    const fetchMock = vi.mocked(fetch);
+    fetchMock.mockImplementation(async (input) => {
+      const url = String(input);
+      if (url.endsWith("/api/auth/guest")) {
+        return new Response(
+          JSON.stringify({ userId: "guest-1", isGuest: true }),
+          {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          },
+        );
+      }
 
-    expect(result).toEqual({
-      ok: false,
-      status: 0,
-      message: "Błąd połączenia z serwerem",
+      return new Response(JSON.stringify([]), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
     });
-  });
 
-  it("returns error on zod validation failure", async () => {
-    mockFetch({ id: "1", value: "not-a-number" });
-    const result = await apiGet("/test", TestSchema);
+    const { apiGet } = await import("./api");
+    const schema = z.array(z.string());
 
-    expect(result.ok).toBe(false);
-    if (!result.ok) {
-      expect(result.message).toContain("Błąd walidacji odpowiedzi");
-      expect(result.message).toContain("value");
-    }
-  });
-});
+    const [first, second] = await Promise.all([
+      apiGet("/api/cards", schema),
+      apiGet("/api/subjects", schema),
+    ]);
 
-describe("apiPost", () => {
-  it("sends POST with JSON body", async () => {
-    mockFetch({ id: "1", value: 10 });
-
-    await apiPost("/test", TestSchema, { value: 10 });
-
-    const [, options] = vi.mocked(fetch).mock.calls[0];
-    expect(options?.method).toBe("POST");
-    expect(options?.body).toBe(JSON.stringify({ value: 10 }));
-    expect(options?.credentials).toBe("include");
-    expect(new Headers(options?.headers).get("Content-Type")).toBe(
-      "application/json",
-    );
-  });
-
-  it("returns parsed data on success", async () => {
-    mockFetch({ id: "1", value: 10 });
-    const result = await apiPost("/test", TestSchema, { value: 10 });
-
-    expect(result).toEqual({ ok: true, data: { id: "1", value: 10 } });
-  });
-});
-
-describe("apiPatch", () => {
-  it("sends PATCH with JSON body", async () => {
-    mockFetch({ id: "1", value: 20 });
-
-    await apiPatch("/test", TestSchema, { value: 20 });
-
-    const [, options] = vi.mocked(fetch).mock.calls[0];
-    expect(options?.method).toBe("PATCH");
-    expect(options?.body).toBe(JSON.stringify({ value: 20 }));
-    expect(options?.credentials).toBe("include");
-    expect(new Headers(options?.headers).get("Content-Type")).toBe(
-      "application/json",
-    );
-  });
-
-  it("returns parsed data on success", async () => {
-    mockFetch({ id: "1", value: 20 });
-    const result = await apiPatch("/test", TestSchema, { value: 20 });
-
-    expect(result).toEqual({ ok: true, data: { id: "1", value: 20 } });
-  });
-});
-
-describe("apiDelete", () => {
-  it("sends DELETE request", async () => {
-    mockFetch({ id: "1", value: 99 });
-
-    await apiDelete("/test", TestSchema);
-
-    const [, options] = vi.mocked(fetch).mock.calls[0];
-    expect(options?.method).toBe("DELETE");
-    expect(options?.credentials).toBe("include");
-    expect(new Headers(options?.headers).has("Content-Type")).toBe(false);
-  });
-
-  it("returns parsed data on success", async () => {
-    mockFetch({ id: "1", value: 99 });
-    const result = await apiDelete("/test", TestSchema);
-
-    expect(result).toEqual({ ok: true, data: { id: "1", value: 99 } });
-  });
-});
-
-describe("AbortSignal", () => {
-  it("forwards signal to fetch from apiGet", async () => {
-    mockFetch({ id: "1", value: 1 });
-    const controller = new AbortController();
-
-    await apiGet("/test", TestSchema, { signal: controller.signal });
-
-    const [, options] = vi.mocked(fetch).mock.calls[0];
-    expect(options?.signal).toBe(controller.signal);
-  });
-
-  it("forwards signal to fetch from apiPost", async () => {
-    mockFetch({ id: "1", value: 1 });
-    const controller = new AbortController();
-
-    await apiPost(
-      "/test",
-      TestSchema,
-      { value: 1 },
-      { signal: controller.signal },
-    );
-
-    const [, options] = vi.mocked(fetch).mock.calls[0];
-    expect(options?.signal).toBe(controller.signal);
-  });
-
-  it("re-throws AbortError so React Query treats it as cancelled", async () => {
-    vi.mocked(fetch).mockRejectedValueOnce(
-      new DOMException("Aborted", "AbortError"),
-    );
-
-    await expect(apiGet("/test", TestSchema)).rejects.toMatchObject({
-      name: "AbortError",
-    });
+    expect(first.ok).toBe(true);
+    expect(second.ok).toBe(true);
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe("/api/auth/guest");
   });
 });

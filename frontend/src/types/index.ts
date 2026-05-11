@@ -5,7 +5,8 @@ export type SubjectKey =
   | "pol"
   | "chem"
   | "fiz"
-  | "ang";
+  | "ang"
+  | "other";
 
 export type Subject = {
   key: SubjectKey;

@@ -8,21 +8,18 @@ import { type Rating, scheduleReview } from "../lib/fsrs";
 import { requireAuth } from "../middleware/auth";
 import {
   cardAllListResponseSchema,
-  cardCreateSchema,
-  cardListResponseSchema,
   cardReviewSchema,
   cardRowSchema,
   idParamsSchema,
   okResponseSchema,
   reviewHistoryListResponseSchema,
-  topicIdParamsSchema,
 } from "../types/schemas";
 
 import type { HonoEnv } from "../lib/factory";
 
 const allCardsRoute = createRoute({
   method: "get",
-  path: "/cards",
+  path: "/",
   tags: ["Cards"],
   responses: {
     200: {
@@ -34,7 +31,7 @@ const allCardsRoute = createRoute({
 
 const dueCardsRoute = createRoute({
   method: "get",
-  path: "/cards/due",
+  path: "/due",
   tags: ["Cards"],
   responses: {
     200: {
@@ -44,45 +41,9 @@ const dueCardsRoute = createRoute({
   },
 });
 
-const listCardsRoute = createRoute({
-  method: "get",
-  path: "/topics/{topicId}/cards",
-  tags: ["Cards"],
-  request: { params: topicIdParamsSchema },
-  responses: {
-    200: {
-      description: "Cards for topic",
-      content: { "application/json": { schema: cardListResponseSchema } },
-    },
-  },
-});
-
-const createCardRoute = createRoute({
-  method: "post",
-  path: "/topics/{topicId}/cards",
-  tags: ["Cards"],
-  request: {
-    params: topicIdParamsSchema,
-    body: {
-      content: { "application/json": { schema: cardCreateSchema } },
-      required: true,
-    },
-  },
-  responses: {
-    201: {
-      description: "Created card",
-      content: { "application/json": { schema: cardRowSchema } },
-    },
-    404: {
-      description: "Topic not found",
-      content: { "application/json": { schema: errorResponseSchema } },
-    },
-  },
-});
-
 const deleteCardRoute = createRoute({
   method: "delete",
-  path: "/cards/{id}",
+  path: "/{id}",
   tags: ["Cards"],
   request: { params: idParamsSchema },
   responses: {
@@ -99,7 +60,7 @@ const deleteCardRoute = createRoute({
 
 const reviewCardRoute = createRoute({
   method: "post",
-  path: "/cards/{id}/review",
+  path: "/{id}/review",
   tags: ["Cards"],
   request: {
     params: idParamsSchema,
@@ -198,42 +159,6 @@ cardsRouter.openapi(dueCardsRoute, async (c) => {
     .where(and(eq(cards.userId, c.get("userId")), lte(cards.due, now)))
     .limit(50);
   return c.json(rows, 200);
-});
-
-cardsRouter.openapi(listCardsRoute, async (c) => {
-  const db = createDb(c.env);
-  const rows = await db
-    .select()
-    .from(cards)
-    .where(
-      and(
-        eq(cards.topicId, c.req.valid("param").topicId),
-        eq(cards.userId, c.get("userId")),
-      ),
-    );
-  return c.json(rows, 200);
-});
-
-cardsRouter.openapi(createCardRoute, async (c) => {
-  const db = createDb(c.env);
-  const userId = c.get("userId");
-  const topicId = c.req.valid("param").topicId;
-
-  const [topic] = await db
-    .select({ id: topics.id })
-    .from(topics)
-    .where(and(eq(topics.id, topicId), eq(topics.userId, userId)));
-  if (!topic) return c.json({ error: "Topic not found" }, 404);
-
-  const [row] = await db
-    .insert(cards)
-    .values({
-      ...c.req.valid("json"),
-      userId,
-      topicId,
-    })
-    .returning();
-  return c.json(row, 201);
 });
 
 cardsRouter.openapi(deleteCardRoute, async (c) => {

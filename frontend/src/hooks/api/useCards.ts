@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { apiDelete, apiGet, apiPost } from "../../lib/api";
+import { ApiErrorException } from "../../lib/error";
 import {
   ApiCardSchema,
   ApiExtendedCardSchema,
@@ -14,7 +15,7 @@ export function useCardsDue() {
     queryKey: queryKeys.cardsDue,
     queryFn: async () => {
       const res = await apiGet("/api/cards/due", ApiExtendedCardSchema.array());
-      if (!res.ok) throw new Error(res.message);
+      if (!res.ok) throw new ApiErrorException(res.error);
       return res.data;
     },
   });
@@ -28,7 +29,7 @@ export function useCardsByTopic(topicId: string) {
         `/api/topics/${topicId}/cards`,
         ApiExtendedCardSchema.array(),
       );
-      if (!res.ok) throw new Error(res.message);
+      if (!res.ok) throw new ApiErrorException(res.error);
       return res.data;
     },
     enabled: Boolean(topicId),
@@ -57,7 +58,7 @@ export function useCreateCard() {
         ApiCardSchema,
         body,
       );
-      if (!res.ok) throw new Error(res.message);
+      if (!res.ok) throw new ApiErrorException(res.error);
       return res.data;
     },
     onSuccess: (_data, variables) => {
@@ -75,7 +76,7 @@ export function useDeleteCard() {
   return useMutation({
     mutationFn: async (id: string) => {
       const res = await apiDelete(`/api/cards/${id}`, OkResponseSchema);
-      if (!res.ok) throw new Error(res.message);
+      if (!res.ok) throw new ApiErrorException(res.error);
       return res.data;
     },
     onSuccess: () => {
@@ -96,7 +97,7 @@ export function useReviewCard() {
   return useMutation({
     mutationFn: async ({ id, body }: { id: string; body: ReviewCardBody }) => {
       const res = await apiPost(`/api/cards/${id}/review`, ApiCardSchema, body);
-      if (!res.ok) throw new Error(res.message);
+      if (!res.ok) throw new ApiErrorException(res.error);
       return res.data;
     },
     onSuccess: () => {
@@ -110,7 +111,7 @@ export function useAllCards() {
     queryKey: queryKeys.allCards,
     queryFn: async () => {
       const res = await apiGet("/api/cards", ApiExtendedCardSchema.array());
-      if (!res.ok) throw new Error(res.message);
+      if (!res.ok) throw new ApiErrorException(res.error);
       return res.data;
     },
   });
@@ -121,10 +122,10 @@ export function useReviewHistory() {
     queryKey: queryKeys.reviewHistory,
     queryFn: async () => {
       const res = await apiGet(
-        "/api/review-history",
+        "/api/cards/review-history",
         ApiReviewHistorySchema.array(),
       );
-      if (!res.ok) throw new Error(res.message);
+      if (!res.ok) throw new ApiErrorException(res.error);
       return res.data;
     },
   });

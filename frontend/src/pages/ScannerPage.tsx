@@ -1,4 +1,3 @@
-import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { PageHead } from "../components/layout/PageHead";
@@ -11,11 +10,9 @@ import {
   MobileFileView,
   type ScannerPageMode,
 } from "../components/ocr/ScannerPageViews";
-import { queryKeys } from "../hooks/api/keys";
 import { useMobile } from "../hooks/useMobile";
-import { apiPost } from "../lib/api";
-import { ScanResponseSchema } from "../lib/schemas";
-import { compressImage } from "../utils/image";
+import { useOcrScan } from "../hooks/useOcrScan";
+import { apiErrorMessage } from "../lib/error";
 
 type Mode = ScannerPageMode;
 
@@ -23,10 +20,7 @@ export function ScannerPage() {
   const isMobile = useMobile();
   const [mode, setMode] = useState<Mode>("camera");
   const [capturedFile, setCapturedFile] = useState<File | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState("");
-  const [error, setError] = useState("");
-  const qc = useQueryClient();
+  const { state, scan, reset: resetScan } = useOcrScan();
 
   const previewUrl = useMemo(
     () => (capturedFile ? URL.createObjectURL(capturedFile) : null),
@@ -41,9 +35,8 @@ export function ScannerPage() {
 
   const resetCameraFlow = useCallback(() => {
     setCapturedFile(null);
-    setResult("");
-    setError("");
-  }, []);
+    resetScan();
+  }, [resetScan]);
 
   const switchMode = useCallback(
     (nextMode: Mode) => {
@@ -57,40 +50,17 @@ export function ScannerPage() {
     setCapturedFile(file);
   }, []);
 
-  const handleScanCaptured = useCallback(async () => {
+  const handleScanCaptured = useCallback(() => {
     if (!capturedFile) return;
-
-    setLoading(true);
-    setResult("");
-    setError("");
-
-    try {
-      const image = await compressImage(capturedFile);
-      const res = await apiPost("/api/scan", ScanResponseSchema, {
-        images: [image],
-      });
-
-      if (!res.ok) {
-        throw new Error(res.message || "Błąd serwera");
-      }
-
-      setResult(res.data?.text || "");
-      qc.invalidateQueries({ queryKey: queryKeys.notifications });
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Wystąpił nieznany błąd";
-      setError(message);
-    } finally {
-      setLoading(false);
-    }
-  }, [capturedFile, qc]);
+    scan([capturedFile]);
+  }, [capturedFile, scan]);
 
   const cameraViewProps: CameraViewProps = {
     capturedFile,
     previewUrl,
-    loading,
-    result,
-    error,
+    loading: state.status === "loading",
+    result: state.status === "success" ? state.text : "",
+    error: state.status === "error" ? apiErrorMessage(state.error) : "",
     onCapture: handleCameraCapture,
     onReset: resetCameraFlow,
     onScan: handleScanCaptured,

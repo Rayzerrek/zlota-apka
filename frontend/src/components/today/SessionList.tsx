@@ -11,8 +11,8 @@ import { cn } from "../../utils/cn";
 import { formatMinutes } from "../../utils/date";
 import { SUBJECT_BG } from "../../utils/subjects";
 
+import type { ApiDashboardSession } from "../../lib/schema-types";
 import type { SubjectKey } from "../../types";
-import type { ApiDashboardSession } from "../../types/api";
 
 type Props = {
   sessions: ApiDashboardSession[];

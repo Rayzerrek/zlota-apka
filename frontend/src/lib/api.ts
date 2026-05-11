@@ -1,18 +1,18 @@
 import { z } from "zod";
 
-import type { ApiResult } from "../types/api";
+import { type ApiError, apiErrorMessage } from "./error";
 
-export type { ApiResult } from "../types/api";
-export type {
-  ApiDashboard,
-  ApiDashboardExam,
-  ApiDashboardSession,
-  ApiExam,
-  ApiSession,
-  ApiSubject,
-  ApiTopic,
-  ExamCreateResponse,
-} from "../types/api";
+type ApiOk<T> = { ok: true; data: T };
+type ApiErr = { ok: false; error: ApiError };
+export type ApiResult<T> = ApiOk<T> | ApiErr;
+
+const GuestSessionSchema = z.object({
+  userId: z.string().min(1),
+  isGuest: z.boolean(),
+});
+
+let guestSessionReady = false;
+let guestSessionPromise: Promise<void> | null = null;
 
 const apiUrlSchema = z.string().url().optional();
 const parsedApiUrl = apiUrlSchema.safeParse(import.meta.env.VITE_API_URL);
@@ -49,12 +49,42 @@ function buildHeaders(init?: RequestInit): Headers {
   return headers;
 }
 
+async function ensureGuestSession() {
+  if (guestSessionReady || typeof window === "undefined") {
+    return;
+  }
+
+  if (!guestSessionPromise) {
+    guestSessionPromise = (async () => {
+      const response = await fetch(`${BASE}/api/auth/guest`, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error("Nie udało się zainicjalizować sesji gościa");
+      }
+
+      GuestSessionSchema.parse(await response.json());
+      guestSessionReady = true;
+    })().finally(() => {
+      guestSessionPromise = null;
+    });
+  }
+
+  await guestSessionPromise;
+}
+
 async function request<TSchema extends z.ZodType>(
   path: string,
   schema: TSchema,
   init?: RequestInit,
 ): Promise<ApiResult<z.infer<TSchema>>> {
   try {
+    if (path !== "/api/auth/guest") {
+      await ensureGuestSession();
+    }
+
     const res = await fetch(`${BASE}${path}`, {
       credentials: "include",
       ...init,
@@ -64,33 +94,27 @@ async function request<TSchema extends z.ZodType>(
       const body = (await res.json().catch(() => ({}))) as { error?: string };
       return {
         ok: false,
-        status: res.status,
-        message: body.error ?? res.statusText,
+        error: {
+          tag: "http",
+          status: res.status,
+          message: body.error ?? res.statusText,
+        },
       };
     }
     const raw = await res.json();
     const data = schema.parse(raw);
     return { ok: true, data };
   } catch (err) {
-    // Cancellations bubble up so React Query treats them as cancelled, not errored.
     if (err instanceof DOMException && err.name === "AbortError") {
       throw err;
     }
     if (err instanceof z.ZodError) {
-      return {
-        ok: false,
-        status: 0,
-        message: `Błąd walidacji odpowiedzi: ${err.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`).join(", ")}`,
-      };
+      return { ok: false, error: { tag: "validation", issues: err.issues } };
     }
     if (err instanceof SyntaxError) {
-      return {
-        ok: false,
-        status: 0,
-        message: "Nieprawidłowy format odpowiedzi serwera",
-      };
+      return { ok: false, error: { tag: "invalid_response" } };
     }
-    return { ok: false, status: 0, message: "Błąd połączenia z serwerem" };
+    return { ok: false, error: { tag: "network" } };
   }
 }
 
@@ -134,4 +158,12 @@ export function apiDelete<TSchema extends z.ZodType>(
   options?: RequestOptions,
 ): Promise<ApiResult<z.infer<TSchema>>> {
   return request(path, schema, { method: "DELETE", signal: options?.signal });
+}
+
+/**
+ * Backwards-compatible accessor: legacy callers used `res.message`. New code
+ * should match on `res.error.tag` instead.
+ */
+export function apiResultMessage<T>(res: ApiResult<T>): string | null {
+  return res.ok ? null : apiErrorMessage(res.error);
 }
