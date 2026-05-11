@@ -16,7 +16,7 @@ let guestSessionPromise: Promise<void> | null = null;
 
 const apiUrlSchema = z.url().optional();
 const parsedApiUrl = apiUrlSchema.safeParse(
-  import.meta.env as any.VITE_API_URL,
+  (import.meta.env as any).VITE_API_URL,
 );
 if (!parsedApiUrl.success) {
   console.error(
