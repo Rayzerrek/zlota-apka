@@ -3,7 +3,7 @@ import { createAuthClient } from "better-auth/react";
 
 const authBaseURL = import.meta.env.DEV
   ? window.location.origin
-  : import.meta.env.VITE_API_URL;
+  : String(import.meta.env.VITE_API_URL).replace(/\/$/, "");
 
 if (!import.meta.env.DEV && !authBaseURL) {
   throw new Error(

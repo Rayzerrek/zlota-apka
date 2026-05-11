@@ -12,13 +12,6 @@
   "vars": {
     "FRONTEND_URL": "https://zlota-apka.pages.dev,http://localhost:5173",
   },
-  "env": {
-    "production": {
-      "vars": {
-        "FRONTEND_URL": "https://zlota-apka.pages.dev",
-      },
-    },
-  },
 
   "observability": {
     "logs": {

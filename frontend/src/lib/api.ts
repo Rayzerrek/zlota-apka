@@ -16,7 +16,7 @@ let guestSessionPromise: Promise<void> | null = null;
 
 const BASE = (import.meta.env as any).DEV
   ? ""
-  : (import.meta.env as any).VITE_API_URL;
+  : String((import.meta.env as any).VITE_API_URL).replace(/\/$/, "");
 
 if (!import.meta.env.DEV && !BASE) {
   throw new Error(
