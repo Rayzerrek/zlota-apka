@@ -286,10 +286,25 @@ async function createGuestUser(c: Context<HonoEnv>): Promise<string> {
 
       if (demoExists.length > 0) {
         await copyDemoData(db, demoGuestId, newGuestId);
+        return newGuestId;
       }
     } catch (err) {
       console.warn("[guest-session] failed to copy demo data:", err);
     }
+  }
+
+  try {
+    const fallbackExists = await db
+      .select({ id: user.id })
+      .from(user)
+      .where(eq(user.id, "demo-guest"))
+      .limit(1);
+
+    if (fallbackExists.length > 0) {
+      await copyDemoData(db, "demo-guest", newGuestId);
+    }
+  } catch (err) {
+    console.warn("[guest-session] failed to copy demo data:", err);
   }
 
   return newGuestId;
@@ -341,6 +356,14 @@ export async function resolveUser(c: Context<HonoEnv>): Promise<ResolvedUser> {
       console.log("[auth] resolved guest from DEMO_GUEST_ID:", existingGuestId);
       return { userId: existingGuestId, isGuest: true };
     }
+    console.warn("[auth] DEMO_GUEST_ID not found:", demoGuestId);
+  }
+
+  const fallbackGuestId = await findGuestUserId(c, "demo-guest");
+  if (fallbackGuestId) {
+    persistGuestCookie(c, fallbackGuestId);
+    console.log("[auth] resolved guest from fallback:", fallbackGuestId);
+    return { userId: fallbackGuestId, isGuest: true };
   }
 
   try {
