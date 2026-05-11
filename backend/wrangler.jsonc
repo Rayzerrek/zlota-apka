@@ -12,6 +12,7 @@
   "vars": {
     "FRONTEND_URL": "https://zlota-apka.pages.dev,http://localhost:5173",
     "BETTER_AUTH_URL": "https://zlota-apka.rayserrek.workers.dev",
+    "DEMO_GUEST_ID": "demo-guest",
   },
 
   "observability": {
