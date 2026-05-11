@@ -21,10 +21,12 @@ import {
   MoonIcon,
   SunIcon,
   UserCircleIcon,
+  WarningIcon,
 } from "@phosphor-icons/react";
 import { useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
+import { useUser } from "../../hooks/api/useUser";
 import { cn } from "../../utils/cn";
 
 import type { MouseEvent, ReactNode } from "react";
@@ -49,10 +51,12 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileProfileMenuOpen, setIsMobileProfileMenuOpen] = useState(false);
+  const { data: userData } = useUser();
 
-  const name = "Użytkownik";
-  const email = "";
+  const name = userData?.name ?? "Użytkownik";
+  const email = userData?.email ?? "";
   const initial = (name[0] || email[0] || "?").toUpperCase();
+  const isGuest = userData?.isGuest ?? true;
 
   useEffect(() => {
     setIsMobileProfileMenuOpen(false);
@@ -117,6 +121,29 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
             </SidebarContent>
 
             <SidebarFooter className="px-1">
+              {isGuest && (
+                <div className="mb-4 mx-2 p-3 bg-paper-3 border border-rule rounded-sm flex flex-col gap-2">
+                  <div className="flex items-center gap-2 text-ink">
+                    <WarningIcon
+                      size={16}
+                      weight="fill"
+                      className="text-amber"
+                    />
+                    <span className="text-sm font-medium">Jesteś gościem</span>
+                  </div>
+                  <p className="text-xs text-ink-muted">
+                    Zapisz swoje postępy, sprawdziany i materiały dodając swój
+                    adres e-mail.
+                  </p>
+                  <Button
+                    variant="ghost"
+                    onClick={() => navigate({ to: "/profile" })}
+                    className="w-full justify-center bg-amber text-paper hover:bg-[#ffcc4a] text-xs py-1 mt-1 rounded-[3px] font-medium"
+                  >
+                    Dodaj e-mail
+                  </Button>
+                </div>
+              )}
               <div className="mt-auto pt-5 flex items-center gap-2">
                 <DropdownMenu>
                   <DropdownMenu.Trigger

@@ -11,6 +11,7 @@ import {
   Suspense,
   lazy,
 } from "react";
+import { z } from "zod";
 
 import App from "./App";
 import {
@@ -105,6 +106,20 @@ const ReviewPage = withSuspense(
     import("./pages/ReviewPage").then((m) => ({ default: m.ReviewPage })),
   ),
 );
+const VerifyEmailPage = withSuspense(
+  lazy(() =>
+    import("./pages/VerifyEmailPage").then((m) => ({
+      default: m.VerifyEmailPage,
+    })),
+  ),
+);
+const VerifyLoginPage = withSuspense(
+  lazy(() =>
+    import("./pages/VerifyLoginPage").then((m) => ({
+      default: m.VerifyLoginPage,
+    })),
+  ),
+);
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -153,6 +168,20 @@ const signUpRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "sign-up",
   component: SignUpPage,
+});
+
+const verifyEmailRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "verify-email",
+  validateSearch: z.object({ token: z.string() }),
+  component: VerifyEmailPage,
+});
+
+const verifyLoginRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "verify-login",
+  validateSearch: z.object({ token: z.string() }),
+  component: VerifyLoginPage,
 });
 
 const todayRoute = createRoute({
@@ -232,6 +261,8 @@ const routeTree = rootRoute.addChildren([
   siteRoute,
   loginRoute,
   signUpRoute,
+  verifyEmailRoute,
+  verifyLoginRoute,
   layoutRoute.addChildren([
     todayRoute,
     calendarRoute,

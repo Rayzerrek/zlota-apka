@@ -88,13 +88,17 @@ async function request<TSchema extends z.ZodType>(
       headers: buildHeaders(init),
     });
     if (!res.ok) {
-      const body = (await res.json().catch(() => ({}))) as { error?: string };
+      const body = (await res.json().catch(() => ({}))) as {
+        error?: string | object;
+      };
+      const message =
+        typeof body.error === "string" ? body.error : res.statusText;
       return {
         ok: false,
         error: {
           tag: "http",
           status: res.status,
-          message: body.error ?? res.statusText,
+          message,
         },
       };
     }
@@ -159,4 +163,14 @@ export function apiDelete<TSchema extends z.ZodType>(
 
 export function apiResultMessage<T>(res: ApiResult<T>): string | null {
   return res.ok ? null : apiErrorMessage(res.error);
+}
+
+const SuccessResponseSchema = z.object({ success: z.boolean() });
+
+export function linkEmail(email: string) {
+  return apiPost("/api/auth/link-email", SuccessResponseSchema, { email });
+}
+
+export function sendMagicLink(email: string) {
+  return apiPost("/api/auth/send-magic-link", SuccessResponseSchema, { email });
 }

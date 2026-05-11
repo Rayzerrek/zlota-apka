@@ -1,28 +1,37 @@
 import { Button } from "@cloudflare/kumo/components/button";
 import { Input } from "@cloudflare/kumo/components/input";
 import { Label } from "@cloudflare/kumo/components/label";
-import { EyeIcon, EyeSlashIcon } from "@phosphor-icons/react";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { LoginHeader } from "../components/ui/LoginHeader";
 import { useTheme } from "../hooks/useTheme";
+import { sendMagicLink } from "../lib/api";
+import { apiResultMessage } from "../lib/api";
 
 export function LoginPage() {
   const { theme, toggleTheme } = useTheme();
-  const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState(() => {
+    if (typeof window === "undefined") return "";
+    return localStorage.getItem("auth.email") ?? "";
+  });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
   const navigate = useNavigate();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
     setLoading(true);
+    localStorage.setItem("auth.email", email);
+    const res = await sendMagicLink(email);
     setLoading(false);
-    navigate({ to: "/today" });
+    if (!res.ok) {
+      setError(apiResultMessage(res) ?? "Nie udało się wysłać linku.");
+      return;
+    }
+    setSent(true);
   }
 
   async function handleGoogle() {
@@ -43,85 +52,59 @@ export function LoginPage() {
 
       <main className="flex-1 flex items-center justify-center md:px-5 md:py-10">
         <div className="w-full md:max-w-[420px] enter">
-          <div className="bg-transparent md:border md:border-rule md:rounded-[4px] p-8 md:p-10 ">
+          <div className="bg-transparent md:border md:border-rule md:rounded-[4px] p-8 md:p-10">
             <h1 className="text-[22px] mb-5 font-semibold text-ink">
               Zaloguj się
             </h1>
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="email" className="text-[14px]">
-                  Adres e-mail
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="jan@kowalski.pl"
-                  autoComplete="email"
-                  aria-label="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full border-rule text-ink placeholder:text-ink-faint"
-                  required
-                />
+            {sent ? (
+              <div className="flex flex-col gap-4">
+                <p className="text-sm text-ink-muted">
+                  Link logowania został wysłany na <strong>{email}</strong>.
+                  Sprawdź skrzynkę e-mail i kliknij w link, aby się zalogować.
+                </p>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setSent(false)}
+                  className="text-amber bg-transparent hover:text-black transition-colors"
+                >
+                  Wyślij ponownie
+                </Button>
               </div>
-
-              <div className="flex flex-col gap-1.5">
-                <div className="flex items-baseline justify-between">
-                  <Label htmlFor="password" className="text-[14px]">
-                    Hasło
+            ) : (
+              <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="email" className="text-[14px]">
+                    Adres e-mail
                   </Label>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    tabIndex={-1}
-                    className="text-[12px] text-amber bg-transparent hover:text-amber/80 transition-colors p-0 h-auto"
-                  >
-                    Zapomniałeś hasła?
-                  </Button>
-                </div>
-                <div className="relative">
                   <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    autoComplete="current-password"
-                    aria-label="current password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full border-rule text-ink placeholder:text-ink-faint pr-10"
+                    id="email"
+                    type="email"
+                    placeholder="jan@kowalski.pl"
+                    autoComplete="email"
+                    aria-label="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full border-rule text-ink placeholder:text-ink-faint"
                     required
                   />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    shape="square"
-                    onClick={() => setShowPassword((v) => !v)}
-                    aria-label={showPassword ? "Ukryj hasło" : "Pokaż hasło"}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-faint hover:text-ink transition-colors p-0"
-                  >
-                    {showPassword ? (
-                      <EyeSlashIcon size={15} />
-                    ) : (
-                      <EyeIcon size={15} />
-                    )}
-                  </Button>
                 </div>
-              </div>
 
-              {error && (
-                <p className="text-[13px] text-red-400 -mt-1">{error}</p>
-              )}
+                {error && (
+                  <p className="text-[13px] text-red-400 -mt-1">{error}</p>
+                )}
 
-              <Button
-                type="submit"
-                variant="primary"
-                disabled={loading}
-                className="w-full mt-1 justify-center bg-amber border-amber text-paper hover:bg-amber/90 hover:border-amber/90 disabled:opacity-60"
-              >
-                {loading ? "Logowanie…" : "Zaloguj się"}
-              </Button>
-            </form>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  disabled={loading}
+                  className="w-full mt-1 justify-center bg-amber border-amber text-paper hover:bg-amber/90 hover:border-amber/90 disabled:opacity-60"
+                >
+                  {loading ? "Wysyłanie…" : "Wyślij link logowania"}
+                </Button>
+              </form>
+            )}
 
             <div className="flex items-center gap-3 my-5">
               <div className="flex-1 h-px bg-rule" />

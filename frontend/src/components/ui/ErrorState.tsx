@@ -11,7 +11,8 @@ type Props = {
 function resolveMessage(error: Props["error"]): string {
   if (typeof error === "string") return error;
   if (error instanceof Error) return error.message;
-  return apiErrorMessage(error);
+  const msg = apiErrorMessage(error);
+  return typeof msg === "string" ? msg : "Wystąpił nieznany błąd";
 }
 
 export function ErrorState({ error, tone = "banner", className }: Props) {

@@ -11,7 +11,7 @@ export function apiErrorMessage(error: ApiError): string {
     case "network":
       return "Błąd połączenia z serwerem";
     case "http":
-      return error.message;
+      return typeof error.message === "string" ? error.message : "Błąd serwera";
     case "validation":
       return `Błąd walidacji odpowiedzi: ${error.issues
         .map((issue) => `${issue.path.join(".")}: ${issue.message}`)

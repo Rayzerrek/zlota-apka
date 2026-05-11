@@ -188,6 +188,7 @@ export const ApiUserSchema = z.object({
   image: z.string().nullable(),
   grade: z.string().nullable(),
   onboardingDone: z.boolean(),
+  isGuest: z.boolean(),
   availability: z.array(ApiUserAvailabilitySchema),
   createdAt: z.string(),
   updatedAt: z.string(),

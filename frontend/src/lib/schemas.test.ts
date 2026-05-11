@@ -301,6 +301,7 @@ describe("ApiUserSchema", () => {
     image: null,
     grade: null,
     onboardingDone: false,
+    isGuest: false,
     availability: [{ id: "a1", dayOfWeek: 1, availableMinutes: 120 }],
     createdAt: "2024-01-01",
     updatedAt: "2024-01-01",

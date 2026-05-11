@@ -31,7 +31,13 @@ function createCorsMiddleware(origins: string[]) {
 }
 
 export function createApp() {
-  const app = new OpenAPIHono<{ Bindings: Env }>();
+  const app = new OpenAPIHono<{ Bindings: Env }>({
+    defaultHook: (result, c) => {
+      if (!result.success) {
+        return c.json({ error: "Nieprawidłowe dane zapytania" }, 400);
+      }
+    },
+  });
 
   app.use("/api/*", async (c, next) => {
     const origins = (c.env.FRONTEND_URL ?? "")

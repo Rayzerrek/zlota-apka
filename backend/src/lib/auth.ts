@@ -100,4 +100,19 @@ export function createAuth(env: Env): AuthInstance {
   return auth;
 }
 
+export async function sendAuthEmail(
+  env: Env,
+  to: string,
+  subject: string,
+  html: string,
+) {
+  const resend = new Resend(env.RESEND_API_KEY);
+  await resend.emails.send({
+    from: "Powtórki <onboarding@resend.dev>",
+    to,
+    subject,
+    html,
+  });
+}
+
 export type Auth = ReturnType<typeof createAuth>;
