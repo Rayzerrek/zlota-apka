@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { cn } from "../../utils/cn";
 import { ProfileField } from "./ProfileField";
 
@@ -22,19 +24,37 @@ const inputCls =
 
 type Props = {
   email: string;
+  setEmail?: (v: string) => void;
   language: string;
   setLanguage: (v: string) => void;
   timezone: string;
   setTimezone: (v: string) => void;
+  isGuest?: boolean;
+  onConfirmEmail?: () => void;
+  onSendMagicLink?: () => void;
+  confirmLoading?: boolean;
+  sendLoading?: boolean;
+  confirmError?: string | null;
+  sendError?: string | null;
 };
 
 export function ProfileAccountSection({
   email,
+  setEmail,
   language,
   setLanguage,
   timezone,
   setTimezone,
+  isGuest = false,
+  onConfirmEmail,
+  onSendMagicLink,
+  confirmLoading,
+  sendLoading,
+  confirmError,
+  sendError,
 }: Props) {
+  const [showLogin, setShowLogin] = useState(false);
+
   return (
     <section className="enter enter-d1 flex flex-col gap-6">
       <div className="pb-3 border-b border-rule flex items-baseline gap-3">
@@ -46,14 +66,94 @@ export function ProfileAccountSection({
         label="Adres email"
         hint="Używany do logowania i powiadomień."
       >
-        <input
-          type="email"
-          value={email}
-          readOnly
-          disabled
-          className={cn(inputCls, "opacity-60 cursor-not-allowed")}
-          autoComplete="email"
-        />
+        <div className="flex flex-col gap-4">
+          {!showLogin && (
+            <>
+              <div className="flex gap-3 items-start">
+                <div className="flex-1 min-w-0">
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail?.(e.target.value)}
+                    readOnly={!isGuest}
+                    disabled={!isGuest}
+                    placeholder={isGuest ? "Wpisz swój adres e-mail" : ""}
+                    className={cn(
+                      inputCls,
+                      !isGuest && "opacity-60 cursor-not-allowed",
+                    )}
+                    autoComplete="email"
+                  />
+                </div>
+                {isGuest && email.trim() !== "" && (
+                  <button
+                    type="button"
+                    disabled={confirmLoading}
+                    className="shrink-0 px-4 py-3 bg-amber text-paper rounded-[2px] font-medium transition-colors hover:bg-[#ffcc4a] text-sm disabled:opacity-60"
+                    onClick={onConfirmEmail}
+                  >
+                    {confirmLoading ? "Wysyłanie…" : "Potwierdź"}
+                  </button>
+                )}
+              </div>
+              {confirmError && (
+                <p className="text-sm text-red-400">{confirmError}</p>
+              )}
+              {isGuest && (
+                <div className="text-sm text-ink-muted">
+                  Masz już konto?{" "}
+                  <button
+                    type="button"
+                    onClick={() => setShowLogin(true)}
+                    className="text-amber hover:underline font-medium"
+                  >
+                    Zaloguj się
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+
+          {showLogin && isGuest && (
+            <div className="p-4 bg-paper-3 border border-rule rounded-sm flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-base font-semibold text-ink m-0">
+                  Zaloguj się
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setShowLogin(false)}
+                  className="text-sm text-ink-muted hover:text-ink transition-colors"
+                >
+                  Wróć
+                </button>
+              </div>
+              <p className="text-sm text-ink-muted m-0">
+                Wpisz adres e-mail powiązany z Twoim kontem. Wyślemy Ci
+                jednorazowy link (Magic Link), dzięki któremu zalogujesz się
+                bezpiecznie bez użycia hasła.
+              </p>
+              <div className="flex gap-3 items-start mt-2">
+                <input
+                  type="email"
+                  placeholder="twój@email.pl"
+                  defaultValue={email}
+                  onChange={(e) => setEmail?.(e.target.value)}
+                  className={cn(inputCls, "flex-1 min-w-0")}
+                />
+                <button
+                  type="button"
+                  disabled={sendLoading}
+                  className="shrink-0 px-4 py-3 bg-amber text-paper rounded-[2px] font-medium transition-colors hover:bg-[#ffcc4a] text-sm disabled:opacity-60"
+                  onClick={onSendMagicLink}
+                >
+                  {sendLoading ? "Wysyłanie…" : "Wyślij link"}
+                </button>
+              </div>
+              {sendError && <p className="text-sm text-red-400">{sendError}</p>}
+            </div>
+          )}
+        </div>
       </ProfileField>
 
       <ProfileField label="Język interfejsu">

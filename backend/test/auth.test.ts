@@ -8,7 +8,7 @@ beforeEach(() => {
 });
 
 describe("auth middleware", () => {
-  it("allows guest access through DEMO_GUEST_ID and persists the cookie", async () => {
+  it("allows guest access through guest cookie", async () => {
     setSession(null);
     setDb(({ kind, table }) => {
       if (kind === "select" && table === user) {
@@ -22,14 +22,15 @@ describe("auth middleware", () => {
 
     const response = await app.request(
       "/api/subjects",
-      { method: "GET" },
-      createEnv({ DEMO_GUEST_ID: "guest-1" }),
+      {
+        method: "GET",
+        headers: { Cookie: "guest_user_id=guest-1" },
+      },
+      createEnv(),
     );
 
     expect(response.status).toBe(200);
-    expect(response.headers.get("set-cookie")).toContain(
-      "guest_user_id=guest-1",
-    );
+    expect(response.headers.get("set-cookie")).toBeNull();
     expect(await response.json()).toEqual([]);
   });
 

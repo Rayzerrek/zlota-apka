@@ -36,29 +36,6 @@ function guestCookieOptions(env: { BETTER_AUTH_URL?: string }): CookieOptions {
   };
 }
 
-async function findGuestUserId(
-  c: Context<HonoEnv>,
-  guestId: string,
-): Promise<string | null> {
-  const db = createDb(c.env);
-
-  try {
-    const guestUser = await db
-      .select({ id: user.id, isGuest: user.isGuest })
-      .from(user)
-      .where(eq(user.id, guestId))
-      .limit(1);
-
-    if (guestUser.length > 0 && guestUser[0].isGuest) {
-      return guestUser[0].id;
-    }
-  } catch (err) {
-    console.warn("[auth] failed to look up guest user:", err);
-  }
-
-  return null;
-}
-
 async function copyDemoData(
   db: ReturnType<typeof createDb>,
   fromUserId: string,
@@ -310,7 +287,7 @@ async function createGuestUser(c: Context<HonoEnv>): Promise<string> {
   return newGuestId;
 }
 
-function persistGuestCookie(c: Context<HonoEnv>, guestId: string) {
+export function persistGuestCookie(c: Context<HonoEnv>, guestId: string) {
   setCookie(c, GUEST_COOKIE_NAME, guestId, guestCookieOptions(c.env));
 }
 
@@ -320,15 +297,7 @@ export type ResolvedUser = {
 };
 
 export async function resolveUser(c: Context<HonoEnv>): Promise<ResolvedUser> {
-  const cookieGuestId = getCookie(c, GUEST_COOKIE_NAME);
-  if (cookieGuestId) {
-    const existingGuestId = await findGuestUserId(c, cookieGuestId);
-    if (existingGuestId) {
-      console.log("[auth] resolved guest from cookie:", existingGuestId);
-      return { userId: existingGuestId, isGuest: true };
-    }
-  }
-
+  // 1. Check better-auth session first
   try {
     const auth = createAuth(c.env);
     const session = await auth.api.getSession({ headers: c.req.raw.headers });
@@ -336,27 +305,30 @@ export async function resolveUser(c: Context<HonoEnv>): Promise<ResolvedUser> {
       return { userId: session.user.id, isGuest: false };
     }
   } catch (err) {
-    console.warn("[auth] getSession failed, falling back to guest:", err);
+    console.warn("[auth] getSession failed:", err);
   }
 
-  const demoGuestId = c.env.DEMO_GUEST_ID?.trim();
-  if (demoGuestId) {
-    const existingGuestId = await findGuestUserId(c, demoGuestId);
-    if (existingGuestId) {
-      persistGuestCookie(c, existingGuestId);
-      console.log("[auth] resolved guest from DEMO_GUEST_ID:", existingGuestId);
-      return { userId: existingGuestId, isGuest: true };
+  // 2. Check guest cookie
+  const cookieGuestId = getCookie(c, GUEST_COOKIE_NAME);
+  if (cookieGuestId) {
+    const db = createDb(c.env);
+    try {
+      const foundUser = await db
+        .select({ id: user.id, isGuest: user.isGuest })
+        .from(user)
+        .where(eq(user.id, cookieGuestId))
+        .limit(1);
+
+      if (foundUser.length > 0) {
+        const u = foundUser[0];
+        return { userId: u.id, isGuest: u.isGuest };
+      }
+    } catch (err) {
+      console.warn("[auth] failed to look up user by cookie:", err);
     }
-    console.warn("[auth] DEMO_GUEST_ID not found:", demoGuestId);
   }
 
-  const fallbackGuestId = await findGuestUserId(c, "demo-guest");
-  if (fallbackGuestId) {
-    persistGuestCookie(c, fallbackGuestId);
-    console.log("[auth] resolved guest from fallback:", fallbackGuestId);
-    return { userId: fallbackGuestId, isGuest: true };
-  }
-
+  // 3. Create new guest
   try {
     const newGuestId = await createGuestUser(c);
     persistGuestCookie(c, newGuestId);

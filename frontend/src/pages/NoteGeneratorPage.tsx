@@ -160,7 +160,7 @@ export function NoteGeneratorPage() {
                 <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-[3px] bg-amber/10 text-[11px] text-amber">
                   2
                 </span>
-                AI Gemini analizuje temat i tworzy notatkę
+                AI analizuje temat i tworzy notatkę
               </li>
               <li className="flex gap-2.5">
                 <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-[3px] bg-amber/10 text-[11px] text-amber">

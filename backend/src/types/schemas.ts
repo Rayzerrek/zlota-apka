@@ -156,6 +156,7 @@ export const userMeResponseSchema = z.object({
   updatedAt: z.union([z.string(), z.date()]),
   grade: z.string().nullable(),
   onboardingDone: z.boolean(),
+  isGuest: z.boolean(),
   availability: z.array(userAvailabilityResponseSchema),
 });
 
