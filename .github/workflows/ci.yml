@@ -61,5 +61,5 @@ jobs:
         run: pnpm lint
       - name: Type check
         run: pnpm exec tsc -b
-      #  - name: Test
-      #    run: pnpm test
+      - name: Test
+        run: pnpm test

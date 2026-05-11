@@ -30,6 +30,7 @@ function guestCookieOptions(env: { BETTER_AUTH_URL?: string }): CookieOptions {
     httpOnly: true,
     secure,
     sameSite: secure ? "None" : "Lax",
+    partitioned: secure ? true : undefined,
     maxAge: 60 * 60 * 24 * 365,
     path: "/",
   };
@@ -304,10 +305,20 @@ export type ResolvedUser = {
 };
 
 export async function resolveUser(c: Context<HonoEnv>): Promise<ResolvedUser> {
-  const guestId = getCookie(c, GUEST_COOKIE_NAME);
-  if (guestId) {
-    const existingGuestId = await findGuestUserId(c, guestId);
+  const headerGuestId = c.req.header("x-guest-user-id");
+  if (headerGuestId) {
+    const existingGuestId = await findGuestUserId(c, headerGuestId);
     if (existingGuestId) {
+      console.log("[auth] resolved guest from header:", existingGuestId);
+      return { userId: existingGuestId, isGuest: true };
+    }
+  }
+
+  const cookieGuestId = getCookie(c, GUEST_COOKIE_NAME);
+  if (cookieGuestId) {
+    const existingGuestId = await findGuestUserId(c, cookieGuestId);
+    if (existingGuestId) {
+      console.log("[auth] resolved guest from cookie:", existingGuestId);
       return { userId: existingGuestId, isGuest: true };
     }
   }
@@ -325,6 +336,7 @@ export async function resolveUser(c: Context<HonoEnv>): Promise<ResolvedUser> {
   try {
     const newGuestId = await createGuestUser(c);
     persistGuestCookie(c, newGuestId);
+    console.log("[auth] created new guest user:", newGuestId);
     return { userId: newGuestId, isGuest: true };
   } catch (err) {
     console.error("[auth] failed to create guest user:", err);
