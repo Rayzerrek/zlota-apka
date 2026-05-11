@@ -38,6 +38,8 @@ jobs:
 
       - name: Build
         run: pnpm build
+        env:
+          VITE_API_URL: https://zlota-apka.rayserrek.workers.dev
 
   backend:
     name: Backend

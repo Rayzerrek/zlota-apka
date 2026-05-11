@@ -3,7 +3,13 @@ import { createAuthClient } from "better-auth/react";
 
 const authBaseURL = import.meta.env.DEV
   ? window.location.origin
-  : (import.meta.env.VITE_API_URL ?? window.location.origin);
+  : import.meta.env.VITE_API_URL;
+
+if (!import.meta.env.DEV && !authBaseURL) {
+  throw new Error(
+    "VITE_API_URL is not set. Define it in .env.production or as an environment variable before building.",
+  );
+}
 
 export const authClient = createAuthClient({
   baseURL: authBaseURL,
