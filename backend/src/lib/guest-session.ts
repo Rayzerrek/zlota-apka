@@ -320,15 +320,6 @@ export type ResolvedUser = {
 };
 
 export async function resolveUser(c: Context<HonoEnv>): Promise<ResolvedUser> {
-  const headerGuestId = c.req.header("x-guest-user-id");
-  if (headerGuestId) {
-    const existingGuestId = await findGuestUserId(c, headerGuestId);
-    if (existingGuestId) {
-      console.log("[auth] resolved guest from header:", existingGuestId);
-      return { userId: existingGuestId, isGuest: true };
-    }
-  }
-
   const cookieGuestId = getCookie(c, GUEST_COOKIE_NAME);
   if (cookieGuestId) {
     const existingGuestId = await findGuestUserId(c, cookieGuestId);

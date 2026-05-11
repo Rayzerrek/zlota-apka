@@ -14,24 +14,7 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
       workbox: {
-        globPatterns: ["**/*.{js,css,html,svg,png,ico,txt,woff2}"],
-      },
-      manifest: {
-        name: "Złota Apka",
-        short_name: "ZłotaApka",
-        description: "Twoja złota aplikacja do nauki",
-        theme_color: "#0B0B0C",
-        background_color: "#0B0B0C",
-        display: "standalone",
-        start_url: "/",
-        icons: [
-          {
-            src: "/favicon.svg",
-            sizes: "any",
-            type: "image/svg+xml",
-            purpose: "any maskable",
-          },
-        ],
+        globPatterns: ["**/*.{js,css,html,svg,png,ico,txt,woff2,webmanifest}"],
       },
     }),
   ],
