@@ -333,6 +333,16 @@ export async function resolveUser(c: Context<HonoEnv>): Promise<ResolvedUser> {
     console.warn("[auth] getSession failed, falling back to guest:", err);
   }
 
+  const demoGuestId = c.env.DEMO_GUEST_ID?.trim();
+  if (demoGuestId) {
+    const existingGuestId = await findGuestUserId(c, demoGuestId);
+    if (existingGuestId) {
+      persistGuestCookie(c, existingGuestId);
+      console.log("[auth] resolved guest from DEMO_GUEST_ID:", existingGuestId);
+      return { userId: existingGuestId, isGuest: true };
+    }
+  }
+
   try {
     const newGuestId = await createGuestUser(c);
     persistGuestCookie(c, newGuestId);
