@@ -26,8 +26,6 @@ if (!import.meta.env.DEV && !BASE) {
 
 export type RequestOptions = { signal?: AbortSignal };
 
-const GUEST_STORAGE_KEY = "guest_user_id";
-
 function buildHeaders(init?: RequestInit): Headers {
   const headers = new Headers(init?.headers);
   const body = init?.body;
@@ -42,14 +40,6 @@ function buildHeaders(init?: RequestInit): Headers {
 
   if (shouldSetContentType) {
     headers.set("Content-Type", "application/json");
-  }
-
-  const storedGuestId =
-    typeof window !== "undefined"
-      ? localStorage.getItem(GUEST_STORAGE_KEY)
-      : null;
-  if (storedGuestId) {
-    headers.set("X-Guest-User-Id", storedGuestId);
   }
 
   return headers;
@@ -72,10 +62,7 @@ async function ensureGuestSession() {
         throw new Error("Nie udało się zainicjalizować sesji gościa");
       }
 
-      const data = GuestSessionSchema.parse(await response.json());
-      if (data.isGuest && data.userId) {
-        localStorage.setItem(GUEST_STORAGE_KEY, data.userId);
-      }
+      GuestSessionSchema.parse(await response.json());
       guestSessionReady = true;
     })().finally(() => {
       guestSessionPromise = null;

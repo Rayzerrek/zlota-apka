@@ -24,7 +24,7 @@ function createCorsMiddleware(origins: string[]) {
       if (!origins.includes(origin)) return null;
       return origin;
     },
-    allowHeaders: ["Content-Type", "Authorization", "X-Guest-User-Id"],
+    allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     credentials: true,
   });
