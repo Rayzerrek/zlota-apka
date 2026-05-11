@@ -30,7 +30,7 @@ function guestCookieOptions(env: { BETTER_AUTH_URL?: string }): CookieOptions {
     httpOnly: true,
     secure,
     sameSite: secure ? "None" : "Lax",
-    partitioned: secure ? true : undefined,
+    partitioned: secure ? true : false,
     maxAge: 60 * 60 * 24 * 365,
     path: "/",
   };
