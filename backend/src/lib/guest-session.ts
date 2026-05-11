@@ -203,7 +203,7 @@ async function copyDemoData(
         updatedAt: card.updatedAt,
       };
     })
-    .filter(Boolean);
+    .filter((x): x is NonNullable<typeof x> => Boolean(x));
 
   if (cardsToCopy.length > 0) {
     await db.insert(cards).values(cardsToCopy);
@@ -227,7 +227,7 @@ async function copyDemoData(
         updatedAt: n.updatedAt,
       };
     })
-    .filter(Boolean);
+    .filter((x): x is NonNullable<typeof x> => Boolean(x));
 
   if (notesToCopy.length > 0) {
     await db.insert(notes).values(notesToCopy);

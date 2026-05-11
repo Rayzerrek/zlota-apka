@@ -15,14 +15,16 @@ let guestSessionReady = false;
 let guestSessionPromise: Promise<void> | null = null;
 
 const apiUrlSchema = z.url().optional();
-const parsedApiUrl = apiUrlSchema.safeParse(import.meta.env.VITE_API_URL);
+const parsedApiUrl = apiUrlSchema.safeParse(
+  import.meta.env as any.VITE_API_URL,
+);
 if (!parsedApiUrl.success) {
   console.error(
     "VITE_API_URL is invalid; falling back to current origin",
     parsedApiUrl.error.issues,
   );
 }
-const BASE = import.meta.env.DEV
+const BASE = (import.meta.env as any.DEV)
   ? ""
   : parsedApiUrl.success
     ? (parsedApiUrl.data ?? "")
