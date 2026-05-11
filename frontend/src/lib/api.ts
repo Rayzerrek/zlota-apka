@@ -14,21 +14,15 @@ const GuestSessionSchema = z.object({
 let guestSessionReady = false;
 let guestSessionPromise: Promise<void> | null = null;
 
-const apiUrlSchema = z.url().optional();
-const parsedApiUrl = apiUrlSchema.safeParse(
-  (import.meta.env as any).VITE_API_URL,
-);
-if (!parsedApiUrl.success) {
-  console.error(
-    "VITE_API_URL is invalid; falling back to current origin",
-    parsedApiUrl.error.issues,
+const BASE = (import.meta.env as any).DEV
+  ? ""
+  : (import.meta.env as any).VITE_API_URL;
+
+if (!import.meta.env.DEV && !BASE) {
+  throw new Error(
+    "VITE_API_URL is not set. Define it in .env.production or as an environment variable before building.",
   );
 }
-const BASE = (import.meta.env as any.DEV)
-  ? ""
-  : parsedApiUrl.success
-    ? (parsedApiUrl.data ?? "")
-    : "";
 
 export type RequestOptions = { signal?: AbortSignal };
 
