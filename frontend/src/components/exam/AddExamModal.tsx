@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { useCreateExam } from "../../hooks/api/useExams";
-import { useSubjects } from "../../hooks/api/useSubjects";
+import { useCreateSubject, useSubjects } from "../../hooks/api/useSubjects";
 import { cn } from "../../utils/cn";
 import { dayLong, longDate } from "../../utils/date";
 import { OptionPicker } from "../ui/OptionPicker";
@@ -59,6 +59,11 @@ export function AddExamModal({ open, onClose }: Props) {
   const [topics, setTopics] = useState<string[]>([]);
   const [topicInput, setTopicInput] = useState("");
 
+  const [isCreatingSubject, setIsCreatingSubject] = useState(false);
+  const [newSubjectName, setNewSubjectName] = useState("");
+  const { mutate: createSubject, isPending: creatingSubject } =
+    useCreateSubject();
+
   const topicInputRef = useRef<HTMLInputElement>(null);
   const todayIso = new Date().toISOString().slice(0, 10);
 
@@ -78,6 +83,8 @@ export function AddExamModal({ open, onClose }: Props) {
     setTopics([]);
     setTopicInput("");
     setSubjectId("");
+    setIsCreatingSubject(false);
+    setNewSubjectName("");
     resetMutation();
   }, [open, resetMutation]);
 
@@ -95,6 +102,21 @@ export function AddExamModal({ open, onClose }: Props) {
     if (t && !topics.includes(t)) setTopics((p) => [...p, t]);
     setTopicInput("");
     topicInputRef.current?.focus();
+  }
+
+  function handleCreateSubject() {
+    const name = newSubjectName.trim();
+    if (!name) return;
+    createSubject(
+      { name, key: "other", color: "#a8a89f", difficulty: 3 },
+      {
+        onSuccess: (data) => {
+          setSubjectId(data.id);
+          setIsCreatingSubject(false);
+          setNewSubjectName("");
+        },
+      },
+    );
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -238,14 +260,67 @@ export function AddExamModal({ open, onClose }: Props) {
           >
             <div className="px-6 py-6 overflow-y-auto flex-1 flex flex-col gap-5">
               <div className="flex flex-col gap-1.5">
-                <Label className="text-[13px] text-ink-muted">Przedmiot</Label>
-                {subjectsLoading ? (
+                <div className="flex items-center justify-between">
+                  <Label className="text-[13px] text-ink-muted">
+                    Przedmiot
+                  </Label>
+                  {!isCreatingSubject && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="xs"
+                      onClick={() => setIsCreatingSubject(true)}
+                      className="text-amber hover:text-amber hover:bg-amber-wash h-auto py-0.5 px-1.5"
+                    >
+                      + Nowy
+                    </Button>
+                  )}
+                </div>
+                {isCreatingSubject ? (
+                  <div className="flex gap-2">
+                    <Input
+                      type="text"
+                      placeholder="Nazwa przedmiotu"
+                      value={newSubjectName}
+                      onChange={(e) => setNewSubjectName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleCreateSubject();
+                        }
+                      }}
+                      className={cn(FIELD, "flex-1")}
+                      autoFocus
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleCreateSubject}
+                      disabled={!newSubjectName.trim() || creatingSubject}
+                      className="shrink-0 rounded-[3px]"
+                    >
+                      {creatingSubject ? "..." : "Dodaj"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => {
+                        setIsCreatingSubject(false);
+                        setNewSubjectName("");
+                      }}
+                      className="shrink-0 px-2 text-ink-faint rounded-[3px]"
+                      aria-label="Anuluj"
+                    >
+                      <XIcon size={16} />
+                    </Button>
+                  </div>
+                ) : subjectsLoading ? (
                   <div className="h-10 bg-paper-3 border border-rule rounded-[3px] animate-pulse" />
                 ) : subjectsError ? (
                   <p className="text-[13px] text-rating-1">{subjectsError}</p>
                 ) : subjectList.length === 0 ? (
                   <p className="text-[13px] text-ink-muted">
-                    Brak przedmiotów — uzupełnij profil, żeby dodać sprawdzian.
+                    Brak przedmiotów — dodaj nowy, żeby zaplanować sprawdzian.
                   </p>
                 ) : (
                   <OptionPicker

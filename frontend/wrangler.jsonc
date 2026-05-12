@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "zlota-apka",
+  "name": "recurs-app",
   "compatibility_date": "2026-04-20",
   "pages_build_output_dir": "./dist",
 }

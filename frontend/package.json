@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "pnpm run build && wrangler pages dev ./dist",
-    "deploy": "pnpm run build && wrangler pages deploy ./dist --project-name=zlota-apka",
+    "deploy": "pnpm run build && wrangler pages deploy ./dist --project-name=recurs-app",
     "fmt": "oxfmt -c ../.oxfmtrc.json",
     "fmt:check": "oxfmt -c ../.oxfmtrc.json --check",
     "lint": "oxlint -c ../.oxlintrc.json",

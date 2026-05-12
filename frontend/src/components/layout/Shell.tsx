@@ -14,20 +14,26 @@ import {
 } from "@cloudflare/kumo/components/sidebar";
 import {
   CalendarBlankIcon,
+  CalendarPlusIcon,
   CameraIcon,
   CardsIcon,
   ChartBarIcon,
   GearSixIcon,
   MoonIcon,
+  PlusIcon,
+  StackPlusIcon,
   SunIcon,
   UserCircleIcon,
   WarningIcon,
+  XIcon,
 } from "@phosphor-icons/react";
 import { useLocation, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useUser } from "../../hooks/api/useUser";
 import { cn } from "../../utils/cn";
+import { AddCardModal } from "../browse/AddCardModal";
+import { AddExamModal } from "../exam/AddExamModal";
 
 import type { MouseEvent, ReactNode } from "react";
 
@@ -51,6 +57,10 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileProfileMenuOpen, setIsMobileProfileMenuOpen] = useState(false);
+  const [addExamOpen, setAddExamOpen] = useState(false);
+  const [addCardOpen, setAddCardOpen] = useState(false);
+  const [fabOpen, setFabOpen] = useState(false);
+  const fabRef = useRef<HTMLDivElement>(null);
   const { data: userData } = useUser();
 
   const name = userData?.name ?? "Użytkownik";
@@ -60,7 +70,29 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
 
   useEffect(() => {
     setIsMobileProfileMenuOpen(false);
+    setFabOpen(false);
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (!fabOpen) return;
+    function onClickOutside(e: globalThis.MouseEvent) {
+      if (fabRef.current && !fabRef.current.contains(e.target as Node)) {
+        setFabOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, [fabOpen]);
+
+  const openAddExam = useCallback(() => {
+    setFabOpen(false);
+    setAddExamOpen(true);
+  }, []);
+
+  const openAddCard = useCallback(() => {
+    setFabOpen(false);
+    setAddCardOpen(true);
+  }, []);
 
   const handleMobileProfileClick = (event: MouseEvent<HTMLButtonElement>) => {
     if (location.pathname === "/profile") {
@@ -275,7 +307,88 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
             </button>
           </div>
         </nav>
+
+        <SpeedDial
+          ref={fabRef}
+          open={fabOpen}
+          onToggle={() => setFabOpen((o) => !o)}
+          onAddExam={openAddExam}
+          onAddCard={openAddCard}
+        />
       </div>
+
+      <AddExamModal open={addExamOpen} onClose={() => setAddExamOpen(false)} />
+      <AddCardModal open={addCardOpen} onClose={() => setAddCardOpen(false)} />
     </SidebarProvider>
+  );
+}
+
+type SpeedDialProps = {
+  open: boolean;
+  onToggle: () => void;
+  onAddExam: () => void;
+  onAddCard: () => void;
+};
+
+const SpeedDial = ({
+  ref,
+  open,
+  onToggle,
+  onAddExam,
+  onAddCard,
+}: SpeedDialProps & { ref: React.Ref<HTMLDivElement> }) => (
+  <div
+    ref={ref}
+    className="fixed right-5 bottom-[calc(80px+env(safe-area-inset-bottom))] z-45 flex flex-col items-end gap-2.5 lg:bottom-8 lg:right-8"
+  >
+    {open && (
+      <div className="flex flex-col items-stretch gap-2 animate-enter [--enter-offset:10px] w-48">
+        <SpeedDialItem
+          label="Dodaj sprawdzian"
+          icon={<CalendarPlusIcon size={18} weight="bold" />}
+          onClick={onAddExam}
+        />
+        <SpeedDialItem
+          label="Dodaj fiszkę"
+          icon={<StackPlusIcon size={18} weight="bold" />}
+          onClick={onAddCard}
+        />
+      </div>
+    )}
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-label={open ? "Zamknij menu" : "Dodaj"}
+      aria-expanded={open}
+      className={cn(
+        "w-14 h-14 rounded-full grid place-items-center shadow-[0_6px_24px_rgba(0,0,0,0.35)] transition-all duration-300",
+        open
+          ? "bg-paper-3 border border-rule text-ink rotate-0"
+          : "bg-amber text-paper border-0 hover:bg-[#ffcc4a] hover:shadow-[0_8px_32px_rgba(242,184,48,0.3)]",
+      )}
+    >
+      {open ? (
+        <XIcon size={22} weight="bold" />
+      ) : (
+        <PlusIcon size={24} weight="bold" />
+      )}
+    </button>
+  </div>
+);
+
+function SpeedDialItem(props: {
+  label: string;
+  icon: ReactNode;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={props.onClick}
+      className="flex items-center gap-3 px-4 py-3 bg-paper-2 border border-rule rounded-sm shadow-[0_8px_24px_rgba(0,0,0,0.3)] text-ink text-[14px] font-medium transition-all duration-200 hover:bg-paper-3 hover:border-rule-strong hover:-translate-y-px cursor-pointer justify-start"
+    >
+      <span className="text-amber">{props.icon}</span>
+      {props.label}
+    </button>
   );
 }
