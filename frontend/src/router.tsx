@@ -54,16 +54,6 @@ const LandingPage = withSuspense(
     import("./pages/LandingPage").then((m) => ({ default: m.LandingPage })),
   ),
 );
-const LoginPage = withSuspense(
-  lazy(() =>
-    import("./pages/LoginPage").then((m) => ({ default: m.LoginPage })),
-  ),
-);
-const SignUpPage = withSuspense(
-  lazy(() =>
-    import("./pages/SignUpPage").then((m) => ({ default: m.SignUpPage })),
-  ),
-);
 const BrowsePage = withSuspense(
   lazy(() =>
     import("./pages/BrowsePage").then((m) => ({ default: m.BrowsePage })),
@@ -158,18 +148,6 @@ const siteRoute = createRoute({
   component: LandingPage,
 });
 
-const loginRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "login",
-  component: LoginPage,
-});
-
-const signUpRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "sign-up",
-  component: SignUpPage,
-});
-
 const verifyEmailRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "verify-email",
@@ -259,8 +237,6 @@ const catchAllRoute = createRoute({
 const routeTree = rootRoute.addChildren([
   indexRoute,
   siteRoute,
-  loginRoute,
-  signUpRoute,
   verifyEmailRoute,
   verifyLoginRoute,
   layoutRoute.addChildren([

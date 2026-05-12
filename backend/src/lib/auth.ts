@@ -1,12 +1,9 @@
 import { neon } from "@neondatabase/serverless";
-import { betterAuth } from "better-auth";
+import { type BetterAuthOptions, betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { magicLink } from "better-auth/plugins";
 import { drizzle } from "drizzle-orm/neon-http";
 
 import * as schema from "../db/schema";
-
-import type { BetterAuthOptions } from "better-auth";
 
 export type Env = {
   DATABASE_URL: string;
@@ -17,8 +14,6 @@ export type Env = {
   FRONTEND_URL?: string;
   GEMINI_API_KEY?: string;
   DEMO_GUEST_ID?: string;
-  GOOGLE_CLIENT_ID: string;
-  GOOGLE_CLIENT_SECRET: string;
 };
 
 type AuthInstance = ReturnType<typeof betterAuth>;
@@ -45,29 +40,8 @@ export function createAuth(env: Env): AuthInstance {
             .filter(Boolean)
         : []),
     ],
-    emailAndPassword: {
-      enabled: true,
-      autoSignIn: true,
-      requireEmailVerification: false,
-    },
-    socialProviders: {
-      google: {
-        clientId: env.GOOGLE_CLIENT_ID,
-        clientSecret: env.GOOGLE_CLIENT_SECRET,
-      },
-    },
-    plugins: [
-      magicLink({
-        sendMagicLink: async ({ email, url }) => {
-          await sendAuthEmail(
-            env,
-            email,
-            "Zaloguj się do Powtórek",
-            `<p>Kliknij link żeby się zalogować:</p><a href="${url}">${url}</a><p>Link wygasa za 10 minut.</p>`,
-          );
-        },
-      }),
-    ],
+    emailAndPassword: { enabled: false },
+    plugins: [],
     advanced: {
       useSecureCookies: isSecureAuth,
       defaultCookieAttributes: {
@@ -121,19 +95,15 @@ export async function sendAuthEmail(
     console.log("[email] sent", {
       to,
       subject,
-      messageId: (response as { messageId?: string })?.messageId,
+      messageId: response.messageId,
     });
   } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
     const code =
       error instanceof Error && "code" in error
-        ? (error as { code: string }).code
+        ? String((error as Record<string, unknown>).code)
         : undefined;
-    console.error("[email] send failed", {
-      to,
-      subject,
-      code,
-      message: error instanceof Error ? error.message : String(error),
-    });
+    console.error("[email] send failed", { to, subject, code, message });
     throw error;
   }
 }

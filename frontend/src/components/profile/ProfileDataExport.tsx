@@ -3,8 +3,7 @@ import { DownloadSimpleIcon } from "@phosphor-icons/react";
 import Papa from "papaparse";
 import { useCallback, useMemo } from "react";
 
-import { useAllCards } from "../../hooks/api/useCards";
-import { useReviewHistory } from "../../hooks/api/useCards";
+import { useAllCards, useReviewHistory } from "../../hooks/api/useCards";
 import { useAllExams } from "../../hooks/api/useExams";
 import { useNotificationInbox } from "../../hooks/api/useNotifications";
 import { useAllSessions } from "../../hooks/api/useSessions";

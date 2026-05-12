@@ -29,15 +29,20 @@ import {
   XIcon,
 } from "@phosphor-icons/react";
 import { useLocation, useNavigate } from "@tanstack/react-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  type MouseEvent,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import { useUser } from "../../hooks/api/useUser";
 import { logout } from "../../lib/api";
 import { cn } from "../../utils/cn";
 import { AddCardModal } from "../browse/AddCardModal";
 import { AddExamModal } from "../exam/AddExamModal";
-
-import type { MouseEvent, ReactNode } from "react";
 
 type PagePath = "/today" | "/calendar" | "/browse" | "/stats" | "/scanner";
 

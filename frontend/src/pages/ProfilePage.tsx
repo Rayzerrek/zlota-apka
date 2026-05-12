@@ -11,8 +11,7 @@ import { ErrorState } from "../components/ui/ErrorState";
 import { useUser } from "../hooks/api/useUser";
 import { useSavedFeedback } from "../hooks/useSavedFeedback";
 import { apiDelete } from "../lib/api";
-import { linkEmail, sendMagicLink } from "../lib/api";
-import { apiResultMessage } from "../lib/api";
+import { apiResultMessage, linkEmail, sendMagicLink } from "../lib/api";
 import { type ApiError } from "../lib/error";
 import { OkResponseSchema } from "../lib/schemas";
 

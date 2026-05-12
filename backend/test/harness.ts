@@ -181,8 +181,6 @@ export function createEnv(overrides: Record<string, unknown> = {}) {
       send: () => Promise.resolve(),
     } as unknown as SendEmail,
     FRONTEND_URL: "http://localhost:5173",
-    GOOGLE_CLIENT_ID: "google-id",
-    GOOGLE_CLIENT_SECRET: "google-secret",
     ...overrides,
   };
 }
