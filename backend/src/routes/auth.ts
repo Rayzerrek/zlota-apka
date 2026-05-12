@@ -71,7 +71,6 @@ const verifyEmailRoute = createRoute({
   },
   responses: {
     302: { description: "Redirect after verification" },
-    400: { description: "Invalid token" },
   },
 });
 
@@ -114,7 +113,6 @@ const verifyLoginRoute = createRoute({
   },
   responses: {
     302: { description: "Redirect after login" },
-    400: { description: "Invalid token" },
   },
 });
 
@@ -177,7 +175,7 @@ authRouter.openapi(linkEmailRoute, async (c) => {
   await sendAuthEmail(
     c.env,
     email,
-    "Potwierdź swój adres e-mail w Powtórkach",
+    "Potwierdź swój adres e-mail w Recurs",
     `<p>Kliknij poniższy link, aby potwierdzić swój adres e-mail:</p><a href="${verifyUrl}">${verifyUrl}</a><p>Link wygasa za 10 minut.</p>`,
   );
 
@@ -251,7 +249,7 @@ authRouter.openapi(sendMagicLinkRoute, async (c) => {
   await sendAuthEmail(
     c.env,
     email,
-    "Zaloguj się do Powtórek",
+    "Zaloguj się do Recurs",
     `<p>Kliknij poniższy link, aby się zalogować:</p><a href="${loginUrl}">${loginUrl}</a><p>Link wygasa za 10 minut.</p>`,
   );
 
