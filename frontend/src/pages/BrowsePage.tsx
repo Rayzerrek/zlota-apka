@@ -8,6 +8,7 @@ import { AddCardModal } from "../components/browse/AddCardModal";
 import { BrowseCard } from "../components/browse/BrowseCard";
 import { BrowseFilters, type Filter } from "../components/browse/BrowseFilters";
 import { BrowseSearchBar } from "../components/browse/BrowseSearchBar";
+import { CardDetailModal } from "../components/browse/CardDetailModal";
 import { PageHead } from "../components/layout/PageHead";
 import { useAllCards, useDeleteCard } from "../hooks/api/useCards";
 import { adaptApiCardToCard } from "../lib/adapters";
@@ -32,6 +33,9 @@ export function BrowsePage() {
   const [q, setQ] = useState("");
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(12);
+  const [selectedCard, setSelectedCard] = useState<
+    (typeof cards)[number] | null
+  >(null);
 
   const counts = useMemo(() => {
     const out: Record<string, number> = { all: cards.length };
@@ -153,6 +157,7 @@ export function BrowsePage() {
           <BrowseCard
             key={card.id}
             card={card}
+            onClick={() => setSelectedCard(card)}
             onDelete={() => deleteCard(card.id)}
           />
         ))}
@@ -184,6 +189,10 @@ export function BrowsePage() {
       )}
 
       <AddCardModal open={addCardOpen} onClose={() => setAddCardOpen(false)} />
+      <CardDetailModal
+        card={selectedCard}
+        onClose={() => setSelectedCard(null)}
+      />
     </>
   );
 }

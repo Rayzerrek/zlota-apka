@@ -1,3 +1,4 @@
+import { Breadcrumbs } from "@cloudflare/kumo/components/breadcrumbs";
 import { Button } from "@cloudflare/kumo/components/button";
 import {
   ArrowRightIcon,
@@ -8,7 +9,6 @@ import {
 import { useRouter, useSearch } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
-import { PageHead } from "../components/layout/PageHead";
 import { useGenerateNote } from "../hooks/api/useNotes";
 
 export function NoteGeneratorPage() {
@@ -46,14 +46,21 @@ export function NoteGeneratorPage() {
 
   return (
     <>
-      <PageHead
-        eyebrow="Asystent AI"
-        title={
-          <>
-            Generator <em>notatek</em>
-          </>
-        }
-      />
+      <div className="mb-9 pb-4 border-b border-rule">
+        <Breadcrumbs size="sm" className="mb-3">
+          <Breadcrumbs.Link href="/browse">Nauka</Breadcrumbs.Link>
+          <Breadcrumbs.Separator />
+          <Breadcrumbs.Current>Generator notatek</Breadcrumbs.Current>
+        </Breadcrumbs>
+        <div className="flex flex-col gap-2">
+          <span className="mono text-xs text-ink-muted uppercase">
+            Asystent AI
+          </span>
+          <h1 className="display italic text-[clamp(36px,6vw,56px)] font-normal leading-[0.95] m-0 text-ink">
+            Generator <em className="not-italic text-amber">notatek</em>
+          </h1>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 gap-8 min-[900px]:grid-cols-[1fr_360px] min-[900px]:items-start">
         <section className="enter enter-d1 rounded-sm border border-rule bg-[linear-gradient(180deg,rgba(242,184,48,0.06),transparent_42%),var(--color-paper-2)] p-6 sm:p-8">
