@@ -5,12 +5,14 @@ import {
   ClockCountdownIcon,
   LightningIcon,
   NotePencilIcon,
+  StackPlusIcon,
   WarningCircleIcon,
 } from "@phosphor-icons/react";
 import { useNavigate } from "@tanstack/react-router";
 import { format } from "date-fns";
 import { type ComponentProps, useState } from "react";
 
+import { AddCardModal } from "../components/browse/AddCardModal";
 import { AddExamModal } from "../components/exam/AddExamModal";
 import { PageHead } from "../components/layout/PageHead";
 import { TodayHeroSkeleton } from "../components/today/HeroSkeleton";
@@ -34,6 +36,7 @@ export function TodayPage() {
   const { startSession: onStartSession } = useStudySession();
   const today = format(new Date(), "yyyy-MM-dd");
   const [addExamOpen, setAddExamOpen] = useState(false);
+  const [addCardOpen, setAddCardOpen] = useState(false);
   const navigate = useNavigate();
   const { data: dashboard, isLoading, error } = useDashboard();
 
@@ -201,6 +204,7 @@ export function TodayPage() {
               <TodayQuickActionsCard
                 onQuickReview={openQuickReview}
                 onAddExam={() => setAddExamOpen(true)}
+                onAddCard={() => setAddCardOpen(true)}
                 onBrowseMaterials={() => navigate({ to: "/browse" })}
               />
             </>
@@ -209,6 +213,7 @@ export function TodayPage() {
       </div>
 
       <AddExamModal open={addExamOpen} onClose={() => setAddExamOpen(false)} />
+      <AddCardModal open={addCardOpen} onClose={() => setAddCardOpen(false)} />
     </>
   );
 }
@@ -376,9 +381,10 @@ function TodayExamCard(props: {
 function TodayQuickActionsCard(props: {
   onQuickReview: () => void;
   onAddExam: () => void;
+  onAddCard: () => void;
   onBrowseMaterials: () => void;
 }) {
-  const { onQuickReview, onAddExam, onBrowseMaterials } = props;
+  const { onQuickReview, onAddExam, onAddCard, onBrowseMaterials } = props;
 
   return (
     <div className="rounded-sm border border-rule bg-paper-2 p-5">
@@ -403,6 +409,15 @@ function TodayQuickActionsCard(props: {
           className="w-full justify-start rounded-sm"
         >
           Dodaj sprawdzian
+        </Button>
+        <Button
+          size="lg"
+          variant="outline"
+          icon={StackPlusIcon}
+          onClick={onAddCard}
+          className="w-full justify-start rounded-sm"
+        >
+          Dodaj fiszkę
         </Button>
         <Button
           size="lg"

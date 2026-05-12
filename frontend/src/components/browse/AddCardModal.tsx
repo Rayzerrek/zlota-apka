@@ -5,7 +5,9 @@ import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { useCreateCard } from "../../hooks/api/useCards";
-import { useAllTopics } from "../../hooks/api/useTopics";
+import { useSubjects } from "../../hooks/api/useSubjects";
+import { useAllTopics, useCreateTopic } from "../../hooks/api/useTopics";
+import { cn } from "../../utils/cn";
 import { OptionPicker } from "../ui/OptionPicker";
 
 type Props = {
@@ -18,16 +20,22 @@ const FIELD =
 
 export function AddCardModal({ open, onClose }: Props) {
   const { data: topics, isLoading: topicsLoading } = useAllTopics();
+  const { data: subjects } = useSubjects();
   const {
     mutate: createCard,
     isPending: submitting,
     error: mutationError,
     reset: resetMutation,
   } = useCreateCard();
+  const { mutate: createTopic, isPending: creatingTopic } = useCreateTopic();
 
   const [topicId, setTopicId] = useState("");
   const [front, setFront] = useState("");
   const [back, setBack] = useState("");
+
+  const [isCreatingTopic, setIsCreatingTopic] = useState(false);
+  const [newTopicName, setNewTopicName] = useState("");
+  const [newTopicSubjectId, setNewTopicSubjectId] = useState("");
 
   const topicOptions = useMemo(
     () =>
@@ -47,10 +55,24 @@ export function AddCardModal({ open, onClose }: Props) {
   }, [open, topicOptions, topicId]);
 
   useEffect(() => {
+    if (
+      isCreatingTopic &&
+      subjects &&
+      subjects.length > 0 &&
+      !newTopicSubjectId
+    ) {
+      setNewTopicSubjectId(subjects[0].id);
+    }
+  }, [isCreatingTopic, subjects, newTopicSubjectId]);
+
+  useEffect(() => {
     if (open) return;
     setTopicId("");
     setFront("");
     setBack("");
+    setIsCreatingTopic(false);
+    setNewTopicName("");
+    setNewTopicSubjectId("");
     resetMutation();
   }, [open, resetMutation]);
 
@@ -62,6 +84,21 @@ export function AddCardModal({ open, onClose }: Props) {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
+
+  function handleCreateTopic() {
+    const name = newTopicName.trim();
+    if (!name || !newTopicSubjectId) return;
+    createTopic(
+      { name, subjectId: newTopicSubjectId },
+      {
+        onSuccess: (data) => {
+          setTopicId(data.id);
+          setIsCreatingTopic(false);
+          setNewTopicName("");
+        },
+      },
+    );
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -113,12 +150,88 @@ export function AddCardModal({ open, onClose }: Props) {
         <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
           <div className="px-6 py-6 overflow-y-auto flex-1 flex flex-col gap-5">
             <div className="flex flex-col gap-1.5">
-              <Label className="text-[13px] text-ink-muted">Temat</Label>
-              {topicsLoading ? (
+              <div className="flex items-center justify-between">
+                <Label className="text-[13px] text-ink-muted">Temat</Label>
+                {!isCreatingTopic && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="xs"
+                    onClick={() => setIsCreatingTopic(true)}
+                    className="text-amber hover:text-amber hover:bg-amber-wash h-auto py-0.5 px-1.5"
+                  >
+                    + Nowy
+                  </Button>
+                )}
+              </div>
+              {isCreatingTopic ? (
+                <div className="flex flex-col gap-2 p-3 bg-paper-3 border border-rule rounded-[3px]">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Nazwa tematu"
+                      value={newTopicName}
+                      onChange={(e) => setNewTopicName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleCreateTopic();
+                        }
+                      }}
+                      className={cn(FIELD, "flex-1 !bg-paper-2")}
+                      autoFocus
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => {
+                        setIsCreatingTopic(false);
+                        setNewTopicName("");
+                      }}
+                      className="shrink-0 px-2 text-ink-faint rounded-[3px]"
+                      aria-label="Anuluj"
+                    >
+                      <XIcon size={16} />
+                    </Button>
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    <select
+                      value={newTopicSubjectId}
+                      onChange={(e) => setNewTopicSubjectId(e.target.value)}
+                      className={cn(
+                        FIELD,
+                        "flex-1 !py-1.5 select-chevron !bg-paper-2",
+                      )}
+                    >
+                      <option value="" disabled>
+                        Wybierz przedmiot...
+                      </option>
+                      {subjects?.map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.name}
+                        </option>
+                      ))}
+                    </select>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleCreateTopic}
+                      disabled={
+                        !newTopicName.trim() ||
+                        !newTopicSubjectId ||
+                        creatingTopic
+                      }
+                      className="shrink-0 rounded-[3px] py-1.5"
+                    >
+                      {creatingTopic ? "..." : "Dodaj"}
+                    </Button>
+                  </div>
+                </div>
+              ) : topicsLoading ? (
                 <div className="h-10 bg-paper-3 border border-rule rounded-[3px] animate-pulse" />
               ) : topicOptions.length === 0 ? (
                 <p className="text-[13px] text-ink-muted">
-                  Brak tematów — dodaj najpierw sprawdzian z tematami.
+                  Brak tematów — dodaj nowy, żeby dodać fiszkę.
                 </p>
               ) : (
                 <OptionPicker

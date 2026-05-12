@@ -2,8 +2,8 @@ import { neon } from "@neondatabase/serverless";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { magicLink } from "better-auth/plugins";
+import { EmailMessage } from "cloudflare:email";
 import { drizzle } from "drizzle-orm/neon-http";
-import { Resend } from "resend";
 
 import * as schema from "../db/schema";
 
@@ -13,7 +13,8 @@ export type Env = {
   DATABASE_URL: string;
   BETTER_AUTH_SECRET: string;
   BETTER_AUTH_URL: string;
-  RESEND_API_KEY: string;
+  SEND_EMAIL: SendEmail;
+  EMAIL_FROM: string;
   FRONTEND_URL?: string;
   GEMINI_API_KEY?: string;
   DEMO_GUEST_ID?: string;
@@ -30,7 +31,6 @@ export function createAuth(env: Env): AuthInstance {
 
   const sql = neon(env.DATABASE_URL);
   const db = drizzle(sql, { schema });
-  const resend = new Resend(env.RESEND_API_KEY);
   const betterAuthUrl = env.BETTER_AUTH_URL;
   const isSecureAuth = betterAuthUrl.startsWith("https://");
 
@@ -60,12 +60,12 @@ export function createAuth(env: Env): AuthInstance {
     plugins: [
       magicLink({
         sendMagicLink: async ({ email, url }) => {
-          await resend.emails.send({
-            from: "Powtórki <onboarding@resend.dev>",
-            to: email,
-            subject: "Zaloguj się do Powtórek",
-            html: `<p>Kliknij link żeby się zalogować:</p><a href="${url}">${url}</a><p>Link wygasa za 10 minut.</p>`,
-          });
+          await sendAuthEmail(
+            env,
+            email,
+            "Zaloguj się do Powtórek",
+            `<p>Kliknij link żeby się zalogować:</p><a href="${url}">${url}</a><p>Link wygasa za 10 minut.</p>`,
+          );
         },
       }),
     ],
@@ -100,19 +100,32 @@ export function createAuth(env: Env): AuthInstance {
   return auth;
 }
 
+function buildMimeEmail(
+  from: string,
+  to: string,
+  subject: string,
+  html: string,
+): string {
+  return [
+    `From: ${from}`,
+    `To: ${to}`,
+    `Subject: ${subject}`,
+    `MIME-Version: 1.0`,
+    `Content-Type: text/html; charset=UTF-8`,
+    ``,
+    html,
+  ].join("\r\n");
+}
+
 export async function sendAuthEmail(
   env: Env,
   to: string,
   subject: string,
   html: string,
 ) {
-  const resend = new Resend(env.RESEND_API_KEY);
-  await resend.emails.send({
-    from: "Powtórki <onboarding@resend.dev>",
-    to,
-    subject,
-    html,
-  });
+  const raw = buildMimeEmail(env.EMAIL_FROM, to, subject, html);
+  const msg = new EmailMessage(env.EMAIL_FROM, to, raw);
+  await env.SEND_EMAIL.send(msg);
 }
 
 export type Auth = ReturnType<typeof createAuth>;

@@ -1,6 +1,6 @@
 import { Button } from "@cloudflare/kumo/components/button";
 import { Pagination } from "@cloudflare/kumo/components/pagination";
-import { PlusIcon } from "@phosphor-icons/react";
+import { PlusIcon, StackIcon } from "@phosphor-icons/react";
 import { useSearch } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 
@@ -66,8 +66,54 @@ export function BrowsePage() {
   if (isLoading) {
     return (
       <>
-        <PageHead eyebrow="Okej" title={<em>Cos</em>} />
+        <PageHead
+          eyebrow="Materiały"
+          title={
+            <>
+              Twoje <em>fiszki</em>
+            </>
+          }
+        />
         <div className="h-96 animate-pulse rounded-sm border border-rule bg-paper-2" />
+      </>
+    );
+  }
+
+  if (cards.length === 0) {
+    return (
+      <>
+        <PageHead
+          eyebrow="Materiały"
+          title={
+            <>
+              Twoje <em>fiszki</em>
+            </>
+          }
+        />
+        <div className="flex flex-col items-center justify-center py-24 gap-6">
+          <div className="w-20 h-20 rounded-full bg-amber-wash border border-amber/20 grid place-items-center">
+            <StackIcon size={36} weight="duotone" className="text-amber" />
+          </div>
+          <div className="text-center max-w-sm">
+            <h2 className="display text-[24px] text-ink mb-2">Brak fiszek</h2>
+            <p className="text-[15px] text-ink-muted leading-relaxed">
+              Dodaj pierwszy sprawdzian z tematami, a potem utwórz fiszki do
+              nauki. Możesz też dodać fiszkę ręcznie.
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            icon={PlusIcon}
+            onClick={() => setAddCardOpen(true)}
+            className="rounded-sm bg-amber border-amber text-paper hover:bg-[#ffcc4a] hover:border-[#ffcc4a] font-semibold"
+          >
+            Dodaj pierwszą fiszkę
+          </Button>
+        </div>
+        <AddCardModal
+          open={addCardOpen}
+          onClose={() => setAddCardOpen(false)}
+        />
       </>
     );
   }
@@ -75,10 +121,10 @@ export function BrowsePage() {
   return (
     <>
       <PageHead
-        eyebrow="Okej"
+        eyebrow="Materiały"
         title={
           <>
-            <em>Cos</em>
+            Twoje <em>fiszki</em>
           </>
         }
       />

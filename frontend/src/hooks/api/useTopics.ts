@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { apiGet } from "../../lib/api";
+import { apiGet, apiPost } from "../../lib/api";
 import { ApiErrorException } from "../../lib/error";
 import { ApiTopicSchema, ApiTopicWithSubjectSchema } from "../../lib/schemas";
 import { queryKeys } from "./keys";
@@ -31,5 +31,25 @@ export function useTopicsByExam(examId: string) {
       return res.data;
     },
     enabled: Boolean(examId),
+  });
+}
+
+export type TopicCreateBody = {
+  name: string;
+  subjectId: string;
+};
+
+export function useCreateTopic() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (body: TopicCreateBody) => {
+      const res = await apiPost("/api/topics", ApiTopicSchema, body);
+      if (!res.ok) throw new ApiErrorException(res.error);
+      return res.data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.allTopics });
+    },
   });
 }

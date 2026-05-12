@@ -11,6 +11,7 @@ import {
   cardRowSchema,
   idParamsSchema,
   okResponseSchema,
+  topicCreateSchema,
   topicPatchSchema,
   topicRowSchema,
   topicWithSubjectListResponseSchema,
@@ -111,6 +112,46 @@ const deleteTopicRoute = createRoute({
 export const topicsRouter = new OpenAPIHono<HonoEnv>();
 
 topicsRouter.use(requireAuth);
+
+const createTopicRoute = createRoute({
+  method: "post",
+  path: "/",
+  tags: ["Topics"],
+  request: {
+    body: {
+      content: { "application/json": { schema: topicCreateSchema } },
+      required: true,
+    },
+  },
+  responses: {
+    201: {
+      description: "Created topic",
+      content: { "application/json": { schema: topicRowSchema } },
+    },
+    404: {
+      description: "Subject not found",
+      content: { "application/json": { schema: errorResponseSchema } },
+    },
+  },
+});
+
+topicsRouter.openapi(createTopicRoute, async (c) => {
+  const db = createDb(c.env);
+  const userId = c.get("userId");
+  const body = c.req.valid("json");
+
+  const [subject] = await db
+    .select({ id: subjects.id })
+    .from(subjects)
+    .where(and(eq(subjects.id, body.subjectId), eq(subjects.userId, userId)));
+  if (!subject) return c.json({ error: "Subject not found" }, 404);
+
+  const [row] = await db
+    .insert(topics)
+    .values({ ...body, userId })
+    .returning();
+  return c.json(row, 201);
+});
 
 topicsRouter.openapi(allTopicsRoute, async (c) => {
   const db = createDb(c.env);

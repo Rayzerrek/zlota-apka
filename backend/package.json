@@ -25,7 +25,6 @@
     "better-auth": "^1.6.7",
     "drizzle-orm": "^0.45.2",
     "hono": "^4.12.14",
-    "resend": "^6.12.2",
     "zod": "^4.3.6"
   },
   "devDependencies": {

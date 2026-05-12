@@ -171,12 +171,15 @@ export function setSession(session: { user: { id: string } } | null) {
   currentSession = session;
 }
 
-export function createEnv(overrides: Record<string, string | undefined> = {}) {
+export function createEnv(overrides: Record<string, unknown> = {}) {
   return {
     DATABASE_URL: "postgres://test",
     BETTER_AUTH_SECRET: "secret",
     BETTER_AUTH_URL: "http://localhost:8787",
-    RESEND_API_KEY: "resend",
+    EMAIL_FROM: "Recurs <test@example.com>",
+    SEND_EMAIL: {
+      send: () => Promise.resolve(),
+    } as unknown as SendEmail,
     FRONTEND_URL: "http://localhost:5173",
     GOOGLE_CLIENT_ID: "google-id",
     GOOGLE_CLIENT_SECRET: "google-secret",

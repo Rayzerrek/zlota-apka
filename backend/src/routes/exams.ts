@@ -194,92 +194,90 @@ examsRouter.openapi(createExamRoute, async (c) => {
     .where(and(eq(subjects.id, body.subjectId), eq(subjects.userId, userId)));
   if (!subject) return c.json({ error: "Subject not found" }, 404);
 
-  const result = await db.transaction(async (tx) => {
-    const [exam] = await tx
-      .insert(exams)
-      .values({
-        userId,
-        subjectId: body.subjectId,
-        name: body.name,
-        examDate: body.examDate,
-        difficulty: body.difficulty,
-        materialSize: body.materialSize,
-        notes: body.notes,
-      })
-      .returning();
+  const [exam] = await db
+    .insert(exams)
+    .values({
+      userId,
+      subjectId: body.subjectId,
+      name: body.name,
+      examDate: body.examDate,
+      difficulty: body.difficulty,
+      materialSize: body.materialSize,
+      notes: body.notes,
+    })
+    .returning();
 
-    const createdTopics =
-      body.topicNames.length > 0
-        ? await tx
-            .insert(topics)
-            .values(
-              body.topicNames.map((name, i) => ({
-                userId,
-                subjectId: body.subjectId,
-                examId: exam.id,
-                name,
-                position: i,
-              })),
-            )
-            .returning()
-        : [];
+  const createdTopics =
+    body.topicNames.length > 0
+      ? await db
+          .insert(topics)
+          .values(
+            body.topicNames.map((name, i) => ({
+              userId,
+              subjectId: body.subjectId,
+              examId: exam.id,
+              name,
+              position: i,
+            })),
+          )
+          .returning()
+      : [];
 
-    const availability = await tx
-      .select()
-      .from(userAvailability)
-      .where(eq(userAvailability.userId, userId));
+  const availability = await db
+    .select()
+    .from(userAvailability)
+    .where(eq(userAvailability.userId, userId));
 
-    const { plannedSessions, daysUntilExam, dailyMinutes } = generateExamPlan(
-      exam,
-      createdTopics,
-      availability,
-      today,
-      body.examDate,
-    );
+  const { plannedSessions, daysUntilExam, dailyMinutes } = generateExamPlan(
+    exam,
+    createdTopics,
+    availability,
+    today,
+    body.examDate,
+  );
 
-    const [run] = await tx
-      .insert(schedulerRuns)
-      .values({
-        userId,
-        examId: exam.id,
-        daysUntilExam,
-        topicsCount: createdTopics.length,
-        dailyMinutes,
-        sessionsCreated: plannedSessions.length,
-        planJson: plannedSessions,
-      })
-      .returning();
-
-    const sessionValues = createStudySessions(plannedSessions, {
+  const [run] = await db
+    .insert(schedulerRuns)
+    .values({
       userId,
       examId: exam.id,
-      schedulerRunId: run.id,
-    });
+      daysUntilExam,
+      topicsCount: createdTopics.length,
+      dailyMinutes,
+      sessionsCreated: plannedSessions.length,
+      planJson: plannedSessions,
+    })
+    .returning();
 
-    const createdSessions =
-      sessionValues.length > 0
-        ? await tx.insert(studySessions).values(sessionValues).returning()
-        : [];
-
-    await tx.insert(notifications).values({
-      userId,
-      type: "exam_created",
-      category: "exam",
-      priority: "medium",
-      title: "Zaplanowano sesje nauki",
-      description: `${createdSessions.length} ${createdSessions.length === 1 ? "sesja" : "sesje"} · ${body.name}`,
-      actionUrl: "/calendar",
-      sentAt: new Date(),
-      scheduledFor: null,
-    });
-
-    return {
-      exam,
-      topics: createdTopics,
-      sessions: createdSessions,
-      schedulerRunId: run.id,
-    };
+  const sessionValues = createStudySessions(plannedSessions, {
+    userId,
+    examId: exam.id,
+    schedulerRunId: run.id,
   });
+
+  const createdSessions =
+    sessionValues.length > 0
+      ? await db.insert(studySessions).values(sessionValues).returning()
+      : [];
+
+  await db.insert(notifications).values({
+    userId,
+    type: "exam_created",
+    category: "exam",
+    priority: "medium",
+    title: "Zaplanowano sesje nauki",
+    description: `${createdSessions.length} ${createdSessions.length === 1 ? "sesja" : "sesje"} · ${body.name}`,
+    actionUrl: "/calendar",
+    sentAt: new Date(),
+    scheduledFor: null,
+  });
+
+  const result = {
+    exam,
+    topics: createdTopics,
+    sessions: createdSessions,
+    schedulerRunId: run.id,
+  };
 
   return c.json(result, 201);
 });

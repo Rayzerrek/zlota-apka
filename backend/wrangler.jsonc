@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "zlota-apka",
+  "name": "recurs-app",
   "compatibility_date": "2026-04-20",
   "compatibility_flags": ["nodejs_compat"],
   "main": "./src/index.tsx",
@@ -10,10 +10,17 @@
   },
 
   "vars": {
-    "FRONTEND_URL": "https://zlota-apka.pages.dev,http://localhost:5173",
-    "BETTER_AUTH_URL": "https://zlota-apka.rayserrek.workers.dev",
+    "FRONTEND_URL": "https://recurs.app,http://localhost:5173",
+    "BETTER_AUTH_URL": "https://api.recurs.app",
     "DEMO_GUEST_ID": "demo-guest",
+    "EMAIL_FROM": "Recurs <hello@recurs.app>",
   },
+
+  "send_email": [
+    {
+      "name": "SEND_EMAIL",
+    },
+  ],
 
   "observability": {
     "logs": {
