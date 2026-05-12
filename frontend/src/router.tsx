@@ -151,7 +151,10 @@ const siteRoute = createRoute({
 const verifyEmailRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "verify-email",
-  validateSearch: z.object({ token: z.string() }),
+  validateSearch: z.object({
+    token: z.string().optional(),
+    status: z.string().optional(),
+  }),
   component: VerifyEmailPage,
 });
 

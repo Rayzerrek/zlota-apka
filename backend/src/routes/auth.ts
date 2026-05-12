@@ -147,10 +147,13 @@ authRouter.openapi(linkEmailRoute, async (c) => {
     );
   }
 
+  const nameFromEmail = email.split("@")[0].slice(0, 50);
+
   await db
     .update(user)
     .set({
       email,
+      name: nameFromEmail,
       isGuest: false,
       emailVerified: false,
       updatedAt: new Date(),
@@ -213,7 +216,7 @@ authRouter.openapi(verifyEmailRoute, async (c) => {
 
   persistGuestCookie(c, payload.userId);
 
-  return c.redirect("/today", 302);
+  return c.redirect("/verify-email?status=success", 302);
 });
 
 authRouter.openapi(sendMagicLinkRoute, async (c) => {
@@ -300,6 +303,14 @@ authRouter.openapi(verifyLoginRoute, async (c) => {
     if (currentUser.length > 0 && currentUser[0].isGuest) {
       await db.delete(user).where(eq(user.id, currentGuestId));
     }
+  }
+
+  if (targetUser[0].name === "Gość") {
+    const nameFromEmail = payload.email.split("@")[0].slice(0, 50);
+    await db
+      .update(user)
+      .set({ name: nameFromEmail, updatedAt: new Date() })
+      .where(eq(user.id, targetUserId));
   }
 
   persistGuestCookie(c, targetUserId);
