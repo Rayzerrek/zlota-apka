@@ -137,7 +137,7 @@ export function ProfileAccountSection({
                 <input
                   type="email"
                   placeholder="twój@email.pl"
-                  defaultValue={email}
+                  value={email}
                   onChange={(e) => setEmail?.(e.target.value)}
                   className={cn(inputCls, "flex-1 min-w-0")}
                 />
