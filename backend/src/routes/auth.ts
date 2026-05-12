@@ -188,7 +188,7 @@ authRouter.openapi(verifyEmailRoute, async (c) => {
   const db = createDb(c.env);
   const token = c.req.query("token");
   if (!token) {
-    return c.redirect("/login?error=missing_token", 302);
+    return c.redirect("/today?error=missing_token", 302);
   }
 
   const rows = await db
@@ -198,7 +198,7 @@ authRouter.openapi(verifyEmailRoute, async (c) => {
     .limit(1);
 
   if (rows.length === 0 || rows[0].expiresAt < new Date()) {
-    return c.redirect("/login?error=invalid_token", 302);
+    return c.redirect("/today?error=invalid_token", 302);
   }
 
   const payload = JSON.parse(rows[0].value) as {
@@ -262,7 +262,7 @@ authRouter.openapi(verifyLoginRoute, async (c) => {
   const db = createDb(c.env);
   const token = c.req.query("token");
   if (!token) {
-    return c.redirect("/login?error=missing_token", 302);
+    return c.redirect("/today?error=missing_token", 302);
   }
 
   const rows = await db
@@ -272,7 +272,7 @@ authRouter.openapi(verifyLoginRoute, async (c) => {
     .limit(1);
 
   if (rows.length === 0 || rows[0].expiresAt < new Date()) {
-    return c.redirect("/login?error=invalid_token", 302);
+    return c.redirect("/today?error=invalid_token", 302);
   }
 
   const payload = JSON.parse(rows[0].value) as { email: string };
@@ -286,7 +286,7 @@ authRouter.openapi(verifyLoginRoute, async (c) => {
     .limit(1);
 
   if (targetUser.length === 0 || targetUser[0].isGuest) {
-    return c.redirect("/login?error=account_not_found", 302);
+    return c.redirect("/today?error=account_not_found", 302);
   }
 
   const targetUserId = targetUser[0].id;
