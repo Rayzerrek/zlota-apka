@@ -2,7 +2,6 @@ import { neon } from "@neondatabase/serverless";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { magicLink } from "better-auth/plugins";
-import { EmailMessage } from "cloudflare:email";
 import { drizzle } from "drizzle-orm/neon-http";
 
 import * as schema from "../db/schema";
@@ -100,32 +99,24 @@ export function createAuth(env: Env): AuthInstance {
   return auth;
 }
 
-function buildMimeEmail(
-  from: string,
-  to: string,
-  subject: string,
-  html: string,
-): string {
-  return [
-    `From: ${from}`,
-    `To: ${to}`,
-    `Subject: ${subject}`,
-    `MIME-Version: 1.0`,
-    `Content-Type: text/html; charset=UTF-8`,
-    ``,
-    html,
-  ].join("\r\n");
-}
-
 export async function sendAuthEmail(
   env: Env,
   to: string,
   subject: string,
   html: string,
 ) {
-  const raw = buildMimeEmail(env.EMAIL_FROM, to, subject, html);
-  const msg = new EmailMessage(env.EMAIL_FROM, to, raw);
-  await env.SEND_EMAIL.send(msg);
+  const fromMatch = env.EMAIL_FROM.match(/^(.+?)\s*<(.+)>$/);
+  const from: string | { email: string; name: string } = fromMatch
+    ? { email: fromMatch[2], name: fromMatch[1] }
+    : env.EMAIL_FROM;
+
+  await env.SEND_EMAIL.send({
+    to,
+    from,
+    subject,
+    html,
+    text: html.replace(/<[^>]+>/g, ""),
+  });
 }
 
 export type Auth = ReturnType<typeof createAuth>;

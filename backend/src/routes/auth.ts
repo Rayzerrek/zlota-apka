@@ -1,6 +1,6 @@
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import { eq } from "drizzle-orm";
-import { getCookie } from "hono/cookie";
+import { deleteCookie, getCookie } from "hono/cookie";
 import { z } from "zod";
 
 import { user, verification } from "../db/schema";
@@ -307,4 +307,28 @@ authRouter.openapi(verifyLoginRoute, async (c) => {
   persistGuestCookie(c, targetUserId);
 
   return c.redirect("/today", 302);
+});
+
+const logoutRoute = createRoute({
+  method: "post",
+  path: "/logout",
+  tags: ["Auth"],
+  responses: {
+    200: {
+      description: "Logged out",
+      content: { "application/json": { schema: successResponseSchema } },
+    },
+  },
+});
+
+authRouter.openapi(logoutRoute, async (c) => {
+  const secure = c.env.BETTER_AUTH_URL?.startsWith("https://") ?? true;
+
+  deleteCookie(c, "guest_user_id", {
+    path: "/",
+    secure,
+    sameSite: secure ? "None" : "Lax",
+  });
+
+  return c.json({ success: true }, 200);
 });

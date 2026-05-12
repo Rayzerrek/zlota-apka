@@ -20,7 +20,7 @@ export function LoginHeader({
   return (
     <header className="flex items-center justify-between px-5 py-4 md:px-10">
       <span className="display italic font-semibold text-[26px] text-amber leading-none">
-        Nazwa
+        Recurs
       </span>
       <div className="flex items-center gap-2">
         <Button

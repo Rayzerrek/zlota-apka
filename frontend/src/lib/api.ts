@@ -174,3 +174,7 @@ export function linkEmail(email: string) {
 export function sendMagicLink(email: string) {
   return apiPost("/api/auth/send-magic-link", SuccessResponseSchema, { email });
 }
+
+export function logout() {
+  return apiPost("/api/auth/logout", SuccessResponseSchema, {});
+}

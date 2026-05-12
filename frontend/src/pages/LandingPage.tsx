@@ -79,7 +79,7 @@ export function LandingPage() {
         className="landing-header z-20 mx-auto flex h-[72px] max-w-6xl items-center justify-between px-5 md:px-8"
       >
         <span className="display text-[24px] font-semibold leading-none tracking-tight">
-          <span className="text-amber">Nazwa</span>
+          <span className="text-amber">Recurs</span>
         </span>
 
         <nav className="flex items-center gap-3">
@@ -98,21 +98,18 @@ export function LandingPage() {
         <section className="relative mx-auto flex max-w-6xl flex-col items-center px-5 pb-24 pt-12 text-center md:px-8 md:pb-32 md:pt-20">
           <div className="animate-enter enter-d1 mb-8 inline-flex items-center gap-2 rounded-full border border-amber/20 bg-amber/5 px-4 py-1.5 text-sm text-amber">
             <SparkleIcon size={14} weight="fill" />
-            Lorem ipsum dolor
+            Nauka z głową
           </div>
 
           <h1 className="animate-enter enter-d2 display max-w-4xl text-[clamp(2.8rem,9vw,6.5rem)] font-light leading-[0.95] tracking-tight">
-            Cos tam,{" "}
-            <span className="gradient-text font-medium">
-              cos tam&nbsp;cos tam.
-            </span>
+            Ucz się mądrzej,{" "}
+            <span className="gradient-text font-medium">nie&nbsp;dłużej.</span>
           </h1>
 
           <p className="animate-enter enter-d3 mt-7 max-w-lg text-[17px] leading-relaxed text-ink-muted">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laboriosam
-            saepe minus commodi? Commodi voluptatum libero qui reprehenderit
-            necessitatibus voluptas! Ipsa nulla quod ab amet vitae nisi
-            voluptatum quas.
+            Recurs łączy fiszki, terminarz sprawdzianów i notatki generowane
+            przez AI w jednym miejscu. Śledź postępy, powtarzaj materiał i nigdy
+            nie daj się zaskoczyć na klasówce.
           </p>
 
           <div className="animate-enter enter-d4 mt-10 flex flex-wrap items-center justify-center gap-3">
@@ -177,8 +174,7 @@ export function LandingPage() {
               Wszystko, czego potrzebujesz
             </h2>
             <p className="animate-enter enter-d1 mt-4 text-ink-muted">
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-              Laboriosam saepe minus commodi.
+              Jeden ekosystem do nauki — od fiszek po sprawdziany i notatki AI.
             </p>
           </div>
 
@@ -186,36 +182,36 @@ export function LandingPage() {
             <BentoCard
               className="md:col-span-2 md:row-span-2"
               icon={CalendarBlankIcon}
-              title="Lorem ipsum dolor"
-              description="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laboriosam saepe minus commodi."
+              title="Terminarz sprawdzianów"
+              description="Dodaj sprawdziany i miej zawsze przed oczami ile dni zostało do każdego terminu. Recurs przypomni Ci, kiedy czas zacząć powtórki."
             >
               <div className="mt-auto flex items-end gap-2 pt-6">
                 <span className="display text-[64px] font-light leading-none text-amber">
                   14
                 </span>
                 <span className="mono pb-2 text-[12px] uppercase tracking-wider text-ink-faint">
-                  lorem ipsum
+                  dni do klasówki
                 </span>
               </div>
             </BentoCard>
 
             <BentoCard
               icon={CardsIcon}
-              title="Lorem ipsum"
-              description="Lorem ipsum dolor sit amet, consectetur adipisicing elit."
+              title="Fiszki"
+              description="Twórz zestawy fiszek do każdego przedmiotu i powtarzaj materiał w swoim tempie."
             />
 
             <BentoCard
               icon={CameraIcon}
-              title="Lorem ipsum dolor"
-              description="Lorem ipsum dolor sit amet, consectetur adipisicing elit."
+              title="Skaner notatek"
+              description="Zrób zdjęcie notatek z zeszytu — Recurs zamieni je w cyfrowe fiszki gotowe do nauki."
             />
 
             <BentoCard
               className="md:row-span-2"
               icon={ChartBarIcon}
-              title="Lorem ipsum dolor"
-              description="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laboriosam saepe minus commodi."
+              title="Statystyki nauki"
+              description="Śledź swoje postępy w każdym przedmiocie i sprawdzaj, które tematy wymagają jeszcze pracy."
             >
               <div className="mt-4 flex flex-col gap-3">
                 <div className="flex items-center gap-3">
@@ -236,14 +232,14 @@ export function LandingPage() {
             <BentoCard
               className="md:col-span-2"
               icon={BrainIcon}
-              title="Lorem ipsum dolor sit"
-              description="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laboriosam saepe minus commodi."
+              title="Notatki generowane przez AI"
+              description="Podaj temat i przedmiot — Recurs wygeneruje zwięzłą notatkę, którą możesz zapisać i przeglądać przed sprawdzianem."
             />
 
             <BentoCard
               icon={ClockIcon}
-              title="Lorem ipsum dolor"
-              description="Lorem ipsum dolor sit amet, consectetur adipisicing elit."
+              title="Timer nauki"
+              description="Ucz się w skupieniu dzięki wbudowanemu timerowi z sesjami i przerwami."
             />
           </div>
         </section>
@@ -252,10 +248,10 @@ export function LandingPage() {
       <footer className="border-t border-rule">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-5 py-8 md:flex-row md:px-8">
           <span className="display text-[18px] font-medium leading-none">
-            <span className="text-amber">Nazwa</span>
+            <span className="text-amber">Recurs</span>
           </span>
           <span className="mono text-[12px] text-ink-faint">
-            © {new Date().getFullYear()} Nazwa. Lorem ipsum dolor sit amet.
+            © {new Date().getFullYear()} Recurs. Ucz się mądrzej.
           </span>
         </div>
       </footer>
