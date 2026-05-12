@@ -110,13 +110,32 @@ export async function sendAuthEmail(
     ? { email: fromMatch[2], name: fromMatch[1] }
     : env.EMAIL_FROM;
 
-  await env.SEND_EMAIL.send({
-    to,
-    from,
-    subject,
-    html,
-    text: html.replace(/<[^>]+>/g, ""),
-  });
+  try {
+    const response = await env.SEND_EMAIL.send({
+      to,
+      from,
+      subject,
+      html,
+      text: html.replace(/<[^>]+>/g, ""),
+    });
+    console.log("[email] sent", {
+      to,
+      subject,
+      messageId: (response as { messageId?: string })?.messageId,
+    });
+  } catch (error: unknown) {
+    const code =
+      error instanceof Error && "code" in error
+        ? (error as { code: string }).code
+        : undefined;
+    console.error("[email] send failed", {
+      to,
+      subject,
+      code,
+      message: error instanceof Error ? error.message : String(error),
+    });
+    throw error;
+  }
 }
 
 export type Auth = ReturnType<typeof createAuth>;
