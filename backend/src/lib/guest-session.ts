@@ -19,9 +19,11 @@ import type { HonoEnv } from "./factory";
 import type { Context } from "hono";
 import type { CookieOptions } from "hono/utils/cookie";
 
-const GUEST_COOKIE_NAME = "guest_user_id";
+export const GUEST_COOKIE_NAME = "guest_user_id";
 
-function guestCookieOptions(env: { BETTER_AUTH_URL?: string }): CookieOptions {
+export function guestCookieOptions(env: {
+  BETTER_AUTH_URL?: string;
+}): CookieOptions {
   const secure = env.BETTER_AUTH_URL
     ? env.BETTER_AUTH_URL.startsWith("https://")
     : true;

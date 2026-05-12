@@ -6,7 +6,12 @@ import { z } from "zod";
 import { user, verification } from "../db/schema";
 import { sendAuthEmail } from "../lib/auth";
 import { createDb } from "../lib/db";
-import { persistGuestCookie, resolveUser } from "../lib/guest-session";
+import {
+  GUEST_COOKIE_NAME,
+  guestCookieOptions,
+  persistGuestCookie,
+  resolveUser,
+} from "../lib/guest-session";
 
 import type { HonoEnv } from "../lib/factory";
 
@@ -331,13 +336,7 @@ const logoutRoute = createRoute({
 });
 
 authRouter.openapi(logoutRoute, async (c) => {
-  const secure = c.env.BETTER_AUTH_URL?.startsWith("https://") ?? true;
-
-  deleteCookie(c, "guest_user_id", {
-    path: "/",
-    secure,
-    sameSite: secure ? "None" : "Lax",
-  });
+  deleteCookie(c, GUEST_COOKIE_NAME, guestCookieOptions(c.env));
 
   return c.json({ success: true }, 200);
 });
