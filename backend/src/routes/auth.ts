@@ -4,7 +4,7 @@ import { deleteCookie, getCookie } from "hono/cookie";
 import { z } from "zod";
 
 import { user, verification } from "../db/schema";
-import { sendAuthEmail } from "../lib/auth";
+import { type Env, sendAuthEmail } from "../lib/auth";
 import { createDb } from "../lib/db";
 import {
   GUEST_COOKIE_NAME,
@@ -14,6 +14,10 @@ import {
 } from "../lib/guest-session";
 
 import type { HonoEnv } from "../lib/factory";
+
+function getFrontendUrl(env: Env): string {
+  return (env.FRONTEND_URL ?? env.BETTER_AUTH_URL).split(",")[0].trim();
+}
 
 const guestBootstrapRoute = createRoute({
   method: "post",
@@ -68,14 +72,26 @@ const linkEmailRoute = createRoute({
 });
 
 const verifyEmailRoute = createRoute({
-  method: "get",
+  method: "post",
   path: "/verify-email",
   tags: ["Auth"],
   request: {
-    query: z.object({ token: z.string() }),
+    body: {
+      content: {
+        "application/json": { schema: z.object({ token: z.string() }) },
+      },
+      required: true,
+    },
   },
   responses: {
-    302: { description: "Redirect after verification" },
+    200: {
+      description: "Email verified",
+      content: { "application/json": { schema: successResponseSchema } },
+    },
+    400: {
+      description: "Invalid or missing token",
+      content: { "application/json": { schema: errorResponseSchema } },
+    },
   },
 });
 
@@ -110,14 +126,30 @@ const sendMagicLinkRoute = createRoute({
 });
 
 const verifyLoginRoute = createRoute({
-  method: "get",
+  method: "post",
   path: "/verify-login",
   tags: ["Auth"],
   request: {
-    query: z.object({ token: z.string() }),
+    body: {
+      content: {
+        "application/json": { schema: z.object({ token: z.string() }) },
+      },
+      required: true,
+    },
   },
   responses: {
-    302: { description: "Redirect after login" },
+    200: {
+      description: "Logged in",
+      content: { "application/json": { schema: successResponseSchema } },
+    },
+    400: {
+      description: "Invalid or missing token",
+      content: { "application/json": { schema: errorResponseSchema } },
+    },
+    404: {
+      description: "Account not found",
+      content: { "application/json": { schema: errorResponseSchema } },
+    },
   },
 });
 
@@ -175,9 +207,7 @@ authRouter.openapi(linkEmailRoute, async (c) => {
     updatedAt: new Date(),
   });
 
-  const frontendUrl = (c.env.FRONTEND_URL ?? c.env.BETTER_AUTH_URL)
-    .split(",")[0]
-    .trim();
+  const frontendUrl = getFrontendUrl(c.env);
   const verifyUrl = `${frontendUrl}/verify-email?token=${encodeURIComponent(token)}`;
 
   await sendAuthEmail(
@@ -192,10 +222,7 @@ authRouter.openapi(linkEmailRoute, async (c) => {
 
 authRouter.openapi(verifyEmailRoute, async (c) => {
   const db = createDb(c.env);
-  const token = c.req.query("token");
-  if (!token) {
-    return c.redirect("/today?error=missing_token", 302);
-  }
+  const { token } = c.req.valid("json");
 
   const rows = await db
     .select()
@@ -204,7 +231,7 @@ authRouter.openapi(verifyEmailRoute, async (c) => {
     .limit(1);
 
   if (rows.length === 0 || rows[0].expiresAt < new Date()) {
-    return c.redirect("/today?error=invalid_token", 302);
+    return c.json({ error: "Nieprawidłowy lub wygasły token" }, 400);
   }
 
   const payload = JSON.parse(rows[0].value) as {
@@ -221,7 +248,7 @@ authRouter.openapi(verifyEmailRoute, async (c) => {
 
   persistGuestCookie(c, payload.userId);
 
-  return c.redirect("/verify-email?status=success", 302);
+  return c.json({ success: true }, 200);
 });
 
 authRouter.openapi(sendMagicLinkRoute, async (c) => {
@@ -249,9 +276,7 @@ authRouter.openapi(sendMagicLinkRoute, async (c) => {
     updatedAt: new Date(),
   });
 
-  const frontendUrl = (c.env.FRONTEND_URL ?? c.env.BETTER_AUTH_URL)
-    .split(",")[0]
-    .trim();
+  const frontendUrl = getFrontendUrl(c.env);
   const loginUrl = `${frontendUrl}/verify-login?token=${encodeURIComponent(token)}`;
 
   await sendAuthEmail(
@@ -266,10 +291,7 @@ authRouter.openapi(sendMagicLinkRoute, async (c) => {
 
 authRouter.openapi(verifyLoginRoute, async (c) => {
   const db = createDb(c.env);
-  const token = c.req.query("token");
-  if (!token) {
-    return c.redirect("/today?error=missing_token", 302);
-  }
+  const { token } = c.req.valid("json");
 
   const rows = await db
     .select()
@@ -278,7 +300,7 @@ authRouter.openapi(verifyLoginRoute, async (c) => {
     .limit(1);
 
   if (rows.length === 0 || rows[0].expiresAt < new Date()) {
-    return c.redirect("/today?error=invalid_token", 302);
+    return c.json({ error: "Nieprawidłowy lub wygasły token" }, 400);
   }
 
   const payload = JSON.parse(rows[0].value) as { email: string };
@@ -292,7 +314,7 @@ authRouter.openapi(verifyLoginRoute, async (c) => {
     .limit(1);
 
   if (targetUser.length === 0 || targetUser[0].isGuest) {
-    return c.redirect("/today?error=account_not_found", 302);
+    return c.json({ error: "Nie znaleziono konta" }, 404);
   }
 
   const targetUserId = targetUser[0].id;
@@ -320,7 +342,7 @@ authRouter.openapi(verifyLoginRoute, async (c) => {
 
   persistGuestCookie(c, targetUserId);
 
-  return c.redirect("/today", 302);
+  return c.json({ success: true }, 200);
 });
 
 const logoutRoute = createRoute({

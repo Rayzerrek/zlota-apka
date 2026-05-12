@@ -24,6 +24,8 @@ if (!import.meta.env.DEV && !BASE) {
   );
 }
 
+export const API_BASE = BASE;
+
 export type RequestOptions = { signal?: AbortSignal };
 
 function buildHeaders(init?: RequestInit): Headers {
@@ -173,6 +175,14 @@ export function linkEmail(email: string) {
 
 export function sendMagicLink(email: string) {
   return apiPost("/api/auth/send-magic-link", SuccessResponseSchema, { email });
+}
+
+export function verifyLogin(token: string) {
+  return apiPost("/api/auth/verify-login", SuccessResponseSchema, { token });
+}
+
+export function verifyEmail(token: string) {
+  return apiPost("/api/auth/verify-email", SuccessResponseSchema, { token });
 }
 
 export function logout() {

@@ -1,19 +1,39 @@
 import { useSearch } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
+import { verifyEmail } from "../lib/api";
+import { apiErrorMessage } from "../lib/error";
+
 export function VerifyEmailPage() {
   const { token, status } = useSearch({ from: "/verify-email" });
   const [pageStatus, setPageStatus] = useState<"loading" | "success" | "error">(
     status === "success" ? "success" : "loading",
   );
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (status === "success") return;
     if (!token) {
       setPageStatus("error");
+      setErrorMessage("Brak tokenu weryfikacyjnego.");
       return;
     }
-    window.location.href = `/api/auth/verify-email?token=${encodeURIComponent(token)}`;
+
+    let cancelled = false;
+    void (async () => {
+      const res = await verifyEmail(token);
+      if (cancelled) return;
+      if (res.ok) {
+        setPageStatus("success");
+      } else {
+        setPageStatus("error");
+        setErrorMessage(apiErrorMessage(res.error));
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [token, status]);
 
   return (
@@ -46,7 +66,9 @@ export function VerifyEmailPage() {
         )}
         {pageStatus === "error" && (
           <>
-            <p className="text-lg text-red-400">Brak tokenu weryfikacyjnego.</p>
+            <p className="text-lg text-red-400">
+              {errorMessage ?? "Nie udało się zweryfikować adresu e-mail."}
+            </p>
             <p className="text-sm text-ink-muted mt-2">
               Upewnij się, że używasz pełnego linku z wiadomości e-mail.
             </p>
