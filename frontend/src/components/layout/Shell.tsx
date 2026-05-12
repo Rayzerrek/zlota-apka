@@ -21,6 +21,7 @@ import {
   GearSixIcon,
   MoonIcon,
   PlusIcon,
+  SignOutIcon,
   StackPlusIcon,
   SunIcon,
   UserCircleIcon,
@@ -31,6 +32,7 @@ import { useLocation, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useUser } from "../../hooks/api/useUser";
+import { logout } from "../../lib/api";
 import { cn } from "../../utils/cn";
 import { AddCardModal } from "../browse/AddCardModal";
 import { AddExamModal } from "../exam/AddExamModal";
@@ -67,6 +69,11 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
   const email = userData?.email ?? "";
   const initial = (name[0] || email[0] || "?").toUpperCase();
   const isGuest = userData?.isGuest ?? true;
+
+  const handleLogout = useCallback(async () => {
+    await logout();
+    window.location.href = "/site";
+  }, []);
 
   useEffect(() => {
     setIsMobileProfileMenuOpen(false);
@@ -113,7 +120,7 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
             <SidebarHeader className="px-1 pb-0">
               <div className="flex items-baseline gap-2.5 mb-10 pl-1">
                 <span className="display italic font-semibold text-[31px] text-amber leading-none">
-                  Nazwa
+                  Recurs
                 </span>
               </div>
             </SidebarHeader>
@@ -217,6 +224,15 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
                         <GearSixIcon size={16} />
                         Ustawienia
                       </DropdownMenu.Item>
+                      {!isGuest && (
+                        <DropdownMenu.Item
+                          className="flex items-center gap-2.5 w-full px-2.5 py-2 bg-transparent border-0 rounded-sm text-ink-muted text-sm text-left cursor-pointer transition-all duration-150 hover:bg-paper-3 hover:text-ink focus-visible:bg-paper-3 focus-visible:text-ink focus-visible:outline-none"
+                          onClick={handleLogout}
+                        >
+                          <SignOutIcon size={16} />
+                          Wyloguj się
+                        </DropdownMenu.Item>
+                      )}
                     </DropdownMenu.Content>
                   </DropdownMenu.Portal>
                 </DropdownMenu>
@@ -285,6 +301,20 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
                   <GearSixIcon size={16} />
                   Ustawienia
                 </Button>
+                {!isGuest && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-sm text-ink-muted text-sm text-left transition-all duration-150 hover:bg-paper-3 hover:text-ink justify-start"
+                    onClick={() => {
+                      setIsMobileProfileMenuOpen(false);
+                      handleLogout();
+                    }}
+                  >
+                    <SignOutIcon size={16} />
+                    Wyloguj się
+                  </Button>
+                )}
               </div>
             )}
             <button
