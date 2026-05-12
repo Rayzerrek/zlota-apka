@@ -1,10 +1,7 @@
+import { Breadcrumbs } from "@cloudflare/kumo/components/breadcrumbs";
 import { Button } from "@cloudflare/kumo/components/button";
-import {
-  ArrowLeftIcon,
-  CheckIcon,
-  CopySimpleIcon,
-} from "@phosphor-icons/react";
-import { useParams, useRouter } from "@tanstack/react-router";
+import { CheckIcon, CopySimpleIcon } from "@phosphor-icons/react";
+import { useParams } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 
 import { useAllCards } from "../hooks/api/useCards";
@@ -17,7 +14,6 @@ import { generateExamNote, noteToMarkdown } from "../utils/examNote";
 export function NotePage() {
   const params = useParams({ strict: false });
   const examId = params.examId as string;
-  const router = useRouter();
   const [copied, setCopied] = useState(false);
 
   const { data: exams, isLoading: examsLoading } = useAllExams();
@@ -63,15 +59,11 @@ export function NotePage() {
     <>
       <div className="enter flex items-end justify-between gap-4 mb-9 pb-4 border-b border-rule">
         <div className="flex flex-col gap-3">
-          <Button
-            variant="ghost"
-            size="xs"
-            icon={ArrowLeftIcon}
-            onClick={() => router.history.back()}
-            className="mono uppercase text-ink-muted hover:text-ink hover:bg-transparent"
-          >
-            Wróć
-          </Button>
+          <Breadcrumbs size="sm">
+            <Breadcrumbs.Link href="/browse">Nauka</Breadcrumbs.Link>
+            <Breadcrumbs.Separator />
+            <Breadcrumbs.Current>{note.examName}</Breadcrumbs.Current>
+          </Breadcrumbs>
           <div className="flex flex-col gap-1.5">
             <span className="mono text-[11px] uppercase text-amber">
               Notatka · {note.subject}

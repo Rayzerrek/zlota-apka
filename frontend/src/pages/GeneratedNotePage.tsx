@@ -1,9 +1,9 @@
+import { Breadcrumbs } from "@cloudflare/kumo/components/breadcrumbs";
 import { Button } from "@cloudflare/kumo/components/button";
-import { ArrowLeftIcon, NotePencilIcon } from "@phosphor-icons/react";
+import { NotePencilIcon } from "@phosphor-icons/react";
 import { useParams, useRouter } from "@tanstack/react-router";
 import ReactMarkdown from "react-markdown";
 
-import { PageHead } from "../components/layout/PageHead";
 import { useGeneratedNote } from "../hooks/api/useNotes";
 import { longDate } from "../utils/date";
 
@@ -45,26 +45,27 @@ export function GeneratedNotePage() {
 
   return (
     <>
-      <PageHead
-        eyebrow={
-          <>
+      <div className="mb-9 pb-4 border-b border-rule">
+        <Breadcrumbs size="sm" className="mb-3">
+          <Breadcrumbs.Link href="/browse">Nauka</Breadcrumbs.Link>
+          <Breadcrumbs.Separator />
+          <Breadcrumbs.Link href="/note/new">
+            Generator notatek
+          </Breadcrumbs.Link>
+          <Breadcrumbs.Separator />
+          <Breadcrumbs.Current>{note.title}</Breadcrumbs.Current>
+        </Breadcrumbs>
+        <div className="flex flex-col gap-2">
+          <span className="mono text-xs text-ink-muted uppercase">
             {note.subject ?? "Notatka"}
             {" · "}
             {longDate(note.createdAt.split("T")[0])}
-          </>
-        }
-        title={note.title}
-      />
-
-      <Button
-        variant="ghost"
-        size="xs"
-        icon={ArrowLeftIcon}
-        onClick={() => router.history.back()}
-        className="mb-8 mono uppercase text-ink-muted hover:text-ink hover:bg-transparent"
-      >
-        Wróć
-      </Button>
+          </span>
+          <h1 className="display italic text-[clamp(36px,6vw,56px)] font-normal leading-[0.95] m-0 text-ink">
+            {note.title}
+          </h1>
+        </div>
+      </div>
 
       <div className="enter enter-d1 bg-paper-2 border border-rule rounded-sm p-6 sm:p-8">
         <div className="text-ink text-[17px] leading-relaxed prose prose-amber max-w-none">

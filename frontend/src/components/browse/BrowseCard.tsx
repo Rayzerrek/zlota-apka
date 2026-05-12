@@ -28,9 +28,10 @@ function todayISO(): string {
 type Props = {
   card: Card;
   onDelete?: () => void;
+  onClick?: () => void;
 };
 
-export function BrowseCard({ card, onDelete }: Props) {
+export function BrowseCard({ card, onDelete, onClick }: Props) {
   const subj = SUBJECTS[card.subject];
   const dueDays = daysBetween(todayISO(), card.dueISO);
   const dueText =
@@ -41,7 +42,18 @@ export function BrowseCard({ card, onDelete }: Props) {
         : `za ${dueDays} d`;
 
   return (
-    <div className="relative overflow-hidden flex flex-col gap-3.5 p-[20px_20px_18px] border border-rule bg-paper-2 rounded-[3px] cursor-pointer transition-all duration-[0.25s] hover:border-rule-strong hover:-translate-y-0.5">
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick?.();
+        }
+      }}
+      className="relative overflow-hidden flex flex-col gap-3.5 p-[20px_20px_18px] border border-rule bg-paper-2 rounded-[3px] cursor-pointer transition-all duration-[0.25s] hover:border-rule-strong hover:-translate-y-0.5"
+    >
       <span
         aria-hidden
         className={cn(
