@@ -65,7 +65,7 @@ export function StatsPage() {
   if (cardsLoading || statsLoading) {
     return (
       <>
-        <PageHead eyebrow="Statystyki" title={<em>postęp</em>} />
+        <PageHead eyebrow="Statystyki" title={<em>Postęp</em>} />
         <div className="h-96 animate-pulse rounded-sm border border-rule bg-paper-2" />
       </>
     );
