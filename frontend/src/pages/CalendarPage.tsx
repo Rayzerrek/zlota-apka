@@ -37,6 +37,12 @@ function weekDaysFrom(iso: string): string[] {
   );
 }
 
+function weekLabel(anchorISO: string): string {
+  const start = startOfWeek(parseISO(anchorISO), { weekStartsOn: 1 });
+  const end = addDays(start, 6);
+  return `${format(start, "d MMM", { locale: pl })} – ${format(end, "d MMM yyyy", { locale: pl })}`;
+}
+
 function monthLabel(iso: string): string {
   const d = parseISO(iso);
   return (
@@ -114,7 +120,7 @@ export function CalendarPage() {
         eyebrow={viewMode === "week" ? "plan tygodniowy" : "plan miesięczny"}
         title={
           viewMode === "week" ? (
-            <em>Jakis plan</em>
+            <em>{weekLabel(weekAnchor)}</em>
           ) : (
             <em>{monthLabel(weekAnchor)}</em>
           )
