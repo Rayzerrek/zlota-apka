@@ -125,7 +125,9 @@
     "sessionsCount": "{{count}} sesji",
     "freeDay": "dzień wolny — złap oddech.",
     "upcomingExams": "Sprawdziany na horyzoncie",
-    "deadlines": "{{count}} terminów"
+    "deadlines_one": "{{count}} termin",
+    "deadlines_few": "{{count}} terminy",
+    "deadlines_many": "{{count}} terminów"
   },
   "browse": {
     "eyebrow": "Materiały",
@@ -200,7 +202,8 @@
     "deleteProfile": "Usuń profil",
     "deleteConfirm": "Czy na pewno?",
     "deleteConfirmYes": "Tak, usuń trwale",
-    "saveChanges": "Zapisz zmiany"
+    "saveChanges": "Zapisz zmiany",
+    "defaultName": "Użytkownik"
   },
   "settings": {
     "eyebrow": "Preferencje",

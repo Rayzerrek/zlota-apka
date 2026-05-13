@@ -32,8 +32,6 @@ export function ExamWidget({ exam }: Props) {
           {examDays}
         </span>
         <p className="mono text-xs text-ink-muted uppercase">
-          {examDays === 1 ? t("common.day") : t("common.days")}
-          <br />
           {examDays === 1
             ? t("common.dayUntilDeadline")
             : t("common.daysUntilDeadline")}

@@ -104,7 +104,7 @@
     "howWellYouKnow": "How well you know your cards",
     "cardsCount": "{{count}} cards",
     "wellMastered": "Well mastered",
-    "rememberLong": "you'll remember them long",
+    "rememberLong": "you'll remember them for a long time",
     "learning": "Learning",
     "reviewRegularly": "review regularly",
     "waitingForYou": "Waiting for you",
@@ -125,7 +125,8 @@
     "sessionsCount": "{{count}} sessions",
     "freeDay": "free day — take a breath.",
     "upcomingExams": "Exams on the horizon",
-    "deadlines": "{{count}} deadlines"
+    "deadlines_one": "{{count}} deadline",
+    "deadlines_other": "{{count}} deadlines"
   },
   "browse": {
     "eyebrow": "Materials",
@@ -200,7 +201,8 @@
     "deleteProfile": "Delete profile",
     "deleteConfirm": "Are you sure?",
     "deleteConfirmYes": "Yes, delete permanently",
-    "saveChanges": "Save changes"
+    "saveChanges": "Save changes",
+    "defaultName": "User"
   },
   "settings": {
     "eyebrow": "Preferences",

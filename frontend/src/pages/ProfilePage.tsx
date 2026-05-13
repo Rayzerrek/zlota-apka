@@ -22,7 +22,7 @@ export function ProfilePage() {
 
   const isGuest = userData?.isGuest ?? true;
   const savedEmail = userData?.email ?? "";
-  const name = userData?.name ?? t("nav.profile");
+  const name = userData?.name ?? t("profile.defaultName");
 
   const [email, setEmail] = useState(() => {
     if (typeof window === "undefined") return "";
