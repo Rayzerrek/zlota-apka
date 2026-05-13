@@ -35,30 +35,29 @@ onboardingRouter.openapi(onboardingRoute, async (c) => {
   const userId = c.get("userId");
   const body = c.req.valid("json");
 
-  await db.transaction(async (tx) => {
-    await tx
-      .update(user)
-      .set({
-        name: body.name ?? undefined,
-        grade: body.grade,
-        onboardingDone: true,
-      })
-      .where(eq(user.id, userId));
+  // neon-http driver does not support transactions — run sequentially
+  await db
+    .update(user)
+    .set({
+      name: body.name ?? undefined,
+      grade: body.grade,
+      onboardingDone: true,
+    })
+    .where(eq(user.id, userId));
 
-    if (body.subjects.length > 0) {
-      await tx
-        .insert(subjects)
-        .values(body.subjects.map((s) => ({ ...s, userId })))
-        .onConflictDoNothing();
-    }
+  if (body.subjects.length > 0) {
+    await db
+      .insert(subjects)
+      .values(body.subjects.map((s) => ({ ...s, userId })))
+      .onConflictDoNothing();
+  }
 
-    if (body.availability.length > 0) {
-      await tx
-        .insert(userAvailability)
-        .values(body.availability.map((a) => ({ ...a, userId })))
-        .onConflictDoNothing();
-    }
-  });
+  if (body.availability.length > 0) {
+    await db
+      .insert(userAvailability)
+      .values(body.availability.map((a) => ({ ...a, userId })))
+      .onConflictDoNothing();
+  }
 
   return c.json({ ok: true }, 200);
 });
