@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { cn } from "../../utils/cn";
 import { ProfileField } from "./ProfileField";
@@ -53,18 +54,19 @@ export function ProfileAccountSection({
   confirmError,
   sendError,
 }: Props) {
+  const { t } = useTranslation();
   const [showLogin, setShowLogin] = useState(false);
 
   return (
     <section className="enter enter-d1 flex flex-col gap-6">
       <div className="pb-3 border-b border-rule flex items-baseline gap-3">
         <span className="mono text-xs text-amber">01 —</span>
-        <h2 className="display text-[23px] text-ink">Konto</h2>
+        <h2 className="display text-[23px] text-ink">{t("profile.account")}</h2>
       </div>
 
       <ProfileField
-        label="Adres email"
-        hint="Używany do logowania i powiadomień."
+        label={t("profile.emailLabel")}
+        hint={t("profile.emailHint")}
       >
         <div className="flex flex-col gap-4">
           {!showLogin && (
@@ -77,7 +79,7 @@ export function ProfileAccountSection({
                     onChange={(e) => setEmail?.(e.target.value)}
                     readOnly={!isGuest}
                     disabled={!isGuest}
-                    placeholder={isGuest ? "Wpisz swój adres e-mail" : ""}
+                    placeholder={isGuest ? t("profile.emailPlaceholder") : ""}
                     className={cn(
                       inputCls,
                       !isGuest && "opacity-60 cursor-not-allowed",
@@ -92,7 +94,9 @@ export function ProfileAccountSection({
                     className="shrink-0 px-4 py-3 bg-amber text-paper rounded-[2px] font-medium transition-colors hover:bg-[#ffcc4a] text-sm disabled:opacity-60"
                     onClick={onConfirmEmail}
                   >
-                    {confirmLoading ? "Wysyłanie…" : "Potwierdź"}
+                    {confirmLoading
+                      ? t("profile.sending")
+                      : t("profile.confirm")}
                   </button>
                 )}
               </div>
@@ -101,13 +105,13 @@ export function ProfileAccountSection({
               )}
               {isGuest && (
                 <div className="text-sm text-ink-muted">
-                  Masz już konto?{" "}
+                  {t("profile.haveAccount")}{" "}
                   <button
                     type="button"
                     onClick={() => setShowLogin(true)}
                     className="text-amber hover:underline font-medium"
                   >
-                    Zaloguj się
+                    {t("profile.logIn")}
                   </button>
                 </div>
               )}
@@ -118,20 +122,18 @@ export function ProfileAccountSection({
             <div className="p-4 bg-paper-3 border border-rule rounded-sm flex flex-col gap-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-base font-semibold text-ink m-0">
-                  Zaloguj się
+                  {t("profile.loginTitle")}
                 </h3>
                 <button
                   type="button"
                   onClick={() => setShowLogin(false)}
                   className="text-sm text-ink-muted hover:text-ink transition-colors"
                 >
-                  Wróć
+                  {t("common.back")}
                 </button>
               </div>
               <p className="text-sm text-ink-muted m-0">
-                Wpisz adres e-mail powiązany z Twoim kontem. Wyślemy Ci
-                jednorazowy link (Magic Link), dzięki któremu zalogujesz się
-                bezpiecznie bez użycia hasła.
+                {t("profile.loginDescription")}
               </p>
               <div className="flex gap-3 items-start mt-2">
                 <input
@@ -147,7 +149,7 @@ export function ProfileAccountSection({
                   className="shrink-0 px-4 py-3 bg-amber text-paper rounded-[2px] font-medium transition-colors hover:bg-[#ffcc4a] text-sm disabled:opacity-60"
                   onClick={onSendMagicLink}
                 >
-                  {sendLoading ? "Wysyłanie…" : "Wyślij link"}
+                  {sendLoading ? t("profile.sending") : t("profile.sendLink")}
                 </button>
               </div>
               {sendError && <p className="text-sm text-red-400">{sendError}</p>}
@@ -156,7 +158,7 @@ export function ProfileAccountSection({
         </div>
       </ProfileField>
 
-      <ProfileField label="Język interfejsu">
+      <ProfileField label={t("profile.language")}>
         <select
           value={language}
           onChange={(e) => setLanguage(e.target.value)}
@@ -170,7 +172,7 @@ export function ProfileAccountSection({
         </select>
       </ProfileField>
 
-      <ProfileField label="Strefa czasowa">
+      <ProfileField label={t("profile.timezone")}>
         <select
           value={timezone}
           onChange={(e) => setTimezone(e.target.value)}

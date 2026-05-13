@@ -2,8 +2,9 @@ import { Button } from "@cloudflare/kumo/components/button";
 import { Input } from "@cloudflare/kumo/components/input";
 import { Label } from "@cloudflare/kumo/components/label";
 import { CheckIcon, PlusIcon, XIcon } from "@phosphor-icons/react";
-import { useEffect, useRef, useState } from "react";
+import { type FormEvent, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 
 import { useCreateExam } from "../../hooks/api/useExams";
 import { useCreateSubject, useSubjects } from "../../hooks/api/useSubjects";
@@ -20,24 +21,25 @@ type Props = {
   onClose: () => void;
 };
 
-const MATERIAL_LABELS: Record<MaterialSize, string> = {
-  small: "Mało",
-  medium: "Średnio",
-  large: "Dużo",
-};
-
-const DIFFICULTY_LABELS: Record<number, string> = {
-  1: "Bardzo łatwy",
-  2: "Łatwy",
-  3: "Średni",
-  4: "Trudny",
-  5: "Bardzo trudny",
-};
-
 const FIELD =
   "w-full bg-paper-3 border border-rule rounded-[3px] px-3 py-2.5 text-[14px] text-ink placeholder:text-ink-faint focus:outline-none focus:border-amber/60 transition-colors";
 
 export function AddExamModal({ open, onClose }: Props) {
+  const { t } = useTranslation();
+
+  const MATERIAL_LABELS_T: Record<MaterialSize, string> = {
+    small: t("exam.materialSmall"),
+    medium: t("exam.materialMedium"),
+    large: t("exam.materialLarge"),
+  };
+
+  const DIFFICULTY_LABELS_T: Record<number, string> = {
+    1: t("exam.difficultyLabels.1"),
+    2: t("exam.difficultyLabels.2"),
+    3: t("exam.difficultyLabels.3"),
+    4: t("exam.difficultyLabels.4"),
+    5: t("exam.difficultyLabels.5"),
+  };
   const {
     data: subjects,
     isLoading: subjectsLoading,
@@ -119,7 +121,7 @@ export function AddExamModal({ open, onClose }: Props) {
     );
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!subjectId) return;
     createExam({
@@ -152,7 +154,7 @@ export function AddExamModal({ open, onClose }: Props) {
     <div
       role="dialog"
       aria-modal
-      aria-label={planResult ? "Plan nauki" : "Dodaj sprawdzian"}
+      aria-label={planResult ? t("exam.studyPlan") : t("exam.addExam")}
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4"
     >
       <div
@@ -164,9 +166,9 @@ export function AddExamModal({ open, onClose }: Props) {
       <div className="relative w-full sm:max-w-[520px] bg-paper-2 border border-rule rounded-t-[6px] sm:rounded-[4px] shadow-[0_24px_64px_rgba(0,0,0,0.55)] flex flex-col max-h-[92dvh] sm:max-h-[85dvh]">
         <div className="flex items-center justify-between px-6 py-5 border-b border-rule shrink-0">
           <div>
-            <p className="eyebrow">Sprawdzian</p>
+            <p className="eyebrow">{t("exam.addExam").split(" ")[0]}</p>
             <h2 className="text-[18px] font-semibold text-ink mt-0.5">
-              {planResult ? "Plan nauki" : "Dodaj sprawdzian"}
+              {planResult ? t("exam.studyPlan") : t("exam.addExam")}
             </h2>
           </div>
           <Button
@@ -174,7 +176,7 @@ export function AddExamModal({ open, onClose }: Props) {
             variant="ghost"
             shape="square"
             onClick={onClose}
-            aria-label="Zamknij"
+            aria-label={t("common.close")}
             className="flex items-center justify-center w-8 h-8 rounded-sm text-ink-faint hover:text-ink hover:bg-paper-3 transition-colors"
           >
             <XIcon size={16} weight="bold" />
@@ -191,14 +193,16 @@ export function AddExamModal({ open, onClose }: Props) {
                 <div>
                   <p className="text-[13px] font-semibold text-ink">
                     {planResult.sessions.length}{" "}
-                    {planResult.sessions.length === 1 ? "sesja" : "sesje"} nauki
-                    {" · "}łącznie {totalMinutes} min
+                    {t("exam.sessionsCreated", {
+                      count: planResult.sessions.length,
+                    }).replace(/^\d+\s*/, "")}
+                    {" · "}
+                    {t("exam.totalMinutes", { minutes: totalMinutes })}
                   </p>
                   <p className="text-[12px] text-ink-muted mt-0.5">
-                    Sprawdzian:{" "}
-                    <span className="text-ink">
-                      {longDate(planResult.exam.examDate)}
-                    </span>
+                    {t("exam.examOn", {
+                      date: longDate(planResult.exam.examDate),
+                    })}
                   </p>
                 </div>
               </div>
@@ -206,8 +210,8 @@ export function AddExamModal({ open, onClose }: Props) {
               {planResult.sessions.length === 0 ? (
                 <p className="text-[14px] text-ink-muted text-center py-8">
                   {planResult.topics.length === 0
-                    ? "Brak tematów — dodaj tematy żeby wygenerować plan."
-                    : "Brak dostępnych terminów — uzupełnij godziny nauki w ustawieniach."}
+                    ? t("exam.noTopics")
+                    : t("exam.noSlots")}
                 </p>
               ) : (
                 <ol className="flex flex-col gap-1.5">
@@ -249,7 +253,7 @@ export function AddExamModal({ open, onClose }: Props) {
                 onClick={onClose}
                 className="w-full justify-center bg-amber border-amber text-paper hover:bg-[#ffcc4a] hover:border-[#ffcc4a] font-semibold"
               >
-                Wygląda dobrze
+                {t("exam.looksGood")}
               </Button>
             </div>
           </>
@@ -262,7 +266,7 @@ export function AddExamModal({ open, onClose }: Props) {
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between">
                   <Label className="text-[13px] text-ink-muted">
-                    Przedmiot
+                    {t("exam.subject")}
                   </Label>
                   {!isCreatingSubject && (
                     <Button
@@ -272,7 +276,7 @@ export function AddExamModal({ open, onClose }: Props) {
                       onClick={() => setIsCreatingSubject(true)}
                       className="text-amber hover:text-amber hover:bg-amber-wash h-auto py-0.5 px-1.5"
                     >
-                      + Nowy
+                      {t("exam.newSubject")}
                     </Button>
                   )}
                 </div>
@@ -320,7 +324,7 @@ export function AddExamModal({ open, onClose }: Props) {
                   <p className="text-[13px] text-rating-1">{subjectsError}</p>
                 ) : subjectList.length === 0 ? (
                   <p className="text-[13px] text-ink-muted">
-                    Brak przedmiotów — dodaj nowy, żeby zaplanować sprawdzian.
+                    {t("exam.noSubjects")}
                   </p>
                 ) : (
                   <OptionPicker
@@ -331,20 +335,20 @@ export function AddExamModal({ open, onClose }: Props) {
                       label: s.name,
                       color: s.color,
                     }))}
-                    ariaLabel="Wybierz przedmiot"
-                    searchPlaceholder="Szukaj przedmiotu..."
-                    emptyText="Brak wyników dla wpisanej frazy."
+                    ariaLabel={t("exam.searchSubject")}
+                    searchPlaceholder={t("exam.searchSubject")}
+                    emptyText={t("exam.noResults")}
                   />
                 )}
               </div>
 
               <div className="flex flex-col gap-1.5">
                 <Label className="text-[13px] text-ink-muted">
-                  Nazwa sprawdzianu
+                  {t("exam.examName")}
                 </Label>
                 <Input
                   type="text"
-                  placeholder="np. Kartkówka z logarytmów"
+                  placeholder={t("exam.examNamePlaceholder")}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
@@ -354,7 +358,7 @@ export function AddExamModal({ open, onClose }: Props) {
 
               <div className="flex flex-col gap-1.5">
                 <Label className="text-[13px] text-ink-muted">
-                  Data sprawdzianu
+                  {t("exam.examDate")}
                 </Label>
                 <Input
                   type="date"
@@ -369,10 +373,10 @@ export function AddExamModal({ open, onClose }: Props) {
               <div className="flex flex-col gap-2">
                 <div className="flex items-baseline justify-between">
                   <Label className="text-[13px] text-ink-muted">
-                    Poziom trudności materiału
+                    {t("exam.difficulty")}
                   </Label>
                   <span className="text-[13px] text-amber font-medium">
-                    {DIFFICULTY_LABELS[difficulty]}
+                    {DIFFICULTY_LABELS_T[difficulty]}
                   </span>
                 </div>
                 <Input
@@ -401,7 +405,7 @@ export function AddExamModal({ open, onClose }: Props) {
 
               <div className="flex flex-col gap-1.5">
                 <Label className="text-[13px] text-ink-muted">
-                  Ilość materiału
+                  {t("exam.materialSize")}
                 </Label>
                 <div className="flex gap-2">
                   {(["small", "medium", "large"] as MaterialSize[]).map(
@@ -418,7 +422,7 @@ export function AddExamModal({ open, onClose }: Props) {
                             : "border-rule text-ink-muted hover:border-rule-strong hover:text-ink",
                         )}
                       >
-                        {MATERIAL_LABELS[size]}
+                        {MATERIAL_LABELS_T[size]}
                       </Button>
                     ),
                   )}
@@ -427,13 +431,16 @@ export function AddExamModal({ open, onClose }: Props) {
 
               <div className="flex flex-col gap-1.5">
                 <Label className="text-[13px] text-ink-muted">
-                  Tematy <span className="text-ink-faint">(opcjonalnie)</span>
+                  {t("exam.topics")}{" "}
+                  <span className="text-ink-faint">
+                    {t("exam.topicsOptional")}
+                  </span>
                 </Label>
                 <div className="flex gap-2">
                   <Input
                     ref={topicInputRef}
                     type="text"
-                    placeholder="np. Ciągi arytmetyczne"
+                    placeholder={t("exam.topicPlaceholder")}
                     value={topicInput}
                     onChange={(e) => setTopicInput(e.target.value)}
                     onKeyDown={(e) => {
@@ -449,7 +456,7 @@ export function AddExamModal({ open, onClose }: Props) {
                     variant="outline"
                     icon={<PlusIcon size={15} weight="bold" />}
                     onClick={addTopic}
-                    aria-label="Dodaj temat"
+                    aria-label={t("exam.addTopic")}
                     className="shrink-0 px-3"
                   />
                 </div>
@@ -486,7 +493,7 @@ export function AddExamModal({ open, onClose }: Props) {
 
             <div className="px-6 py-4 border-t border-rule flex items-center justify-end gap-3 shrink-0">
               <Button type="button" variant="ghost" onClick={onClose}>
-                Anuluj
+                {t("common.cancel")}
               </Button>
               <Button
                 type="submit"
@@ -494,7 +501,7 @@ export function AddExamModal({ open, onClose }: Props) {
                 disabled={submitting || subjectList.length === 0 || !subjectId}
                 className="bg-amber border-amber text-paper hover:bg-[#ffcc4a] hover:border-[#ffcc4a] font-semibold disabled:opacity-50"
               >
-                {submitting ? "Planuję…" : "Zaplanuj"}
+                {submitting ? t("exam.planning") : t("exam.plan")}
               </Button>
             </div>
           </form>

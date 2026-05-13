@@ -3,6 +3,7 @@ import { Label } from "@cloudflare/kumo/components/label";
 import { XIcon } from "@phosphor-icons/react";
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 
 import { useCreateCard } from "../../hooks/api/useCards";
 import { useSubjects } from "../../hooks/api/useSubjects";
@@ -19,6 +20,7 @@ const FIELD =
   "w-full bg-paper-3 border border-rule rounded-[3px] px-3 py-2.5 text-[14px] text-ink placeholder:text-ink-faint focus:outline-none focus:border-amber/60 transition-colors resize-none";
 
 export function AddCardModal({ open, onClose }: Props) {
+  const { t } = useTranslation();
   const { data: topics, isLoading: topicsLoading } = useAllTopics();
   const { data: subjects } = useSubjects();
   const {
@@ -39,12 +41,12 @@ export function AddCardModal({ open, onClose }: Props) {
 
   const topicOptions = useMemo(
     () =>
-      (topics ?? []).map((t) => ({
-        value: t.id,
-        label: t.name,
-        meta: t.subjectName ?? "Bez przedmiotu",
+      (topics ?? []).map((tp) => ({
+        value: tp.id,
+        label: tp.name,
+        meta: tp.subjectName ?? t("common.noSubject"),
       })),
-    [topics],
+    [topics, t],
   );
 
   useEffect(() => {
@@ -118,7 +120,7 @@ export function AddCardModal({ open, onClose }: Props) {
     <div
       role="dialog"
       aria-modal
-      aria-label="Dodaj fiszkę"
+      aria-label={t("card.addCard")}
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4"
     >
       <div
@@ -130,9 +132,9 @@ export function AddCardModal({ open, onClose }: Props) {
       <div className="relative w-full sm:max-w-[480px] bg-paper-2 border border-rule rounded-t-[6px] sm:rounded-[4px] shadow-[0_24px_64px_rgba(0,0,0,0.55)] flex flex-col max-h-[92dvh] sm:max-h-[85dvh]">
         <div className="flex items-center justify-between px-6 py-5 border-b border-rule shrink-0">
           <div>
-            <p className="eyebrow">Fiszka</p>
+            <p className="eyebrow">{t("card.addCard").split(" ").pop()}</p>
             <h2 className="text-[18px] font-semibold text-ink mt-0.5">
-              Dodaj fiszkę
+              {t("card.addCard")}
             </h2>
           </div>
           <Button
@@ -140,7 +142,7 @@ export function AddCardModal({ open, onClose }: Props) {
             variant="ghost"
             shape="square"
             onClick={onClose}
-            aria-label="Zamknij"
+            aria-label={t("common.close")}
             className="flex items-center justify-center w-8 h-8 rounded-sm text-ink-faint hover:text-ink hover:bg-paper-3 transition-colors"
           >
             <XIcon size={16} weight="bold" />
@@ -151,7 +153,9 @@ export function AddCardModal({ open, onClose }: Props) {
           <div className="px-6 py-6 overflow-y-auto flex-1 flex flex-col gap-5">
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
-                <Label className="text-[13px] text-ink-muted">Temat</Label>
+                <Label className="text-[13px] text-ink-muted">
+                  {t("card.topic")}
+                </Label>
                 {!isCreatingTopic && (
                   <Button
                     type="button"
@@ -160,7 +164,7 @@ export function AddCardModal({ open, onClose }: Props) {
                     onClick={() => setIsCreatingTopic(true)}
                     className="text-amber hover:text-amber hover:bg-amber-wash h-auto py-0.5 px-1.5"
                   >
-                    + Nowy
+                    {t("card.newTopic")}
                   </Button>
                 )}
               </div>
@@ -169,7 +173,7 @@ export function AddCardModal({ open, onClose }: Props) {
                   <div className="flex gap-2">
                     <input
                       type="text"
-                      placeholder="Nazwa tematu"
+                      placeholder={t("card.topicPlaceholder")}
                       value={newTopicName}
                       onChange={(e) => setNewTopicName(e.target.value)}
                       onKeyDown={(e) => {
@@ -189,7 +193,7 @@ export function AddCardModal({ open, onClose }: Props) {
                         setNewTopicName("");
                       }}
                       className="shrink-0 px-2 text-ink-faint rounded-[3px]"
-                      aria-label="Anuluj"
+                      aria-label={t("common.cancel")}
                     >
                       <XIcon size={16} />
                     </Button>
@@ -204,7 +208,7 @@ export function AddCardModal({ open, onClose }: Props) {
                       )}
                     >
                       <option value="" disabled>
-                        Wybierz przedmiot...
+                        {t("exam.searchSubject")}
                       </option>
                       {subjects?.map((s) => (
                         <option key={s.id} value={s.id}>
@@ -223,7 +227,7 @@ export function AddCardModal({ open, onClose }: Props) {
                       }
                       className="shrink-0 rounded-[3px] py-1.5"
                     >
-                      {creatingTopic ? "..." : "Dodaj"}
+                      {creatingTopic ? "..." : t("common.save")}
                     </Button>
                   </div>
                 </div>
@@ -231,28 +235,28 @@ export function AddCardModal({ open, onClose }: Props) {
                 <div className="h-10 bg-paper-3 border border-rule rounded-[3px] animate-pulse" />
               ) : topicOptions.length === 0 ? (
                 <p className="text-[13px] text-ink-muted">
-                  Brak tematów — dodaj nowy, żeby dodać fiszkę.
+                  {t("card.noTopics")}
                 </p>
               ) : (
                 <OptionPicker
                   value={topicId}
                   onChange={setTopicId}
                   options={topicOptions}
-                  ariaLabel="Wybierz temat"
-                  searchPlaceholder="Szukaj tematu..."
-                  emptyText="Brak tematów dla wpisanej frazy."
+                  ariaLabel={t("card.selectTopic")}
+                  searchPlaceholder={t("card.searchTopic")}
+                  emptyText={t("card.noTopicResults")}
                 />
               )}
             </div>
 
             <div className="flex flex-col gap-1.5">
               <Label className="text-[13px] text-ink-muted">
-                Przód (pytanie)
+                {t("card.front")}
               </Label>
               <textarea
                 value={front}
                 onChange={(e) => setFront(e.target.value)}
-                placeholder="np. Jakie są właściwości funkcji kwadratowej?"
+                placeholder={t("card.frontPlaceholder")}
                 rows={3}
                 required
                 className={FIELD}
@@ -261,12 +265,12 @@ export function AddCardModal({ open, onClose }: Props) {
 
             <div className="flex flex-col gap-1.5">
               <Label className="text-[13px] text-ink-muted">
-                Tył (odpowiedź)
+                {t("card.back")}
               </Label>
               <textarea
                 value={back}
                 onChange={(e) => setBack(e.target.value)}
-                placeholder="np. Wartość w wierzchołku, miejsca zerowe, monotoniczność..."
+                placeholder={t("card.backPlaceholder")}
                 rows={3}
                 required
                 className={FIELD}
@@ -280,7 +284,7 @@ export function AddCardModal({ open, onClose }: Props) {
 
           <div className="px-6 py-4 border-t border-rule flex items-center justify-end gap-3 shrink-0">
             <Button type="button" variant="ghost" onClick={onClose}>
-              Anuluj
+              {t("common.cancel")}
             </Button>
             <Button
               type="submit"
@@ -288,7 +292,7 @@ export function AddCardModal({ open, onClose }: Props) {
               disabled={submitting || !topicId || !front.trim() || !back.trim()}
               className="bg-amber border-amber text-paper hover:bg-[#ffcc4a] hover:border-[#ffcc4a] font-semibold disabled:opacity-50"
             >
-              {submitting ? "Dodaję…" : "Dodaj fiszkę"}
+              {submitting ? t("card.adding") : t("card.addCard")}
             </Button>
           </div>
         </form>

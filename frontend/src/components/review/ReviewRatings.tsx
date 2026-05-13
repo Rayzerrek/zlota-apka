@@ -1,13 +1,8 @@
+import { useTranslation } from "react-i18next";
+
 import { cn } from "../../utils/cn";
 
 import type { Rating } from "../../types";
-
-const RATING_LABELS: Record<Rating, { label: string; sub: string }> = {
-  1: { label: "Znowu", sub: "od nowa" },
-  2: { label: "Trudne", sub: "krótki interwał" },
-  3: { label: "Dobre", sub: "standardowo" },
-  4: { label: "Łatwe", sub: "długi interwał" },
-};
 
 const RATINGS: readonly Rating[] = [1, 2, 3, 4];
 
@@ -31,6 +26,15 @@ type Props = {
 };
 
 export function ReviewRatings({ flipped, onRate }: Props) {
+  const { t } = useTranslation();
+
+  const RATING_LABELS: Record<Rating, { label: string; sub: string }> = {
+    1: { label: t("review.rating1"), sub: t("review.rating1sub") },
+    2: { label: t("review.rating2"), sub: t("review.rating2sub") },
+    3: { label: t("review.rating3"), sub: t("review.rating3sub") },
+    4: { label: t("review.rating4"), sub: t("review.rating4sub") },
+  };
+
   return (
     <div className="grid grid-cols-4 gap-3 px-6 pb-6 pt-5 max-w-[720px] w-full mx-auto">
       {RATINGS.map((r) => (

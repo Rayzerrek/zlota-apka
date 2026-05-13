@@ -11,6 +11,7 @@ import {
 import { useNavigate } from "@tanstack/react-router";
 import { format } from "date-fns";
 import { type ComponentProps, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { AddCardModal } from "../components/browse/AddCardModal";
 import { AddExamModal } from "../components/exam/AddExamModal";
@@ -33,6 +34,7 @@ type TodayReminder = ComponentProps<typeof TodayReminderCard> & {
 };
 
 export function TodayPage() {
+  const { t } = useTranslation();
   const { startSession: onStartSession } = useStudySession();
   const today = format(new Date(), "yyyy-MM-dd");
   const [addExamOpen, setAddExamOpen] = useState(false);
@@ -64,6 +66,7 @@ export function TodayPage() {
     nextSession,
     nextExamName: nextExam?.name ?? null,
     examDays,
+    t,
   });
 
   const openCalendar = () => navigate({ to: "/calendar" });
@@ -95,14 +98,12 @@ export function TodayPage() {
   if (overdueCount > 0) {
     reminders.push({
       id: "overdue",
-      eyebrow: "Zaległe powtórki",
-      title:
-        overdueCount === 1
-          ? "1 zaległa sesja"
-          : `${overdueCount} zaległe sesje`,
-      description:
-        "Zacznij od najstarszej pozycji. To najszybciej porządkuje plan i zmniejsza presję przed kolejnymi dniami.",
-      actionLabel: nextSession ? "Zacznij pierwszą sesję" : "Otwórz kalendarz",
+      eyebrow: t("today.overdueReminder"),
+      title: t("today.overdueSession", { count: overdueCount }),
+      description: t("today.overdueDescription"),
+      actionLabel: nextSession
+        ? t("today.startFirstSession")
+        : t("today.openCalendar"),
       onAction: startNextSession,
       icon: WarningCircleIcon,
       tone: "warning",
@@ -116,6 +117,7 @@ export function TodayPage() {
     nextSession,
     onStartSession,
     onOpenCalendar: openCalendar,
+    t,
   });
 
   if (examReminder) {
@@ -134,7 +136,8 @@ export function TodayPage() {
         eyebrow={`${dayLong(today)} · ${longDate(today)}`}
         title={
           <>
-            Plan na <em>dziś</em>
+            {t("today.title").split("<em>")[0]}
+            <em>{t("today.title").match(/<em>(.*?)<\/em>/)?.[1]}</em>
           </>
         }
       />
@@ -228,6 +231,7 @@ function TodayHeroCard(props: {
   todayProgressPercent: number;
   onAddExam: () => void;
 }) {
+  const { t } = useTranslation();
   const {
     title,
     copy,
@@ -243,7 +247,7 @@ function TodayHeroCard(props: {
     <div className="rounded-sm border border-rule bg-paper p-5 sm:p-6">
       <div className="max-w-[40rem]">
         <div className="mono text-[12px] uppercase tracking-[0.16em] text-amber">
-          Co teraz
+          {t("today.whatNow")}
         </div>
         <h2 className="mt-3 display text-[30px] leading-[1.05] text-ink sm:text-[36px]">
           {title}
@@ -256,7 +260,7 @@ function TodayHeroCard(props: {
       {totalToday > 0 && (
         <div className="mt-5 max-w-[28rem]">
           <div className="mb-2 flex items-baseline justify-between gap-2 mono text-[11px] uppercase tracking-[0.16em] text-ink-faint">
-            <span>Postęp dzisiejszych sesji</span>
+            <span>{t("today.todaySessionsProgress")}</span>
             <span className="text-ink tabular-nums">
               {completedToday} / {totalToday}
             </span>
@@ -288,7 +292,7 @@ function TodayHeroCard(props: {
             onClick={onAddExam}
             className="rounded-sm"
           >
-            Dodaj sprawdzian
+            {t("today.addExam")}
           </Button>
         )}
       </div>
@@ -301,12 +305,13 @@ function TodayWeekProgressCard(props: {
   total: number;
   progressPercent: number;
 }) {
+  const { t } = useTranslation();
   const { completed, total, progressPercent } = props;
 
   return (
     <div className="rounded-sm border border-rule bg-paper-2 p-5">
       <div className="mono text-[12px] uppercase tracking-[0.16em] text-ink-muted">
-        Progres tygodnia
+        {t("today.weekProgress")}
       </div>
       <div className="mt-4 flex items-center gap-3">
         <div className="h-2 flex-1 overflow-hidden rounded-sm bg-kumo-base">
@@ -320,7 +325,7 @@ function TodayWeekProgressCard(props: {
         </span>
       </div>
       <div className="mt-2 text-sm text-ink-muted">
-        {completed} / {total} zaplanowanych sesji ukończonych
+        {completed} / {total} {t("today.plannedSessionsCompleted")}
       </div>
     </div>
   );
@@ -331,12 +336,13 @@ function TodayExamCard(props: {
   examDays: number | null;
   onOpenCalendar: () => void;
 }) {
+  const { t } = useTranslation();
   const { nextExam, examDays, onOpenCalendar } = props;
 
   return (
     <div className="rounded-sm border border-rule bg-[linear-gradient(180deg,rgba(242,184,48,0.08),transparent_65%),var(--color-paper-2)] p-6 sm:p-7">
       <div className="mono text-[12px] uppercase tracking-[0.18em] text-amber">
-        Najbliższy sprawdzian
+        {t("today.nextExam")}
       </div>
 
       {nextExam && examDays !== null ? (
@@ -345,7 +351,9 @@ function TodayExamCard(props: {
             {nextExam.name}
           </div>
           <div className="mt-3 text-base text-ink-muted">
-            {nextExam.subjectName ?? nextExam.subjectKey ?? "Bez przedmiotu"}
+            {nextExam.subjectName ??
+              nextExam.subjectKey ??
+              t("common.noSubject")}
             {" · "}
             {longDate(nextExam.examDate)}
           </div>
@@ -355,7 +363,9 @@ function TodayExamCard(props: {
               {examDays}
             </span>
             <span className="pb-2 mono text-[12px] uppercase tracking-[0.16em] text-ink-faint">
-              {examDays === 1 ? "dzień" : "dni"} do terminu
+              {examDays === 1
+                ? t("common.dayUntilDeadline")
+                : t("common.daysUntilDeadline")}
             </span>
           </div>
 
@@ -365,13 +375,12 @@ function TodayExamCard(props: {
             onClick={onOpenCalendar}
             className="mt-5 rounded-sm bg-amber text-paper hover:bg-[#ffcc4a]"
           >
-            Otwórz kalendarz
+            {t("today.openCalendar")}
           </Button>
         </>
       ) : (
         <div className="mt-4 text-sm leading-6 text-ink-muted">
-          Brak aktywnego terminu. Dodaj sprawdzian, a planner sam rozpisze
-          powtórki.
+          {t("today.noActiveExam")}
         </div>
       )}
     </div>
@@ -384,12 +393,13 @@ function TodayQuickActionsCard(props: {
   onAddCard: () => void;
   onBrowseMaterials: () => void;
 }) {
+  const { t } = useTranslation();
   const { onQuickReview, onAddExam, onAddCard, onBrowseMaterials } = props;
 
   return (
     <div className="rounded-sm border border-rule bg-paper-2 p-5">
       <div className="mono text-[12px] uppercase tracking-[0.16em] text-ink-muted">
-        Szybkie akcje
+        {t("today.quickActions")}
       </div>
       <div className="mt-4 grid gap-2.5">
         <Button
@@ -399,7 +409,7 @@ function TodayQuickActionsCard(props: {
           onClick={onQuickReview}
           className="w-full justify-start rounded-sm bg-amber font-semibold text-paper transition-all hover:-translate-y-px hover:bg-[#ffcc4a] active:translate-y-0"
         >
-          Szybka powtórka
+          {t("today.quickReview")}
         </Button>
         <Button
           size="lg"
@@ -408,7 +418,7 @@ function TodayQuickActionsCard(props: {
           onClick={onAddExam}
           className="w-full justify-start rounded-sm"
         >
-          Dodaj sprawdzian
+          {t("today.addExam")}
         </Button>
         <Button
           size="lg"
@@ -417,7 +427,7 @@ function TodayQuickActionsCard(props: {
           onClick={onAddCard}
           className="w-full justify-start rounded-sm"
         >
-          Dodaj fiszkę
+          {t("today.addCard")}
         </Button>
         <Button
           size="lg"
@@ -426,7 +436,7 @@ function TodayQuickActionsCard(props: {
           onClick={onBrowseMaterials}
           className="w-full justify-start rounded-sm"
         >
-          Przejrzyj materiały
+          {t("today.browseMaterials")}
         </Button>
       </div>
     </div>
@@ -440,6 +450,7 @@ function getTodayHeroContent(args: {
   nextSession: ApiDashboardSession | null;
   nextExamName: string | null;
   examDays: number | null;
+  t: (key: string, opts?: Record<string, unknown>) => string;
 }) {
   const {
     totalSessions,
@@ -448,52 +459,53 @@ function getTodayHeroContent(args: {
     nextSession,
     nextExamName,
     examDays,
+    t,
   } = args;
 
   if (totalSessions === 0) {
     return {
-      title: "Wolny dzień",
-      copy: "Na dziś nie masz nic w planie. Dodaj sprawdzian albo zajrzyj do materiałów, a scheduler rozpisze powtórki sam.",
-      primaryCtaLabel: "Powtórz materiał",
+      title: t("today.freeDay"),
+      copy: t("today.freeDayCopy"),
+      primaryCtaLabel: t("today.reviewMaterial"),
     };
   }
 
   if (remainingSessions === 0) {
     return {
-      title: "Plan na dziś domknięty",
-      copy: "Na dziś masz już wszystko zrobione. Możesz spokojnie wrócić do materiałów albo zaplanować kolejny termin.",
-      primaryCtaLabel: "Powtórz materiał",
+      title: t("today.planDone"),
+      copy: t("today.planDoneCopy"),
+      primaryCtaLabel: t("today.reviewMaterial"),
     };
   }
 
   if (overdueCount > 0) {
     return {
-      title: "Najpierw odzyskaj zaległości",
-      copy: `Masz ${overdueCount} zaległe ${overdueCount === 1 ? "powtórkę" : "powtórki"}. Najszybciej wrócisz do rytmu, jeśli zaczniesz właśnie od nich.`,
-      primaryCtaLabel: "Zacznij naukę",
+      title: t("today.catchUp"),
+      copy: t("today.catchUpCopy", { count: overdueCount }),
+      primaryCtaLabel: t("today.startStudying"),
     };
   }
 
   if (nextExamName && examDays !== null && examDays <= 7) {
     return {
-      title: "To jest Twój kolejny krok",
-      copy: `Najbliżej jest ${nextExamName}. Warto dziś domknąć choć jedną sesję, żeby wejść w końcówkę bez stresu.`,
-      primaryCtaLabel: "Zacznij naukę",
+      title: t("today.nextStep"),
+      copy: t("today.nextStepExamCopy", { examName: nextExamName }),
+      primaryCtaLabel: t("today.startStudying"),
     };
   }
 
   if (nextSession?.topicName) {
     return {
-      title: "To jest Twój kolejny krok",
-      copy: `Zacznij od ${nextSession.topicName}. To najprostszy sposób, żeby ruszyć z planem bez analizowania statystyk.`,
-      primaryCtaLabel: "Zacznij naukę",
+      title: t("today.nextStep"),
+      copy: t("today.nextStepTopicCopy", { topicName: nextSession.topicName }),
+      primaryCtaLabel: t("today.startStudying"),
     };
   }
 
   return {
-    title: "Masz gotowy plan na dziś",
-    copy: "Masz gotowy plan. Wystarczy odpalić pierwszą sesję i wejść w rytm.",
-    primaryCtaLabel: "Zacznij naukę",
+    title: t("today.readyPlan"),
+    copy: t("today.readyPlanCopy"),
+    primaryCtaLabel: t("today.startStudying"),
   };
 }
 
@@ -504,6 +516,7 @@ function getExamReminder(args: {
   nextSession: ApiDashboardSession | null;
   onStartSession: (id: string) => void;
   onOpenCalendar: () => void;
+  t: (key: string, opts?: Record<string, unknown>) => string;
 }): TodayReminder | null {
   const {
     nextExam,
@@ -512,27 +525,32 @@ function getExamReminder(args: {
     nextSession,
     onStartSession,
     onOpenCalendar,
+    t,
   } = args;
 
   if (!nextExam || examDays === null || examDays > 3) {
     return null;
   }
 
+  const title =
+    examDays === 0
+      ? t("today.examToday", { name: nextExam.name })
+      : examDays === 1
+        ? t("today.examTomorrow", { name: nextExam.name })
+        : t("today.examInDays", { name: nextExam.name, days: examDays });
+
   return {
     id: "exam",
-    eyebrow: "Dziś pilnuj tego",
-    title:
-      examDays === 0
-        ? `${nextExam.name} jest dziś`
-        : examDays === 1
-          ? `${nextExam.name} jest jutro`
-          : `${nextExam.name} za ${examDays} dni`,
+    eyebrow: t("today.watchToday"),
+    title,
     description:
       remainingSessions > 0
-        ? `Zostało jeszcze ${remainingSessions} ${remainingSessions === 1 ? "sesja" : "sesje"} na dziś. Dobrze domknąć przynajmniej pierwszą od razu.`
-        : "Dzisiejszy plan jest już gotowy. Możesz wejść w szybką powtórkę albo sprawdzić cały harmonogram.",
+        ? t("today.sessionsRemaining", { count: remainingSessions })
+        : t("today.planReady"),
     actionLabel:
-      remainingSessions > 0 ? "Zacznij pierwszą sesję" : "Zobacz plan",
+      remainingSessions > 0
+        ? t("today.startFirstSession")
+        : t("today.seeSchedule"),
     onAction: () => {
       if (remainingSessions > 0 && nextSession) {
         onStartSession(nextSession.id);

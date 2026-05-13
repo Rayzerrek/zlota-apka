@@ -1,6 +1,7 @@
 import { Button } from "@cloudflare/kumo/components/button";
 import { ArrowLeftIcon } from "@phosphor-icons/react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useDashboard } from "../../hooks/api/useDashboard";
 import { useCompleteSession } from "../../hooks/api/useSessions";
@@ -64,9 +65,8 @@ function findExamForSubject(
   };
 }
 
-const SCORE_LABELS = ["słabo", "", "", "", "świetnie"] as const;
-
 export function StudyTimer({ sessionId, onExit }: Props) {
+  const { t } = useTranslation();
   const today = new Date().toISOString().slice(0, 10);
   const { data: dashboard, isLoading } = useDashboard();
   const {
@@ -87,6 +87,14 @@ export function StudyTimer({ sessionId, onExit }: Props) {
   const [notes, setNotes] = useState("");
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const actualMinutes = Math.max(1, Math.round(elapsed / 60));
+
+  const SCORE_LABELS = [
+    t("studyTimer.poor"),
+    "",
+    "",
+    "",
+    t("studyTimer.great"),
+  ] as const;
 
   useEffect(() => {
     if (phase !== "timer") return;
@@ -158,7 +166,7 @@ export function StudyTimer({ sessionId, onExit }: Props) {
         <div className="flex flex-col items-center gap-3 text-center">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-rule border-t-amber" />
           <p className="mono text-[13px] uppercase text-ink-muted">
-            Ładowanie sesji
+            {t("studyTimer.loadingSession")}
           </p>
         </div>
       </div>
@@ -189,7 +197,7 @@ export function StudyTimer({ sessionId, onExit }: Props) {
               onClick={handleExitRequest}
               className="text-ink-muted hover:text-amber mono text-[14px] uppercase"
             >
-              Wróć
+              {t("studyTimer.back")}
             </Button>
           </div>
 
@@ -202,12 +210,14 @@ export function StudyTimer({ sessionId, onExit }: Props) {
                 )}
               />
               <span className="mono text-[14px] uppercase text-ink-muted">
-                {subject?.name ?? session.subjectName ?? "Sesja nauki"}
+                {subject?.name ??
+                  session.subjectName ??
+                  t("studyTimer.studySession")}
               </span>
             </div>
 
             <h1 className="display italic text-[clamp(32px,7vw,56px)] font-medium leading-[1.05] text-ink text-center max-w-[18ch]">
-              {session.topicName ?? "Sesja nauki"}
+              {session.topicName ?? t("studyTimer.studySession")}
             </h1>
 
             <div className="flex flex-col items-center gap-1">
@@ -215,13 +225,13 @@ export function StudyTimer({ sessionId, onExit }: Props) {
                 {formatTimer(elapsed)}
               </span>
               <span className="mono text-[14px] text-ink-faint">
-                z {formatPlanned(session.plannedMinutes)}
+                {t("studyTimer.of")} {formatPlanned(session.plannedMinutes)}
               </span>
             </div>
 
             {exam && (
               <p className="mono text-[13px] text-ink-muted">
-                {exam.name} za {exam.days} {exam.days === 1 ? "dzień" : "dni"}
+                {t("studyTimer.examIn", { name: exam.name, count: exam.days })}
               </p>
             )}
 
@@ -231,7 +241,7 @@ export function StudyTimer({ sessionId, onExit }: Props) {
               onClick={handleFinish}
               className="mt-4 bg-amber text-paper rounded-sm hover:bg-[#ffcc4a] hover:-translate-y-px active:translate-y-0 transition-all font-semibold px-8 py-4"
             >
-              Zakończ sesję
+              {t("studyTimer.finishSession")}
             </Button>
           </div>
         </>
@@ -244,7 +254,7 @@ export function StudyTimer({ sessionId, onExit }: Props) {
               {formatTimer(elapsed)}
             </span>
             <span className="display italic text-[18px] text-ink text-center truncate max-w-[60%]">
-              {session.topicName ?? "Sesja nauki"}
+              {session.topicName ?? t("studyTimer.studySession")}
             </span>
             <span className="w-14" />
           </div>
@@ -253,7 +263,7 @@ export function StudyTimer({ sessionId, onExit }: Props) {
             <div className="flex flex-col items-center gap-8 px-6 py-10 max-w-[440px] mx-auto">
               <div>
                 <h2 className="display font-normal text-[28px] text-ink text-center mb-6">
-                  Jak Ci poszło?
+                  {t("studyTimer.howDidItGo")}
                 </h2>
                 <div className="flex items-center justify-center gap-3">
                   {[1, 2, 3, 4, 5].map((n) => (
@@ -274,20 +284,22 @@ export function StudyTimer({ sessionId, onExit }: Props) {
                   ))}
                 </div>
                 <p className="mono text-[12px] uppercase text-ink-faint text-center mt-2.5">
-                  {score ? SCORE_LABELS[score - 1] : "wybierz ocenę"}
+                  {score
+                    ? SCORE_LABELS[score - 1]
+                    : t("studyTimer.chooseRating")}
                 </p>
               </div>
 
               <div className="w-full">
                 <h2 className="display font-normal text-[28px] text-ink text-center mb-4">
-                  Skończyłeś zakres?
+                  {t("studyTimer.finishedScope")}
                 </h2>
                 <div className="flex justify-center gap-2.5">
                   {(
                     [
-                      ["Tak", "yes"],
-                      ["Nie", "no"],
-                      ["Częściowo", "partially"],
+                      [t("studyTimer.yes"), "yes"],
+                      [t("studyTimer.no"), "no"],
+                      [t("studyTimer.partially"), "partially"],
                     ] as const
                   ).map(([label, value]) => (
                     <Button
@@ -319,13 +331,14 @@ export function StudyTimer({ sessionId, onExit }: Props) {
                       : "text-ink-muted hover:text-ink",
                   )}
                 >
-                  {notesExpanded ? "−" : "+"} dodaj uwagę (opcjonalne)
+                  {notesExpanded ? "−" : "+"}{" "}
+                  {t("studyTimer.addNote").replace(/^\+\s*/, "")}
                 </button>
                 {notesExpanded && (
                   <textarea
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Co było szczególnie trudne?"
+                    placeholder={t("studyTimer.notePlaceholder")}
                     maxLength={500}
                     rows={3}
                     className="mt-2 w-full bg-paper-3 border border-rule rounded-sm px-4 py-3 text-ink text-[15px] resize-none placeholder:text-ink-faint focus:outline-none focus:border-amber transition-colors duration-200"
@@ -342,7 +355,9 @@ export function StudyTimer({ sessionId, onExit }: Props) {
                   !canSave && "opacity-40 pointer-events-none",
                 )}
               >
-                {isSaving ? "Zapisywanie..." : "Zapisz i wróć"}
+                {isSaving
+                  ? t("studyTimer.saving")
+                  : t("studyTimer.saveAndReturn")}
               </Button>
 
               {saveError instanceof Error && (
@@ -362,11 +377,11 @@ export function StudyTimer({ sessionId, onExit }: Props) {
               ✓
             </div>
             <div className="display font-normal text-[32px] text-ink">
-              Zapisano
+              {t("studyTimer.saved")}
             </div>
             <p className="text-ink-muted mono text-[14px]">
               {formatTimer(elapsed)} · {actualMinutes}min ·{" "}
-              {session.topicName ?? "Sesja nauki"}
+              {session.topicName ?? t("studyTimer.studySession")}
             </p>
           </div>
         </div>
@@ -376,10 +391,10 @@ export function StudyTimer({ sessionId, onExit }: Props) {
         <div className="absolute inset-0 bg-paper/70 flex items-center justify-center p-6 z-10">
           <div className="bg-kumo-base border border-rule rounded-sm p-8 max-w-[320px] w-full flex flex-col gap-5">
             <p className="text-ink text-center leading-relaxed">
-              Przerwać sesję?
+              {t("studyTimer.interruptSession")}
               <br />
               <span className="text-ink-muted text-[14px]">
-                Czas nie zostanie zapisany.
+                {t("studyTimer.timeNotSaved")}
               </span>
             </p>
             <div className="flex gap-2.5">
@@ -388,14 +403,14 @@ export function StudyTimer({ sessionId, onExit }: Props) {
                 onClick={handleExitCancel}
                 className="flex-1 border border-rule rounded-sm mono text-[14px] uppercase text-ink-muted hover:text-ink hover:border-rule-strong"
               >
-                Kontynuuj naukę
+                {t("studyTimer.continueStudying")}
               </Button>
               <Button
                 variant="ghost"
                 onClick={handleExitConfirm}
                 className="flex-1 border border-rating-1 rounded-sm mono text-[14px] uppercase text-rating-1 hover:bg-rating-1/10"
               >
-                Przerwij
+                {t("studyTimer.interrupt")}
               </Button>
             </div>
           </div>

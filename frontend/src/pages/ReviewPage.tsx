@@ -2,6 +2,7 @@ import { Button } from "@cloudflare/kumo/components/button";
 import { XIcon } from "@phosphor-icons/react";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { ReviewCard } from "../components/review/ReviewCard";
 import { ReviewDoneScreen } from "../components/review/ReviewDoneScreen";
@@ -22,6 +23,7 @@ const reviewShellCls =
   "fixed inset-0 z-50 flex flex-col bg-paper/95 backdrop-blur-[18px]";
 
 export function ReviewPage() {
+  const { t } = useTranslation();
   const { sessionId } = useParams({ from: "/_layout/review/$sessionId" });
   const navigate = useNavigate();
 
@@ -35,7 +37,9 @@ export function ReviewPage() {
 
   const nextExam = dashboard?.upcomingExams[0] ?? null;
   const reviewLabel =
-    isAllToday && nextExam ? `Powtórka przed: ${nextExam.name}` : null;
+    isAllToday && nextExam
+      ? t("review.reviewBefore", { name: nextExam.name })
+      : null;
 
   const cards = useMemo(() => {
     if (isAllToday) {
@@ -89,12 +93,12 @@ export function ReviewPage() {
             onClick={() => navigate({ to: "/today" })}
             className="text-ink-muted hover:text-amber mono text-[14px] uppercase"
           >
-            Zamknij
+            {t("review.close")}
           </Button>
         </div>
         <div className="flex-1 grid place-items-center">
           <p className="text-ink-faint display italic text-[25px]">
-            Brak kart do powtórki.
+            {t("review.noCards")}
           </p>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { PageHead } from "../components/layout/PageHead";
 import {
@@ -17,6 +18,7 @@ import { apiErrorMessage } from "../lib/error";
 type Mode = ScannerPageMode;
 
 export function ScannerPage() {
+  const { t } = useTranslation();
   const isMobile = useMobile();
   const [mode, setMode] = useState<Mode>("camera");
   const [capturedFile, setCapturedFile] = useState<File | null>(null);
@@ -80,10 +82,10 @@ export function ScannerPage() {
       ) : (
         <>
           <PageHead
-            eyebrow="Optyczne rozpoznawanie znaków"
+            eyebrow={t("scanner.eyebrow")}
             title={
               <>
-                <em>Skaner AI</em>
+                <em>{t("scanner.title").replace(/<\/?em>/g, "")}</em>
               </>
             }
           />

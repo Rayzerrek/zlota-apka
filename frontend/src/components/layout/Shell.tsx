@@ -37,6 +37,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useUser } from "../../hooks/api/useUser";
 import { logout } from "../../lib/api";
@@ -46,12 +47,16 @@ import { AddExamModal } from "../exam/AddExamModal";
 
 type PagePath = "/today" | "/calendar" | "/browse" | "/stats" | "/scanner";
 
-const NAV: { path: PagePath; label: string; icon: typeof SunIcon }[] = [
-  { path: "/today", label: "Dziś", icon: SunIcon },
-  { path: "/calendar", label: "Kalendarz", icon: CalendarBlankIcon },
-  { path: "/browse", label: "Nauka", icon: CardsIcon },
-  { path: "/stats", label: "Postęp", icon: ChartBarIcon },
-  { path: "/scanner", label: "Skaner", icon: CameraIcon },
+const NAV_KEYS: {
+  path: PagePath;
+  labelKey: string;
+  icon: typeof SunIcon;
+}[] = [
+  { path: "/today", labelKey: "nav.today", icon: SunIcon },
+  { path: "/calendar", labelKey: "nav.calendar", icon: CalendarBlankIcon },
+  { path: "/browse", labelKey: "nav.browse", icon: CardsIcon },
+  { path: "/stats", labelKey: "nav.stats", icon: ChartBarIcon },
+  { path: "/scanner", labelKey: "nav.scanner", icon: CameraIcon },
 ];
 
 type Props = {
@@ -61,6 +66,7 @@ type Props = {
 };
 
 export function Shell({ children, theme, onToggleTheme }: Props) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileProfileMenuOpen, setIsMobileProfileMenuOpen] = useState(false);
@@ -70,7 +76,7 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
   const fabRef = useRef<HTMLDivElement>(null);
   const { data: userData } = useUser();
 
-  const name = userData?.name ?? "Użytkownik";
+  const name = userData?.name ?? t("nav.profile");
   const email = userData?.email ?? "";
   const initial = (name[0] || email[0] || "?").toUpperCase();
   const isGuest = userData?.isGuest ?? true;
@@ -134,7 +140,7 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
               <SidebarGroup>
                 <SidebarGroupContent>
                   <SidebarMenu>
-                    {NAV.map((item) => {
+                    {NAV_KEYS.map((item) => {
                       const isActive = location.pathname === item.path;
                       return (
                         <SidebarMenuItem key={item.path}>
@@ -154,7 +160,7 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
                                 : "text-ink-muted hover:text-ink",
                             )}
                           >
-                            {item.label}
+                            {t(item.labelKey)}
                           </SidebarMenuButton>
                         </SidebarMenuItem>
                       );
@@ -173,18 +179,19 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
                       weight="fill"
                       className="text-amber"
                     />
-                    <span className="text-sm font-medium">Jesteś gościem</span>
+                    <span className="text-sm font-medium">
+                      {t("shell.guestWarning")}
+                    </span>
                   </div>
                   <p className="text-xs text-ink-muted">
-                    Zapisz swoje postępy, sprawdziany i materiały dodając swój
-                    adres e-mail.
+                    {t("shell.guestDescription")}
                   </p>
                   <Button
                     variant="ghost"
                     onClick={() => navigate({ to: "/profile" })}
                     className="w-full justify-center bg-amber text-paper hover:bg-[#ffcc4a] text-xs py-1 mt-1 rounded-[3px] font-medium"
                   >
-                    Dodaj e-mail
+                    {t("shell.addEmail")}
                   </Button>
                 </div>
               )}
@@ -195,7 +202,7 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
                       <Button
                         type="button"
                         variant="ghost"
-                        aria-label="Menu konta"
+                        aria-label={t("shell.accountMenu")}
                         className="flex items-center gap-3 p-2 bg-transparent border-0 rounded-[5px] cursor-pointer flex-1 min-w-0 text-left transition-colors duration-200"
                       />
                     }
@@ -220,14 +227,14 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
                         onClick={() => navigate({ to: "/profile" })}
                       >
                         <UserCircleIcon size={16} />
-                        Pokaż profil
+                        {t("shell.showProfile")}
                       </DropdownMenu.Item>
                       <DropdownMenu.Item
                         className="flex items-center gap-2.5 w-full px-2.5 py-2 bg-transparent border-0 rounded-sm text-ink-muted text-sm text-left cursor-pointer transition-all duration-150 hover:bg-paper-3 hover:text-ink focus-visible:bg-paper-3 focus-visible:text-ink focus-visible:outline-none"
                         onClick={() => navigate({ to: "/settings" })}
                       >
                         <GearSixIcon size={16} />
-                        Ustawienia
+                        {t("shell.settings")}
                       </DropdownMenu.Item>
                       {!isGuest && (
                         <DropdownMenu.Item
@@ -235,7 +242,7 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
                           onClick={handleLogout}
                         >
                           <SignOutIcon size={16} />
-                          Wyloguj się
+                          {t("shell.logout")}
                         </DropdownMenu.Item>
                       )}
                     </DropdownMenu.Content>
@@ -250,7 +257,7 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
                       <MoonIcon size={16} />
                     )
                   }
-                  aria-label="Zmień motyw"
+                  aria-label={t("shell.changeTheme")}
                   onClick={onToggleTheme}
                   className="px-2.5 py-2.5 rounded-sm hover:bg-paper-3 transition-colors duration-200"
                 />
@@ -270,24 +277,24 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
         </main>
 
         <nav
-          aria-label="Nawigacja"
+          aria-label={t("nav.navigation")}
           className="dock-frost fixed left-3 right-3 bottom-[calc(12px+env(safe-area-inset-bottom))] flex justify-stretch p-1.5 border border-rule rounded-sm z-40 lg:hidden"
         >
-          {NAV.map((item) => {
+          {NAV_KEYS.map((item) => {
             const isActive = location.pathname === item.path;
             return (
               <button
                 key={item.path}
                 type="button"
                 onClick={() => navigate({ to: item.path })}
-                aria-label={item.label}
+                aria-label={t(item.labelKey)}
                 className={cn(
                   "flex-1 flex flex-col items-center justify-center gap-0.5 px-1 py-2 bg-transparent border-0 rounded-sm mono text-[13px] uppercase cursor-pointer transition-colors duration-200",
                   isActive ? "text-amber" : "text-ink-faint hover:text-ink",
                 )}
               >
                 <item.icon size={22} weight={isActive ? "fill" : "regular"} />
-                <span>{item.label}</span>
+                <span>{t(item.labelKey)}</span>
               </button>
             );
           })}
@@ -304,7 +311,7 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
                   }}
                 >
                   <GearSixIcon size={16} />
-                  Ustawienia
+                  {t("shell.settings")}
                 </Button>
                 {!isGuest && (
                   <Button
@@ -317,14 +324,14 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
                     }}
                   >
                     <SignOutIcon size={16} />
-                    Wyloguj się
+                    {t("shell.logout")}
                   </Button>
                 )}
               </div>
             )}
             <button
               type="button"
-              aria-label="Profil"
+              aria-label={t("nav.profile")}
               aria-expanded={isMobileProfileMenuOpen}
               onClick={handleMobileProfileClick}
               className={cn(
@@ -338,7 +345,7 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
                 size={22}
                 weight={location.pathname === "/profile" ? "fill" : "regular"}
               />
-              <span>Profil</span>
+              <span>{t("nav.profile")}</span>
             </button>
           </div>
         </nav>
@@ -349,6 +356,7 @@ export function Shell({ children, theme, onToggleTheme }: Props) {
           onToggle={() => setFabOpen((o) => !o)}
           onAddExam={openAddExam}
           onAddCard={openAddCard}
+          t={t}
         />
       </div>
 
@@ -363,6 +371,7 @@ type SpeedDialProps = {
   onToggle: () => void;
   onAddExam: () => void;
   onAddCard: () => void;
+  t: (key: string) => string;
 };
 
 const SpeedDial = ({
@@ -371,6 +380,7 @@ const SpeedDial = ({
   onToggle,
   onAddExam,
   onAddCard,
+  t,
 }: SpeedDialProps & { ref: React.Ref<HTMLDivElement> }) => (
   <div
     ref={ref}
@@ -379,12 +389,12 @@ const SpeedDial = ({
     {open && (
       <div className="flex flex-col items-stretch gap-2 animate-enter [--enter-offset:10px] w-48">
         <SpeedDialItem
-          label="Dodaj sprawdzian"
+          label={t("shell.addExam")}
           icon={<CalendarPlusIcon size={18} weight="bold" />}
           onClick={onAddExam}
         />
         <SpeedDialItem
-          label="Dodaj fiszkę"
+          label={t("shell.addCard")}
           icon={<StackPlusIcon size={18} weight="bold" />}
           onClick={onAddCard}
         />
@@ -393,7 +403,7 @@ const SpeedDial = ({
     <button
       type="button"
       onClick={onToggle}
-      aria-label={open ? "Zamknij menu" : "Dodaj"}
+      aria-label={open ? t("shell.closeMenu") : t("shell.add")}
       aria-expanded={open}
       className={cn(
         "w-14 h-14 rounded-full grid place-items-center shadow-[0_6px_24px_rgba(0,0,0,0.35)] transition-all duration-300",

@@ -11,7 +11,9 @@ import {
 } from "@phosphor-icons/react";
 import { useNavigate } from "@tanstack/react-router";
 import { type ReactNode, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
+import { LanguageSwitcher } from "../components/ui/LanguageSwitcher";
 import { ThemeButton } from "../components/ui/ThemeButton";
 import { useTheme } from "../hooks/useTheme";
 
@@ -48,6 +50,7 @@ function BentoCard({
 }
 
 export function LandingPage() {
+  const { t } = useTranslation();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const headerRef = useRef<HTMLElement>(null);
@@ -83,13 +86,14 @@ export function LandingPage() {
         </span>
 
         <nav className="flex items-center gap-3">
+          <LanguageSwitcher />
           <ThemeButton theme={theme} onToggleTheme={toggleTheme} />
           <Button
             variant="ghost"
             onClick={() => navigate({ to: "/today" })}
             className="hidden rounded-sm bg-amber px-5 text-paper hover:bg-[#ffcc4a] sm:inline-flex"
           >
-            Rozpocznij
+            {t("landing.startLearning")}
           </Button>
         </nav>
       </header>
@@ -98,18 +102,18 @@ export function LandingPage() {
         <section className="relative mx-auto flex max-w-6xl flex-col items-center px-5 pb-24 pt-12 text-center md:px-8 md:pb-32 md:pt-20">
           <div className="animate-enter enter-d1 mb-8 inline-flex items-center gap-2 rounded-full border border-amber/20 bg-amber/5 px-4 py-1.5 text-sm text-amber">
             <SparkleIcon size={14} weight="fill" />
-            Nauka z głową
+            {t("landing.smartLearning")}
           </div>
 
           <h1 className="animate-enter enter-d2 display max-w-4xl text-[clamp(2.8rem,9vw,6.5rem)] font-light leading-[0.95] tracking-tight">
-            Ucz się mądrzej,{" "}
-            <span className="gradient-text font-medium">nie&nbsp;dłużej.</span>
+            {t("landing.heroTitle").split("<gradient>")[0]}
+            <span className="gradient-text font-medium">
+              {t("landing.heroTitle").match(/<gradient>(.*?)<\/gradient>/)?.[1]}
+            </span>
           </h1>
 
           <p className="animate-enter enter-d3 mt-7 max-w-lg text-[17px] leading-relaxed text-ink-muted">
-            Recurs łączy fiszki, terminarz sprawdzianów i notatki generowane
-            przez AI w jednym miejscu. Śledź postępy, powtarzaj materiał i nigdy
-            nie daj się zaskoczyć na klasówce.
+            {t("landing.heroDescription")}
           </p>
 
           <div className="animate-enter enter-d4 mt-10 flex flex-wrap items-center justify-center gap-3">
@@ -119,7 +123,7 @@ export function LandingPage() {
               onClick={() => navigate({ to: "/today" })}
               className="rounded-sm bg-amber px-8 text-paper hover:bg-[#ffcc4a] hover:-translate-y-px hover:shadow-[0_0_30px_rgba(242,184,48,0.2)] active:translate-y-0 transition-all font-semibold"
             >
-              Rozpocznij naukę
+              {t("landing.startStudying")}
               <ArrowRightIcon size={18} weight="bold" className="ml-1.5" />
             </Button>
             <Button
@@ -132,7 +136,7 @@ export function LandingPage() {
               }}
               className="rounded-sm"
             >
-              Zobacz jak działa
+              {t("landing.seeHowItWorks")}
             </Button>
           </div>
 
@@ -171,10 +175,10 @@ export function LandingPage() {
         >
           <div className="mb-12 text-center">
             <h2 className="animate-enter display text-[clamp(1.8rem,5vw,3rem)] font-light leading-tight">
-              Wszystko, czego potrzebujesz
+              {t("landing.everythingYouNeed")}
             </h2>
             <p className="animate-enter enter-d1 mt-4 text-ink-muted">
-              Jeden ekosystem do nauki — od fiszek po sprawdziany i notatki AI.
+              {t("landing.oneEcosystem")}
             </p>
           </div>
 
@@ -182,36 +186,36 @@ export function LandingPage() {
             <BentoCard
               className="md:col-span-2 md:row-span-2"
               icon={CalendarBlankIcon}
-              title="Terminarz sprawdzianów"
-              description="Dodaj sprawdziany i miej zawsze przed oczami ile dni zostało do każdego terminu. Recurs przypomni Ci, kiedy czas zacząć powtórki."
+              title={t("landing.examScheduler")}
+              description={t("landing.examSchedulerDesc")}
             >
               <div className="mt-auto flex items-end gap-2 pt-6">
                 <span className="display text-[64px] font-light leading-none text-amber">
                   14
                 </span>
                 <span className="mono pb-2 text-[12px] uppercase tracking-wider text-ink-faint">
-                  dni do klasówki
+                  {t("landing.daysUntilTest")}
                 </span>
               </div>
             </BentoCard>
 
             <BentoCard
               icon={CardsIcon}
-              title="Fiszki"
-              description="Twórz zestawy fiszek do każdego przedmiotu i powtarzaj materiał w swoim tempie."
+              title={t("landing.flashcards")}
+              description={t("landing.flashcardsDesc")}
             />
 
             <BentoCard
               icon={CameraIcon}
-              title="Skaner notatek"
-              description="Zrób zdjęcie notatek z zeszytu — Recurs zamieni je w cyfrowe fiszki gotowe do nauki."
+              title={t("landing.noteScanner")}
+              description={t("landing.noteScannerDesc")}
             />
 
             <BentoCard
               className="md:row-span-2"
               icon={ChartBarIcon}
-              title="Statystyki nauki"
-              description="Śledź swoje postępy w każdym przedmiocie i sprawdzaj, które tematy wymagają jeszcze pracy."
+              title={t("landing.studyStats")}
+              description={t("landing.studyStatsDesc")}
             >
               <div className="mt-4 flex flex-col gap-3">
                 <div className="flex items-center gap-3">
@@ -232,14 +236,14 @@ export function LandingPage() {
             <BentoCard
               className="md:col-span-2"
               icon={BrainIcon}
-              title="Notatki generowane przez AI"
-              description="Podaj temat i przedmiot — Recurs wygeneruje zwięzłą notatkę, którą możesz zapisać i przeglądać przed sprawdzianem."
+              title={t("landing.aiNotes")}
+              description={t("landing.aiNotesDesc")}
             />
 
             <BentoCard
               icon={ClockIcon}
-              title="Timer nauki"
-              description="Ucz się w skupieniu dzięki wbudowanemu timerowi z sesjami i przerwami."
+              title={t("landing.studyTimer")}
+              description={t("landing.studyTimerDesc")}
             />
           </div>
         </section>
@@ -251,7 +255,7 @@ export function LandingPage() {
             <span className="text-amber">Recurs</span>
           </span>
           <span className="mono text-[12px] text-ink-faint">
-            © {new Date().getFullYear()} Recurs. Ucz się mądrzej.
+            © {new Date().getFullYear()} Recurs. {t("landing.footer")}
           </span>
         </div>
       </footer>

@@ -1,4 +1,5 @@
 import { Button } from "@cloudflare/kumo/components/button";
+import { useTranslation } from "react-i18next";
 
 import { cn } from "../../utils/cn";
 import { SUBJECTS, SUBJECT_BG } from "../../utils/subjects";
@@ -14,6 +15,8 @@ type Props = {
 };
 
 export function BrowseFilters({ filter, onFilterChange, counts }: Props) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex gap-2 flex-wrap mb-7 pb-5 border-b border-rule">
       <Button
@@ -26,7 +29,7 @@ export function BrowseFilters({ filter, onFilterChange, counts }: Props) {
             : "border-rule bg-transparent hover:bg-transparent text-ink-muted hover:border-rule-strong hover:text-ink",
         )}
       >
-        Wszystkie
+        {t("common.all")}
         <span className="opacity-60 ml-1">{counts.all}</span>
       </Button>
       {(Object.keys(SUBJECTS) as SubjectKey[]).map((k) => (
@@ -44,7 +47,7 @@ export function BrowseFilters({ filter, onFilterChange, counts }: Props) {
           <span
             className={cn("w-1.5 h-1.5 rounded-full shrink-0", SUBJECT_BG[k])}
           />
-          {SUBJECTS[k].name}
+          {t(`subjects.${k}`, { defaultValue: SUBJECTS[k].name })}
           <span className="opacity-60 ml-1">{counts[k] ?? 0}</span>
         </Button>
       ))}

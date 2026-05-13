@@ -1,6 +1,7 @@
 import { Button } from "@cloudflare/kumo/components/button";
 import { CheckIcon, WarningIcon } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { PageHead } from "../components/layout/PageHead";
 import { ProfileAccountSection } from "../components/profile/ProfileAccountSection";
@@ -16,11 +17,12 @@ import { type ApiError } from "../lib/error";
 import { OkResponseSchema } from "../lib/schemas";
 
 export function ProfilePage() {
+  const { t } = useTranslation();
   const { data: userData } = useUser();
 
   const isGuest = userData?.isGuest ?? true;
   const savedEmail = userData?.email ?? "";
-  const name = userData?.name ?? "Użytkownik";
+  const name = userData?.name ?? t("profile.defaultName");
 
   const [email, setEmail] = useState(() => {
     if (typeof window === "undefined") return "";
@@ -96,10 +98,11 @@ export function ProfilePage() {
   return (
     <>
       <PageHead
-        eyebrow="Konto"
+        eyebrow={t("profile.eyebrow")}
         title={
           <>
-            Twój <em>profil</em>
+            {t("profile.title").split("<em>")[0]}
+            <em>{t("profile.title").match(/<em>(.*?)<\/em>/)?.[1]}</em>
           </>
         }
       />
@@ -114,12 +117,10 @@ export function ProfilePage() {
             />
             <div className="flex flex-col gap-1">
               <h3 className="text-base font-semibold text-ink m-0">
-                Twoje konto jest tymczasowe
+                {t("profile.guestWarning")}
               </h3>
               <p className="text-sm text-ink-muted m-0">
-                Jesteś zalogowany jako gość. Dodaj swój adres e-mail, aby
-                bezpiecznie zapisać swoje postępy, sprawdziany i materiały, i
-                mieć do nich dostęp z dowolnego urządzenia.
+                {t("profile.guestDescription")}
               </p>
             </div>
           </div>
@@ -147,12 +148,12 @@ export function ProfilePage() {
             onClick={handleSave}
             className="bg-amber text-paper rounded-sm hover:bg-[#ffcc4a] font-semibold px-7 py-3"
           >
-            Zapisz zmiany
+            {t("profile.saveChanges")}
           </Button>
           {saved && (
             <span className="mono text-[14px] uppercase text-rating-4 flex items-center gap-1.5">
               <CheckIcon size={12} weight="bold" />
-              Zapisano
+              {t("common.saved")}
             </span>
           )}
         </section>

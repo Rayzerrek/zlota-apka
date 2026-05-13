@@ -1,5 +1,6 @@
 import { Button } from "@cloudflare/kumo/components/button";
 import { ArrowRightIcon, XIcon } from "@phosphor-icons/react";
+import { useTranslation } from "react-i18next";
 
 import type { Rating } from "../../types";
 
@@ -10,6 +11,7 @@ type Props = {
 };
 
 export function ReviewDoneScreen({ ratings, total, onExit }: Props) {
+  const { t } = useTranslation();
   const correct = ratings.filter((r) => r >= 3).length;
   const wrong = ratings.length - correct;
 
@@ -22,10 +24,10 @@ export function ReviewDoneScreen({ ratings, total, onExit }: Props) {
           onClick={onExit}
           className="text-ink-muted hover:text-amber mono text-[14px] uppercase"
         >
-          Zamknij
+          {t("review.close")}
         </Button>
         <span className="mono text-[14px] uppercase text-ink-muted">
-          <span className="text-ink font-semibold">Ukończono</span>
+          <span className="text-ink font-semibold">{t("review.done")}</span>
         </span>
         <span className="w-20" />
         <div className="absolute bottom-0 left-0 h-0.5 w-full bg-amber transition-[width] duration-[0.4s] [transition-timing-function:var(--ease-out)]" />
@@ -36,11 +38,10 @@ export function ReviewDoneScreen({ ratings, total, onExit }: Props) {
             ✓
           </div>
           <div className="display font-normal text-[39px] [&_em]:italic [&_em]:text-amber">
-            <em>Koniec</em> sesji.
+            <em>{t("review.sessionEnd").replace(/<\/?em>/g, "")}</em>
           </div>
           <p className="text-ink-muted max-w-[40ch]">
-            Dobra robota. Kolejne powtórki zaplanowaliśmy na podstawie ocen —
-            karty „idealne" wrócą za dłużej, trudne wrócą jutro.
+            {t("review.doneDescription")}
           </p>
           <div className="flex gap-9 mt-4 py-5 border-t border-b border-rule">
             <div className="flex flex-col gap-1">
@@ -48,7 +49,7 @@ export function ReviewDoneScreen({ ratings, total, onExit }: Props) {
                 {correct}
               </div>
               <div className="mono text-[13px] uppercase text-ink-faint">
-                Poprawnych
+                {t("review.correct")}
               </div>
             </div>
             <div className="flex flex-col gap-1">
@@ -56,7 +57,7 @@ export function ReviewDoneScreen({ ratings, total, onExit }: Props) {
                 {wrong}
               </div>
               <div className="mono text-[13px] uppercase text-ink-faint">
-                Do poprawy
+                {t("review.toImprove")}
               </div>
             </div>
             <div className="flex flex-col gap-1">
@@ -64,7 +65,7 @@ export function ReviewDoneScreen({ ratings, total, onExit }: Props) {
                 {total}
               </div>
               <div className="mono text-[13px] uppercase text-ink-faint">
-                Razem
+                {t("review.total")}
               </div>
             </div>
           </div>
@@ -74,7 +75,7 @@ export function ReviewDoneScreen({ ratings, total, onExit }: Props) {
             onClick={onExit}
             className="bg-amber text-paper rounded-sm hover:bg-[#ffcc4a] font-semibold px-7 py-4"
           >
-            Wróć do planu
+            {t("review.backToPlan")}
             <ArrowRightIcon size={18} weight="bold" className="ml-1" />
           </Button>
         </div>

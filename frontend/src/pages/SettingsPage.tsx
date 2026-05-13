@@ -3,13 +3,16 @@ import { Label } from "@cloudflare/kumo/components/label";
 import { Switch } from "@cloudflare/kumo/components/switch";
 import { CheckIcon } from "@phosphor-icons/react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { PageHead } from "../components/layout/PageHead";
 import { ProfileAppearanceSection } from "../components/profile/ProfileAppearanceSection";
+import { LanguageSwitcher } from "../components/ui/LanguageSwitcher";
 import { useSavedFeedback } from "../hooks/useSavedFeedback";
 import { useTheme } from "../hooks/useTheme";
 
 export function SettingsPage() {
+  const { t } = useTranslation();
   const { theme, setTheme } = useTheme();
   const [notifications, setNotifications] = useState(
     () => localStorage.getItem("settings.notifications") !== "false",
@@ -45,10 +48,10 @@ export function SettingsPage() {
   return (
     <>
       <PageHead
-        eyebrow="Preferencje"
+        eyebrow={t("settings.eyebrow")}
         title={
           <>
-            <em>Ustawienia</em>
+            <em>{t("settings.title").replace(/<\/?em>/g, "")}</em>
           </>
         }
       />
@@ -58,21 +61,25 @@ export function SettingsPage() {
           <div className="pb-3 border-b border-rule flex items-baseline justify-between gap-3">
             <div className="flex items-baseline gap-3">
               <span className="mono text-xs text-amber">01 —</span>
-              <h2 className="display text-[23px] text-ink">Nauka</h2>
+              <h2 className="display text-[23px] text-ink">
+                {t("settings.study")}
+              </h2>
             </div>
             {saved && (
               <span className="mono text-[13px] uppercase text-rating-4 flex items-center gap-1.5">
                 <CheckIcon size={11} weight="bold" />
-                Zapisano
+                {t("common.saved")}
               </span>
             )}
           </div>
 
           <Label className="flex items-center justify-between gap-6 py-4 border-b border-dashed border-rule cursor-pointer">
             <div className="flex flex-col gap-1">
-              <span className="text-[18px] text-ink">Powiadomienia</span>
+              <span className="text-[18px] text-ink">
+                {t("settings.notifications")}
+              </span>
               <span className="text-[15px] text-ink-faint">
-                Codzienne przypomnienia o powtórkach.
+                {t("settings.notificationsHint")}
               </span>
             </div>
             <Switch
@@ -83,9 +90,11 @@ export function SettingsPage() {
 
           <Label className="flex items-center justify-between gap-6 py-4 border-b border-dashed border-rule cursor-pointer">
             <div className="flex flex-col gap-1">
-              <span className="text-[18px] text-ink">Dźwięki</span>
+              <span className="text-[18px] text-ink">
+                {t("settings.sounds")}
+              </span>
               <span className="text-[15px] text-ink-faint">
-                Subtelne dźwięki przy ocenianiu kart.
+                {t("settings.soundsHint")}
               </span>
             </div>
             <Switch checked={sound} onCheckedChange={handleSoundChange} />
@@ -93,9 +102,11 @@ export function SettingsPage() {
 
           <Label className="flex items-center justify-between gap-6 py-4 border-b border-dashed border-rule">
             <div className="flex flex-col gap-1">
-              <span className="text-[18px] text-ink">Dzienny limit kart</span>
+              <span className="text-[18px] text-ink">
+                {t("settings.dailyLimit")}
+              </span>
               <span className="text-[15px] text-ink-faint">
-                Maksymalna liczba nowych kart dziennie.
+                {t("settings.dailyLimitHint")}
               </span>
             </div>
             <div className="flex items-center gap-3">
@@ -115,6 +126,18 @@ export function SettingsPage() {
               </span>
             </div>
           </Label>
+
+          <div className="flex items-center justify-between gap-6 py-4 border-b border-dashed border-rule">
+            <div className="flex flex-col gap-1">
+              <span className="text-[18px] text-ink">
+                {t("settings.language")}
+              </span>
+              <span className="text-[15px] text-ink-faint">
+                {t("settings.languageHint")}
+              </span>
+            </div>
+            <LanguageSwitcher />
+          </div>
         </section>
 
         <ProfileAppearanceSection theme={theme} onThemeChange={setTheme} />
@@ -122,15 +145,17 @@ export function SettingsPage() {
         <section className="enter enter-d2 flex flex-col gap-4">
           <div className="pb-3 border-b border-rule flex items-baseline gap-3">
             <span className="mono text-xs text-amber">03 —</span>
-            <h2 className="display text-[23px] text-ink">O aplikacji</h2>
+            <h2 className="display text-[23px] text-ink">
+              {t("settings.about")}
+            </h2>
           </div>
           <dl className="grid grid-cols-[140px_1fr] gap-y-3 text-[17px]">
             <dt className="mono text-[14px] text-ink-faint uppercase self-center">
-              Wersja
+              {t("settings.version")}
             </dt>
             <dd className="mono text-ink-muted">0.0.0 — dev</dd>
             <dt className="mono text-[14px] text-ink-faint uppercase self-center">
-              Build
+              {t("settings.build")}
             </dt>
             <dd className="mono text-ink-muted">local</dd>
           </dl>

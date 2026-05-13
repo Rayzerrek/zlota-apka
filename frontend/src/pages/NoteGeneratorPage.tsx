@@ -7,11 +7,13 @@ import {
   TextAlignLeftIcon,
 } from "@phosphor-icons/react";
 import { useRouter, useSearch } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useGenerateNote } from "../hooks/api/useNotes";
 
 export function NoteGeneratorPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const search = useSearch({ strict: false }) as {
     topic?: string;
@@ -27,7 +29,7 @@ export function NoteGeneratorPage() {
     if (search.subject) setSubject(search.subject);
   }, [search.topic, search.subject]);
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!topic.trim()) return;
 
@@ -48,16 +50,19 @@ export function NoteGeneratorPage() {
     <>
       <div className="mb-9 pb-4 border-b border-rule">
         <Breadcrumbs size="sm" className="mb-3">
-          <Breadcrumbs.Link href="/browse">Nauka</Breadcrumbs.Link>
+          <Breadcrumbs.Link href="/browse">{t("notes.study")}</Breadcrumbs.Link>
           <Breadcrumbs.Separator />
-          <Breadcrumbs.Current>Generator notatek</Breadcrumbs.Current>
+          <Breadcrumbs.Current>{t("notes.noteGenerator")}</Breadcrumbs.Current>
         </Breadcrumbs>
         <div className="flex flex-col gap-2">
           <span className="mono text-xs text-ink-muted uppercase">
-            Asystent AI
+            {t("notes.aiAssistant")}
           </span>
           <h1 className="display italic text-[clamp(36px,6vw,56px)] font-normal leading-[0.95] m-0 text-ink">
-            Generator <em className="not-italic text-amber">notatek</em>
+            {t("notes.noteGenerator").split(" ")[0]}{" "}
+            <em className="not-italic text-amber">
+              {t("notes.noteGenerator").split(" ").slice(1).join(" ")}
+            </em>
           </h1>
         </div>
       </div>
@@ -70,9 +75,11 @@ export function NoteGeneratorPage() {
                 <SparkleIcon size={20} weight="fill" />
               </div>
               <div>
-                <p className="display text-[18px] text-ink">Nowa notatka</p>
+                <p className="display text-[18px] text-ink">
+                  {t("notes.newNote")}
+                </p>
                 <p className="text-sm text-ink-muted mt-0.5">
-                  Wpisz temat, a AI przygotuje kompleksową notatkę
+                  {t("notes.newNoteDescription")}
                 </p>
               </div>
             </div>
@@ -83,13 +90,13 @@ export function NoteGeneratorPage() {
                   htmlFor="topic"
                   className="mono text-[12px] uppercase tracking-[0.16em] text-ink-muted"
                 >
-                  Temat *
+                  {t("notes.topicLabel")}
                 </label>
                 <textarea
                   id="topic"
                   value={topic}
                   onChange={(e) => setTopic(e.target.value)}
-                  placeholder="np. Właściwości funkcji kwadratowej, II wojna światowa — najważniejsze bitwy..."
+                  placeholder={t("notes.topicPlaceholder")}
                   rows={3}
                   className={`${FIELD_CLASS} resize-none min-h-[88px]`}
                   disabled={isPending}
@@ -101,16 +108,16 @@ export function NoteGeneratorPage() {
                   htmlFor="subject"
                   className="mono text-[12px] uppercase tracking-[0.16em] text-ink-muted"
                 >
-                  Przedmiot
+                  {t("notes.subjectLabel")}
                   <span className="text-ink-faint normal-case ml-1">
-                    (opcjonalnie)
+                    {t("notes.subjectOptional")}
                   </span>
                 </label>
                 <input
                   id="subject"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  placeholder="np. Matematyka, Historia, Biologia..."
+                  placeholder={t("notes.subjectPlaceholder")}
                   className={FIELD_CLASS}
                   disabled={isPending}
                 />
@@ -131,11 +138,11 @@ export function NoteGeneratorPage() {
                 {isPending ? (
                   <>
                     <span className="inline-block w-4 h-4 border-2 border-paper/30 border-t-paper rounded-full animate-spin mr-2" />
-                    Generowanie...
+                    {t("notes.generating")}
                   </>
                 ) : (
                   <>
-                    Generuj notatkę
+                    {t("notes.generate")}
                     <ArrowRightIcon
                       size={18}
                       weight="bold"
@@ -153,34 +160,18 @@ export function NoteGeneratorPage() {
             <div className="flex items-center gap-2.5 mb-3">
               <BookOpenTextIcon size={18} className="text-amber" />
               <span className="mono text-[11px] uppercase tracking-[0.16em] text-ink">
-                Jak to działa
+                {t("notes.howItWorks")}
               </span>
             </div>
             <ul className="flex flex-col gap-3 text-sm text-ink-muted">
-              <li className="flex gap-2.5">
-                <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-[3px] bg-amber/10 text-[11px] text-amber">
-                  1
-                </span>
-                Wpisz temat i opcjonalnie przedmiot
-              </li>
-              <li className="flex gap-2.5">
-                <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-[3px] bg-amber/10 text-[11px] text-amber">
-                  2
-                </span>
-                AI analizuje temat i tworzy notatkę
-              </li>
-              <li className="flex gap-2.5">
-                <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-[3px] bg-amber/10 text-[11px] text-amber">
-                  3
-                </span>
-                Notatka jest zapisywana — dostajesz stały link
-              </li>
-              <li className="flex gap-2.5">
-                <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-[3px] bg-amber/10 text-[11px] text-amber">
-                  4
-                </span>
-                Wracaj do niej kiedy chcesz, udostępniaj znajomym
-              </li>
+              {(["step1", "step2", "step3", "step4"] as const).map((key, i) => (
+                <li key={key} className="flex gap-2.5">
+                  <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-[3px] bg-amber/10 text-[11px] text-amber">
+                    {i + 1}
+                  </span>
+                  {t(`notes.${key}`)}
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -188,7 +179,7 @@ export function NoteGeneratorPage() {
             <div className="flex items-center gap-2.5 mb-3">
               <TextAlignLeftIcon size={18} className="text-ink-muted" />
               <span className="mono text-[11px] uppercase tracking-[0.16em] text-ink">
-                Przykładowe tematy
+                {t("notes.exampleTopics")}
               </span>
             </div>
             <div className="flex flex-col gap-1.5">

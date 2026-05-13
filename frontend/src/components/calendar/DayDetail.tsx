@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 import { cn } from "../../utils/cn";
 import { dayLong } from "../../utils/date";
 import { SUBJECTS, SUBJECT_BG } from "../../utils/subjects";
@@ -10,6 +12,8 @@ type Props = {
 };
 
 export function DayDetail({ selected, sessions }: Props) {
+  const { t } = useTranslation();
+
   return (
     <section className="mt-6">
       <div className="flex items-baseline justify-between gap-3 mb-5 pb-3 border-b border-rule">
@@ -19,14 +23,14 @@ export function DayDetail({ selected, sessions }: Props) {
         </h2>
         <span className="mono text-[14px] uppercase text-ink-faint">
           {sessions.length === 0
-            ? "Brak zaplanowanych sesji"
-            : `${sessions.length} sesji`}
+            ? t("calendar.noPlannedSessions")
+            : t("calendar.sessionsCount", { count: sessions.length })}
         </span>
       </div>
 
       {sessions.length === 0 ? (
         <div className="py-8 text-ink-faint display italic text-2xl">
-          dzień wolny — złap oddech.
+          {t("calendar.freeDay")}
         </div>
       ) : (
         sessions.map((s, idx) => {
@@ -67,7 +71,9 @@ export function DayDetail({ selected, sessions }: Props) {
                 </span>
               </span>
               <span className="mono text-sm text-ink flex items-center gap-2.5">
-                <span className="text-ink-faint">{s.cardIds.length} kart</span>
+                <span className="text-ink-faint">
+                  {s.cardIds.length} {t("common.cards")}
+                </span>
               </span>
             </div>
           );
