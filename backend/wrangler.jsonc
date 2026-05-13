@@ -11,7 +11,7 @@
 
   "vars": {
     "FRONTEND_URL": "https://recurs.app,http://localhost:5173",
-    "BETTER_AUTH_URL": "https://api.recurs.app",
+    "BETTER_AUTH_URL": "https://https://zlota-apka.rayserrek.workers.dev",
     "DEMO_GUEST_ID": "demo-guest",
     "EMAIL_FROM": "Recurs <hello@recurs.app>",
   },
