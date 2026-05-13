@@ -5,6 +5,7 @@ import {
   NotePencilIcon,
 } from "@phosphor-icons/react";
 import { useNavigate } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   examId: string;
@@ -12,6 +13,7 @@ type Props = {
 };
 
 export function ExamMenu({ examId, subjectKey }: Props) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   return (
@@ -20,8 +22,8 @@ export function ExamMenu({ examId, subjectKey }: Props) {
         render={
           <button
             type="button"
-            aria-label="Opcje egzaminu"
-            title="Opcje egzaminu"
+            aria-label={t("exam.examOptions")}
+            title={t("exam.examOptions")}
             className="grid h-8 w-8 place-items-center rounded-[4px] text-ink-faint transition-colors hover:bg-white/[0.04] hover:text-ink focus:outline-none"
           />
         }
@@ -42,7 +44,7 @@ export function ExamMenu({ examId, subjectKey }: Props) {
             <span className="text-ink-faint">
               <NotePencilIcon size={15} />
             </span>
-            Wygeneruj notatkę
+            {t("exam.generateNote")}
           </DropdownMenu.Item>
           <DropdownMenu.Item
             onSelect={() =>
@@ -56,7 +58,7 @@ export function ExamMenu({ examId, subjectKey }: Props) {
             <span className="text-ink-faint">
               <CardsIcon size={15} />
             </span>
-            Przeglądaj fiszki
+            {t("exam.browseCards")}
           </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Portal>

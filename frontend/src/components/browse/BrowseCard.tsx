@@ -1,18 +1,12 @@
 import { Button } from "@cloudflare/kumo/components/button";
 import { TrashIcon } from "@phosphor-icons/react";
+import { useTranslation } from "react-i18next";
 
 import { cn } from "../../utils/cn";
 import { daysBetween } from "../../utils/date";
 import { SUBJECTS, SUBJECT_BG } from "../../utils/subjects";
 
 import type { Card, CardStage } from "../../types";
-
-const STAGE_LABELS: Record<CardStage, string> = {
-  new: "nowa",
-  learning: "uczona",
-  review: "utrwalona",
-  due: "na dziś",
-};
 
 const STAGE_COLORS: Record<CardStage, string> = {
   new: "text-sub-mat",
@@ -32,14 +26,23 @@ type Props = {
 };
 
 export function BrowseCard({ card, onDelete, onClick }: Props) {
+  const { t } = useTranslation();
+
+  const STAGE_LABELS: Record<CardStage, string> = {
+    new: t("browse.stageNew"),
+    learning: t("browse.stageLearning"),
+    review: t("browse.stageReview"),
+    due: t("browse.stageDue"),
+  };
+
   const subj = SUBJECTS[card.subject];
   const dueDays = daysBetween(todayISO(), card.dueISO);
   const dueText =
     dueDays < 0
-      ? `zaległa ${Math.abs(dueDays)} d`
+      ? t("browse.overdue", { days: Math.abs(dueDays) })
       : dueDays === 0
-        ? "dziś"
-        : `za ${dueDays} d`;
+        ? t("browse.dueToday")
+        : t("browse.dueIn", { days: dueDays });
 
   return (
     <div
@@ -69,7 +72,7 @@ export function BrowseCard({ card, onDelete, onClick }: Props) {
               SUBJECT_BG[card.subject],
             )}
           />
-          {subj.name}
+          {t(`subjects.${card.subject}`, { defaultValue: subj.name })}
         </span>
         <div className="flex items-center gap-2">
           <span

@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 import { DonutChart } from "../components/charts/DonutChart";
 import { PageHead } from "../components/layout/PageHead";
@@ -17,6 +18,7 @@ function formatMinutes(mins: number): string {
 }
 
 export function StatsPage() {
+  const { t } = useTranslation();
   const { data: apiCards, isLoading: cardsLoading } = useAllCards();
   const {
     retentionPct,
@@ -41,22 +43,22 @@ export function StatsPage() {
   const legendItems = [
     {
       count: mature,
-      label: "Dobrze opanowane",
-      sub: "zapamiętasz je długo",
+      label: t("stats.wellMastered"),
+      sub: t("stats.rememberLong"),
       bg: "bg-rating-4",
       text: "text-rating-4",
     },
     {
       count: young,
-      label: "W trakcie nauki",
-      sub: "powtarzaj regularnie",
+      label: t("stats.learning"),
+      sub: t("stats.reviewRegularly"),
       bg: "bg-amber",
       text: "text-amber",
     },
     {
       count: dueOrNew,
-      label: "Czekają na Ciebie",
-      sub: "zacznij dziś",
+      label: t("stats.waitingForYou"),
+      sub: t("stats.startToday"),
       bg: "bg-ink-faint",
       text: "text-ink-faint",
     },
@@ -65,7 +67,10 @@ export function StatsPage() {
   if (cardsLoading || statsLoading) {
     return (
       <>
-        <PageHead eyebrow="Statystyki" title={<em>Postęp</em>} />
+        <PageHead
+          eyebrow={t("stats.eyebrow")}
+          title={<em>{t("stats.title")}</em>}
+        />
         <div className="h-96 animate-pulse rounded-sm border border-rule bg-paper-2" />
       </>
     );
@@ -74,13 +79,13 @@ export function StatsPage() {
   return (
     <>
       <PageHead
-        eyebrow="Statystyki"
+        eyebrow={t("stats.eyebrow")}
         title={
           <>
-            <em>postęp</em>
+            <em>{t("stats.title")}</em>
           </>
         }
-        date="Aktualizacja dziś"
+        date={t("stats.updateToday")}
       />
 
       <div className="enter enter-d1 grid grid-cols-1 gap-6 pb-10 border-b border-rule mb-10 min-[800px]:grid-cols-[1.2fr_1fr] min-[800px]:gap-14 min-[800px]:items-end">
@@ -90,25 +95,27 @@ export function StatsPage() {
           </div>
         </div>
         <div className="flex flex-col gap-3">
-          <span className="eyebrow">Co to znaczy</span>
+          <span className="eyebrow">{t("stats.whatItMeans")}</span>
           <p className="text-ink-muted leading-relaxed">
-            <strong className="text-ink">{retentionPct}%</strong> kart pamiętasz
-            przy pierwszym podejściu. Cel to{" "}
-            <strong className="text-ink">90%</strong> — im bliżej, tym mniej
-            czasu tracisz na powtarzanie tych samych kart.
+            <strong className="text-ink">{retentionPct}%</strong>{" "}
+            {t("stats.retentionExplanation", { pct: retentionPct })
+              .replace(/<\/?strong>/g, "")
+              .split(`${retentionPct}%`)[1]
+              ?.split("90%")
+              .join("90%") ?? ""}
           </p>
           <div className="flex gap-6 pt-4 border-t border-dashed border-rule-strong mt-1">
             <div>
               <div className="display text-[31px] leading-none">
                 {streakDays}
               </div>
-              <div className="eyebrow text-[13px]">dni z rzędu</div>
+              <div className="eyebrow text-[13px]">{t("stats.daysInRow")}</div>
             </div>
             <div>
               <div className="mono text-[31px] leading-none">
                 {formatMinutes(weekMinutes)}
               </div>
-              <div className="eyebrow text-[13px]">/ tydzień</div>
+              <div className="eyebrow text-[13px]">{t("stats.perWeek")}</div>
             </div>
             <div>
               <div className="mono text-[31px] leading-none">
@@ -117,7 +124,7 @@ export function StatsPage() {
                   /{totalCards}
                 </span>
               </div>
-              <div className="eyebrow text-[13px]">opanowanych</div>
+              <div className="eyebrow text-[13px]">{t("stats.mastered")}</div>
             </div>
           </div>
         </div>
@@ -126,11 +133,11 @@ export function StatsPage() {
       <section className="enter enter-d2 mb-10 pb-10 border-b border-rule">
         <div className="flex items-baseline justify-between gap-3 mb-8 pb-3 border-b border-rule">
           <h2 className="display font-normal text-[25px] text-ink flex items-baseline gap-3">
-            <span className="mono text-xs text-amber">01 —</span> Jak dobrze
-            znasz karty
+            <span className="mono text-xs text-amber">01 —</span>{" "}
+            {t("stats.howWellYouKnow")}
           </h2>
           <span className="mono text-[14px] uppercase text-ink-faint">
-            {total} kart
+            {t("stats.cardsCount", { count: total })}
           </span>
         </div>
 
@@ -139,17 +146,17 @@ export function StatsPage() {
             <DonutChart
               data={[
                 {
-                  name: "Opanowane",
+                  name: t("stats.wellMastered"),
                   value: mature,
                   color: "var(--color-rating-4)",
                 },
                 {
-                  name: "W trakcie",
+                  name: t("stats.learning"),
                   value: young,
                   color: "var(--color-amber)",
                 },
                 {
-                  name: "Do zrobienia",
+                  name: t("stats.waitingForYou"),
                   value: dueOrNew,
                   color: "var(--color-ink-faint)",
                 },
@@ -181,20 +188,23 @@ export function StatsPage() {
       <section className="enter enter-d3 mt-4">
         <div className="flex items-baseline justify-between gap-3 mb-5 pb-3 border-b border-rule">
           <h2 className="display font-normal text-[25px] text-ink flex items-baseline gap-3">
-            <span className="mono text-xs text-amber">02 —</span> Z czego ci
-            idzie najlepiej
+            <span className="mono text-xs text-amber">02 —</span>{" "}
+            {t("stats.bestSubjects")}
           </h2>
         </div>
         <div className="flex flex-col gap-4">
           {subjectRetention.length === 0 && (
             <p className="text-ink-faint mono text-sm">
-              Brak danych o retencji per przedmiot.
+              {t("stats.noRetentionData")}
             </p>
           )}
           {subjectRetention.map(({ subject, pct }) => (
             <div key={subject} className="flex items-center gap-4">
               <div className="mono text-[13px] uppercase text-ink-muted w-24 shrink-0">
-                {SUBJECTS[subject as keyof typeof SUBJECTS]?.name ?? subject}
+                {t(`subjects.${subject}`, {
+                  defaultValue:
+                    SUBJECTS[subject as keyof typeof SUBJECTS]?.name ?? subject,
+                })}
               </div>
               <div className="flex-1 h-2 bg-kumo-base rounded-sm overflow-hidden">
                 <div

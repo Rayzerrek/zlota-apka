@@ -1,6 +1,7 @@
 import { Button } from "@cloudflare/kumo/components/button";
 import { SparkleIcon } from "@phosphor-icons/react";
 import { useNavigate } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 
 import { cn } from "../../utils/cn";
 import { daysBetween, longDate } from "../../utils/date";
@@ -18,17 +19,18 @@ type Props = {
 };
 
 export function UpcomingExams({ exams }: Props) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   return (
     <section className="mt-16">
       <div className="flex items-baseline justify-between gap-3 mb-5 pb-3 border-b border-rule">
         <h2 className="display font-normal text-[25px] text-ink flex items-baseline gap-3">
-          <span className="mono text-xs text-amber">03 —</span> Sprawdziany na
-          horyzoncie
+          <span className="mono text-xs text-amber">03 —</span>{" "}
+          {t("calendar.upcomingExams")}
         </h2>
         <span className="mono text-[14px] uppercase text-ink-faint">
-          {exams.length} terminów
+          {t("calendar.deadlines", { count: exams.length })}
         </span>
       </div>
       <div className="flex flex-col">
@@ -62,8 +64,8 @@ export function UpcomingExams({ exams }: Props) {
                   variant="ghost"
                   shape="square"
                   size="sm"
-                  aria-label="Notatka"
-                  title="Generuj notatkę"
+                  aria-label={t("notes.note")}
+                  title={t("exam.generateNote")}
                   icon={SparkleIcon}
                   onClick={() =>
                     navigate({

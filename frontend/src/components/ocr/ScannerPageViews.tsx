@@ -5,6 +5,7 @@ import {
   SpinnerIcon,
   TextAlignLeftIcon,
 } from "@phosphor-icons/react";
+import { useTranslation } from "react-i18next";
 
 import { CameraCapture } from "./CameraCapture";
 import { Scanner } from "./Scanner";
@@ -44,6 +45,7 @@ export function MobileCameraView({
   onScan,
   onSwitchToFile,
 }: CameraViewProps) {
+  const { t } = useTranslation();
   const mobileViewportClassName =
     "h-[calc(100dvh-7rem-env(safe-area-inset-bottom))]";
   const showCaptureHint = !capturedFile && !loading && !result && !error;
@@ -62,7 +64,7 @@ export function MobileCameraView({
           {previewUrl && (
             <img
               src={previewUrl}
-              alt="Zrobione zdjęcie"
+              alt={t("scanner.capturedPhoto")}
               className="h-full w-full object-cover"
             />
           )}
@@ -76,7 +78,7 @@ export function MobileCameraView({
                 onClick={onReset}
                 className="rounded-full border border-white/15 bg-white/10 px-5 py-3 text-[15px] font-medium text-white backdrop-blur-md hover:bg-white/15"
               >
-                Nowe zdjęcie
+                {t("scanner.newPhoto")}
               </Button>
               <Button
                 type="button"
@@ -84,7 +86,7 @@ export function MobileCameraView({
                 onClick={onScan}
                 className="rounded-full px-6 py-3 text-[15px] font-medium shadow-lg"
               >
-                Skanuj
+                {t("scanner.scan")}
               </Button>
             </div>
           )}
@@ -101,14 +103,14 @@ export function MobileCameraView({
           icon={<FilesIcon size={16} weight="bold" />}
           className="shrink-0 rounded-full border border-rule bg-paper-2 px-3.5 py-2.5 text-[14px] font-medium text-ink"
         >
-          Pliki
+          {t("scanner.files")}
         </Button>
       </div>
 
       {showCaptureHint && (
         <div className="pointer-events-none absolute inset-x-6 bottom-[calc(7rem+env(safe-area-inset-bottom))] z-10 rounded-3xl border border-white/10 bg-black/20 px-4 py-3 text-center backdrop-blur-sm">
           <p className="text-[14px] leading-relaxed text-white/82">
-            Ustaw kartkę w ramce. Najlepiej w dobrym świetle i bez cienia.
+            {t("scanner.cameraHint")}
           </p>
         </div>
       )}
@@ -121,10 +123,10 @@ export function MobileCameraView({
               className="mx-auto animate-spin text-amber"
             />
             <p className="mt-3 text-[15px] font-medium">
-              AI analizuje zdjęcie…
+              {t("scanner.aiAnalyzing")}
             </p>
             <p className="mt-1 text-[13px] text-white/65">
-              To może potrwać chwilę.
+              {t("scanner.mayTakeAWhile")}
             </p>
           </div>
         </div>
@@ -133,7 +135,7 @@ export function MobileCameraView({
       {showError && (
         <div className="absolute inset-x-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-30 rounded-[28px] border border-rating-1/30 bg-paper p-5 text-ink shadow-2xl">
           <p className="text-[12px] uppercase tracking-[0.18em] text-rating-1">
-            Problem
+            {t("scanner.problem")}
           </p>
           <p className="mt-2 text-[15px] leading-relaxed text-ink-muted">
             {error}
@@ -145,7 +147,7 @@ export function MobileCameraView({
               onClick={onReset}
               className="rounded-full border border-rule px-4 py-2.5 text-[14px] font-medium text-ink"
             >
-              Spróbuj jeszcze raz
+              {t("scanner.tryAgain")}
             </Button>
           </div>
         </div>
@@ -161,7 +163,7 @@ export function MobileCameraView({
               onClick={onReset}
               className="rounded-full border border-rule px-4 py-2 text-[14px] font-medium text-ink"
             >
-              Nowe zdjęcie
+              {t("scanner.newPhoto")}
             </Button>
           </div>
           <ScanResult text={result} />
@@ -172,15 +174,17 @@ export function MobileCameraView({
 }
 
 export function MobileFileView({ onSwitchToCamera }: FileViewProps) {
+  const { t } = useTranslation();
+
   return (
     <section className="-mb-16 -mt-6 -mx-5 min-h-[calc(100dvh-7rem-env(safe-area-inset-bottom))] bg-paper px-4 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))]">
       <div className="mx-auto flex max-w-xl items-center justify-between gap-3">
         <div>
           <p className="text-[11px] uppercase tracking-[0.22em] text-ink-faint">
-            Skaner AI
+            {t("scanner.aiScanner")}
           </p>
           <h1 className="mt-1 text-[28px] leading-none text-ink">
-            Dodaj zdjęcia z plików
+            {t("scanner.mobileFileTitle")}
           </h1>
         </div>
         <Button
@@ -190,7 +194,7 @@ export function MobileFileView({ onSwitchToCamera }: FileViewProps) {
           icon={<CameraIcon size={16} weight="bold" />}
           className="rounded-full border border-rule bg-paper-2 px-3.5 py-2.5 text-[14px] font-medium text-ink"
         >
-          Aparat
+          {t("scanner.camera")}
         </Button>
       </div>
 
@@ -201,11 +205,10 @@ export function MobileFileView({ onSwitchToCamera }: FileViewProps) {
           </div>
           <div>
             <p className="text-[15px] font-medium text-ink">
-              Masz już zdjęcia w telefonie?
+              {t("scanner.mobileFileHint")}
             </p>
             <p className="mt-1 text-[14px] leading-relaxed text-ink-muted">
-              Wybierz notatki, kartki albo slajdy. Aplikacja wyciągnie z nich
-              tekst.
+              {t("scanner.mobileFileDescription")}
             </p>
           </div>
         </div>
@@ -216,6 +219,8 @@ export function MobileFileView({ onSwitchToCamera }: FileViewProps) {
 }
 
 export function DesktopModeToggle({ mode, onSwitchMode }: ModeToggleProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex w-fit items-center gap-1 rounded-sm border border-rule bg-paper-2 p-1">
       <button
@@ -229,7 +234,7 @@ export function DesktopModeToggle({ mode, onSwitchMode }: ModeToggleProps) {
         ].join(" ")}
       >
         <CameraIcon size={16} weight={mode === "camera" ? "fill" : "regular"} />
-        Aparat
+        {t("scanner.camera")}
       </button>
       <button
         type="button"
@@ -242,7 +247,7 @@ export function DesktopModeToggle({ mode, onSwitchMode }: ModeToggleProps) {
         ].join(" ")}
       >
         <FilesIcon size={16} weight={mode === "file" ? "fill" : "regular"} />
-        Pliki
+        {t("scanner.files")}
       </button>
     </div>
   );
@@ -258,6 +263,7 @@ export function DesktopCameraView({
   onReset,
   onScan,
 }: CameraViewProps) {
+  const { t } = useTranslation();
   const showPreview = capturedFile && !loading && !result && !error;
   const showError = error && !loading;
   const showResult = result && !loading;
@@ -267,8 +273,7 @@ export function DesktopCameraView({
       {!capturedFile && (
         <>
           <p className="text-[15px] text-ink-faint">
-            Zrób zdjęcie notatki, kartki lub slajdu. AI przetworzy je na tekst,
-            który możesz wykorzystać w swoich fiszkach.
+            {t("scanner.desktopCameraHint")}
           </p>
           <CameraCapture onCapture={onCapture} />
         </>
@@ -280,7 +285,7 @@ export function DesktopCameraView({
             <div className="relative overflow-hidden rounded-sm border border-rule bg-black">
               <img
                 src={previewUrl}
-                alt="Zrobione zdjęcie"
+                alt={t("scanner.capturedPhoto")}
                 className="h-auto max-h-[min(50vh,calc(100dvh-320px))] w-full object-contain"
               />
             </div>
@@ -293,7 +298,7 @@ export function DesktopCameraView({
               onClick={onScan}
               className="rounded-sm"
             >
-              Skanuj
+              {t("scanner.scan")}
             </Button>
             <Button
               type="button"
@@ -301,7 +306,7 @@ export function DesktopCameraView({
               onClick={onReset}
               className="rounded-sm"
             >
-              Nowe zdjęcie
+              {t("scanner.newPhoto")}
             </Button>
           </div>
         </div>
@@ -310,9 +315,7 @@ export function DesktopCameraView({
       {loading && (
         <div className="flex items-center gap-3 text-ink-muted">
           <SpinnerIcon size={18} className="animate-spin" />
-          <span className="text-[15px]">
-            AI analizuje zdjęcie (może to potrwać chwilę)…
-          </span>
+          <span className="text-[15px]">{t("scanner.aiAnalyzing")}</span>
         </div>
       )}
 
@@ -328,11 +331,12 @@ export function DesktopCameraView({
 }
 
 export function DesktopFileView() {
+  const { t } = useTranslation();
+
   return (
     <div className="flex flex-col gap-4">
       <p className="text-[15px] text-ink-faint">
-        Wybierz zdjęcia kartek, notatek lub slajdów. AI przetworzy je na tekst,
-        który możesz wykorzystać w swoich fiszkach.
+        {t("scanner.desktopFileHint")}
       </p>
       <Scanner />
     </div>

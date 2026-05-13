@@ -6,6 +6,7 @@ import {
   CoffeeIcon,
 } from "@phosphor-icons/react";
 import { useNavigate } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 
 import { cn } from "../../utils/cn";
 import { formatMinutes } from "../../utils/date";
@@ -27,6 +28,7 @@ function toSubjectKey(k: string | null): SubjectKey | null {
 }
 
 export function SessionList({ sessions, onStartSession, className }: Props) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   if (sessions.length === 0) {
@@ -34,13 +36,14 @@ export function SessionList({ sessions, onStartSession, className }: Props) {
       <section className={cn("mt-16", className)}>
         <div className="flex items-baseline justify-between gap-3 mb-5 pb-3 border-b border-rule">
           <h2 className="display font-normal text-[25px] text-ink flex items-baseline gap-3">
-            <span className="mono text-xs text-amber">01 —</span> Plan dnia
+            <span className="mono text-xs text-amber">01 —</span>{" "}
+            {t("today.planDnia")}
           </h2>
         </div>
         <Empty
           icon={<CoffeeIcon size={44} weight="duotone" />}
-          title="Brak sesji na dziś"
-          description="Nic na dziś w planie. Dodaj materiał albo ustaw nadchodzący sprawdzian — scheduler rozpisze powtórki."
+          title={t("today.noSessionsTitle")}
+          description={t("today.noSessionsDescription")}
           contents={
             <div className="flex gap-2.5 flex-wrap justify-center">
               <Button
@@ -48,13 +51,13 @@ export function SessionList({ sessions, onStartSession, className }: Props) {
                 icon={CalendarPlusIcon}
                 onClick={() => navigate({ to: "/calendar" })}
               >
-                Zaplanuj sprawdzian
+                {t("today.planExam")}
               </Button>
               <Button
                 variant="secondary"
                 onClick={() => navigate({ to: "/browse" })}
               >
-                Przejrzyj karty
+                {t("today.browseCards")}
               </Button>
             </div>
           }
@@ -70,13 +73,13 @@ export function SessionList({ sessions, onStartSession, className }: Props) {
           <span className="mono text-[11px] uppercase tracking-widest text-amber">
             01 —
           </span>{" "}
-          Plan dnia
+          {t("today.planDnia")}
         </h2>
         <span className="mono text-[12px] uppercase tracking-widest text-ink-faint bg-kumo-base px-3 py-1 rounded-full">
           <span className="text-ink">
             {sessions.filter((s) => s.status === "completed").length}
           </span>{" "}
-          / {sessions.length} ukończone
+          / {sessions.length} {t("today.completed")}
         </span>
       </div>
 
@@ -129,7 +132,7 @@ export function SessionList({ sessions, onStartSession, className }: Props) {
                       isDone && "line-through decoration-ink-faint/40",
                     )}
                   >
-                    {s.subjectName ?? s.subjectKey ?? "Bez przedmiotu"}
+                    {s.subjectName ?? s.subjectKey ?? t("common.noSubject")}
                   </span>
                 </div>
                 <div

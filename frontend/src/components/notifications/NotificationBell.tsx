@@ -3,11 +3,13 @@ import { Popover } from "@cloudflare/kumo/components/popover";
 import { BellIcon, BellRingingIcon } from "@phosphor-icons/react";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useNotificationInbox } from "../../hooks/api/useNotifications";
 import { NotificationItem } from "./NotificationItem";
 
 export function NotificationBell() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const perPage = 10;
@@ -27,7 +29,7 @@ export function NotificationBell() {
         render={
           <button
             type="button"
-            aria-label={`Powiadomienia${unreadCount > 0 ? ` (${unreadCount} nieprzeczytane)` : ""}`}
+            aria-label={`${t("notifications.title")}${unreadCount > 0 ? ` (${unreadCount})` : ""}`}
             className="relative flex items-center justify-center w-10 h-10 rounded-sm text-ink-muted hover:text-ink hover:bg-paper-3 transition-colors bg-transparent border-0 cursor-pointer"
           />
         }
@@ -53,7 +55,7 @@ export function NotificationBell() {
         <div className="flex items-center justify-between px-4 py-3 border-b border-rule shrink-0">
           <div className="flex items-center gap-2">
             <h3 className="text-[14px] font-semibold text-ink">
-              Powiadomienia
+              {t("notifications.title")}
             </h3>
           </div>
           {notifications.length > 0 && (
@@ -64,7 +66,7 @@ export function NotificationBell() {
                   onClick={() => void markAllRead()}
                   className="text-[12px] text-amber hover:text-[#ffcc4a] transition-colors bg-transparent border-0 cursor-pointer"
                 >
-                  Oznacz jako przeczytane
+                  {t("notifications.markAsRead")}
                 </button>
               )}
               <button
@@ -72,7 +74,7 @@ export function NotificationBell() {
                 onClick={() => void clearAll()}
                 className="text-[12px] text-ink-faint hover:text-ink-muted transition-colors bg-transparent border-0 cursor-pointer"
               >
-                Wyczyść wszystko
+                {t("notifications.clearAll")}
               </button>
             </div>
           )}
@@ -82,15 +84,18 @@ export function NotificationBell() {
           {!isFetched ? (
             <div className="flex flex-col items-center justify-center gap-2 py-10 px-4 text-center">
               <BellIcon size={28} className="text-ink-faint" />
-              <p className="text-[13px] text-ink-muted">Ładowanie...</p>
+              <p className="text-[13px] text-ink-muted">
+                {t("common.loading")}
+              </p>
             </div>
           ) : notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-2 py-10 px-4 text-center">
               <BellIcon size={28} className="text-ink-faint" />
-              <p className="text-[13px] text-ink-muted">Brak powiadomień</p>
+              <p className="text-[13px] text-ink-muted">
+                {t("notifications.noNotifications")}
+              </p>
               <p className="text-[12px] text-ink-faint">
-                Powiadomienia o wygenerowanych notatkach, zaplanowanych sesjach
-                i innych wydarzeniach pojawią się tutaj.
+                {t("notifications.notificationsHint")}
               </p>
             </div>
           ) : (

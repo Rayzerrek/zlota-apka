@@ -1,5 +1,6 @@
 import { Button } from "@cloudflare/kumo/components/button";
 import { CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react";
+import { useTranslation } from "react-i18next";
 
 import { cn } from "../../utils/cn";
 
@@ -18,6 +19,8 @@ export function CalendarNav({
   viewMode,
   onToggleView,
 }: Props) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex flex-col sm:flex-row gap-3 mb-5 items-center justify-between">
       <div className="flex gap-2.5 items-center order-2 sm:order-1">
@@ -27,21 +30,21 @@ export function CalendarNav({
           onClick={onPrev}
           className="rounded-sm ring-rule-strong text-ink hover:ring-amber hover:text-amber"
         >
-          <span className="hidden sm:inline">Poprzedni</span>
+          <span className="hidden sm:inline">{t("calendar.prev")}</span>
         </Button>
         <Button
           variant="outline"
           onClick={onToday}
           className="rounded-sm ring-rule-strong text-ink hover:ring-amber hover:text-amber"
         >
-          Dziś
+          {t("calendar.today")}
         </Button>
         <Button
           variant="outline"
           onClick={onNext}
           className="rounded-sm ring-rule-strong text-ink hover:ring-amber hover:text-amber"
         >
-          <span className="hidden sm:inline">Następny</span>
+          <span className="hidden sm:inline">{t("calendar.next")}</span>
           <CaretRightIcon size={14} />
         </Button>
       </div>
@@ -57,7 +60,7 @@ export function CalendarNav({
               : "text-ink-faint hover:text-ink-muted",
           )}
         >
-          Tydzień
+          {t("calendar.week")}
         </button>
         <button
           type="button"
@@ -69,7 +72,7 @@ export function CalendarNav({
               : "text-ink-faint hover:text-ink-muted",
           )}
         >
-          Miesiąc
+          {t("calendar.month")}
         </button>
       </div>
     </div>

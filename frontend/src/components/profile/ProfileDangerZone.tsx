@@ -1,5 +1,6 @@
 import { Button } from "@cloudflare/kumo/components/button";
 import { TrashIcon, WarningIcon } from "@phosphor-icons/react";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   confirmDelete: boolean;
@@ -12,13 +13,14 @@ export function ProfileDangerZone({
   setConfirmDelete,
   onDelete,
 }: Props) {
+  const { t } = useTranslation();
+
   return (
     <section className="enter enter-d4 mt-6 pt-8 border-t border-dashed border-rule">
       <div className="flex items-center gap-2 mb-2">
         <p className="text-[17px] text-ink-muted leading-[1.55] max-w-[48ch] mb-5">
           <WarningIcon size={30} weight="fill" className="text-rating-1" />
-          Usunięcie profilu jest nieodwracalne. Wszystkie karty, sesje i postępy
-          zostaną trwale utracone.
+          {t("profile.dangerZone")}
         </p>
       </div>
 
@@ -28,19 +30,19 @@ export function ProfileDangerZone({
           icon={TrashIcon}
           onClick={() => setConfirmDelete(true)}
         >
-          Usuń profil
+          {t("profile.deleteProfile")}
         </Button>
       ) : (
         <div className="flex flex-col gap-3 p-4 border border-rating-1 rounded-sm bg-rating-1/5">
           <div className="mono text-[14px] uppercase text-rating-1">
-            Czy na pewno?
+            {t("profile.deleteConfirm")}
           </div>
           <div className="flex gap-2 flex-wrap">
             <Button variant="destructive" icon={TrashIcon} onClick={onDelete}>
-              Tak, usuń trwale
+              {t("profile.deleteConfirmYes")}
             </Button>
             <Button variant="ghost" onClick={() => setConfirmDelete(false)}>
-              Anuluj
+              {t("common.cancel")}
             </Button>
           </div>
         </div>

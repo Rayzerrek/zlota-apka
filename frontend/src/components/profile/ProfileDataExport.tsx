@@ -2,6 +2,7 @@ import { Button } from "@cloudflare/kumo/components/button";
 import { DownloadSimpleIcon } from "@phosphor-icons/react";
 import Papa from "papaparse";
 import { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useAllCards, useReviewHistory } from "../../hooks/api/useCards";
 import { useAllExams } from "../../hooks/api/useExams";
@@ -30,6 +31,7 @@ function todayStamp(): string {
 }
 
 export function ProfileDataExport() {
+  const { t } = useTranslation();
   const { addNotification } = useNotificationInbox();
   const { data: apiCards } = useAllCards();
   const { data: apiExams } = useAllExams();
@@ -91,9 +93,9 @@ export function ProfileDataExport() {
       filename,
       content: JSON.stringify(payload, null, 2),
       mime: "application/json",
-      notificationTitle: "Wyeksportowano dane",
+      notificationTitle: t("profile.exportedData"),
     });
-  }, [cards, exams, exportFile, history, sessions]);
+  }, [cards, exams, exportFile, history, sessions, t]);
 
   const handleCSV = useCallback(() => {
     const filename = `powtorki-history-${todayStamp()}.csv`;
@@ -101,20 +103,18 @@ export function ProfileDataExport() {
       filename,
       content: Papa.unparse(history),
       mime: "text/csv",
-      notificationTitle: "Wyeksportowano historię",
+      notificationTitle: t("profile.exportedHistory"),
     });
-  }, [exportFile, history]);
+  }, [exportFile, history, t]);
 
   return (
     <section className="enter enter-d3 flex flex-col gap-3 pt-2">
       <h2 className="display font-normal text-[21px] text-ink flex items-baseline gap-3">
         <span className="mono text-xs text-amber">02 —</span>
-        Twoje dane
+        {t("profile.yourData")}
       </h2>
       <p className="text-[15px] text-ink-muted leading-[1.55] max-w-[52ch]">
-        Historia powtórek należy do Ciebie. Pobierz ją w dowolnej chwili — JSON
-        zawiera całość (karty, sesje, sprawdziany, oceny), CSV to sama historia
-        ocen do arkuszy.
+        {t("profile.dataDescription")}
       </p>
       <div className="flex gap-2.5 flex-wrap mt-1">
         <Button
@@ -123,7 +123,7 @@ export function ProfileDataExport() {
           onClick={handleJSON}
           disabled={isLoading}
         >
-          Eksport JSON
+          {t("profile.exportJSON")}
         </Button>
         <Button
           variant="secondary"
@@ -131,7 +131,7 @@ export function ProfileDataExport() {
           onClick={handleCSV}
           disabled={isLoading}
         >
-          Eksport CSV (historia)
+          {t("profile.exportCSV")}
         </Button>
       </div>
     </section>

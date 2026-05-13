@@ -1,4 +1,5 @@
 import { NotificationBell } from "../notifications/NotificationBell";
+import { LanguageSwitcher } from "../ui/LanguageSwitcher";
 
 import type { ReactNode } from "react";
 
@@ -27,6 +28,7 @@ export function PageHead({ eyebrow, title, date }: Props) {
             <span>{date}</span>
           </div>
         )}
+        <LanguageSwitcher className="hidden lg:flex" />
         <NotificationBell />
       </div>
     </div>

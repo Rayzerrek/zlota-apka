@@ -7,8 +7,9 @@ import {
   startOfWeek,
   subMonths,
 } from "date-fns";
-import { pl } from "date-fns/locale";
+import { enUS, pl } from "date-fns/locale";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { CalendarNav } from "../components/calendar/CalendarNav";
 import { DayDetail } from "../components/calendar/DayDetail";
@@ -37,23 +38,25 @@ function weekDaysFrom(iso: string): string[] {
   );
 }
 
-function weekLabel(anchorISO: string): string {
+function weekLabel(anchorISO: string, locale: typeof pl): string {
   const start = startOfWeek(parseISO(anchorISO), { weekStartsOn: 1 });
   const end = addDays(start, 6);
-  return `${format(start, "d MMM", { locale: pl })} – ${format(end, "d MMM yyyy", { locale: pl })}`;
+  return `${format(start, "d MMM", { locale })} – ${format(end, "d MMM yyyy", { locale })}`;
 }
 
-function monthLabel(iso: string): string {
+function monthLabel(iso: string, locale: typeof pl): string {
   const d = parseISO(iso);
   return (
-    format(d, "LLLL", { locale: pl }).charAt(0).toUpperCase() +
-    format(d, "LLLL", { locale: pl }).slice(1) +
+    format(d, "LLLL", { locale }).charAt(0).toUpperCase() +
+    format(d, "LLLL", { locale }).slice(1) +
     " " +
     format(d, "yyyy")
   );
 }
 
 export function CalendarPage() {
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language === "en" ? enUS : pl;
   const today = todayISO();
   const [viewMode, setViewMode] = useState<ViewMode>("week");
   const [weekAnchor, setWeekAnchor] = useState(today);
@@ -108,7 +111,10 @@ export function CalendarPage() {
   if (examsLoading || sessionsLoading) {
     return (
       <>
-        <PageHead eyebrow="plan" title={<em>Ładowanie...</em>} />
+        <PageHead
+          eyebrow={t("calendar.weeklyPlan")}
+          title={<em>{t("common.loading")}</em>}
+        />
         <div className="h-96 animate-pulse rounded-sm border border-rule bg-paper-2" />
       </>
     );
@@ -117,12 +123,16 @@ export function CalendarPage() {
   return (
     <>
       <PageHead
-        eyebrow={viewMode === "week" ? "plan tygodniowy" : "plan miesięczny"}
+        eyebrow={
+          viewMode === "week"
+            ? t("calendar.weeklyPlan")
+            : t("calendar.monthlyPlan")
+        }
         title={
           viewMode === "week" ? (
-            <em>{weekLabel(weekAnchor)}</em>
+            <em>{weekLabel(weekAnchor, locale)}</em>
           ) : (
-            <em>{monthLabel(weekAnchor)}</em>
+            <em>{monthLabel(weekAnchor, locale)}</em>
           )
         }
       />

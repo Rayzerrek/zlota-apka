@@ -2,12 +2,14 @@ import { Breadcrumbs } from "@cloudflare/kumo/components/breadcrumbs";
 import { Button } from "@cloudflare/kumo/components/button";
 import { NotePencilIcon } from "@phosphor-icons/react";
 import { useParams, useRouter } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import ReactMarkdown from "react-markdown";
 
 import { useGeneratedNote } from "../hooks/api/useNotes";
 import { longDate } from "../utils/date";
 
 export function GeneratedNotePage() {
+  const { t } = useTranslation();
   const params = useParams({ strict: false });
   const id = params.id as string;
   const router = useRouter();
@@ -26,18 +28,16 @@ export function GeneratedNotePage() {
     return (
       <div className="py-24 text-center">
         <p className="display italic text-[28px] text-ink-faint">
-          Notatka nie została znaleziona.
+          {t("notes.notFoundTitle")}
         </p>
-        <p className="mt-3 text-sm text-ink-muted">
-          Sprawdź, czy link jest poprawny, albo wygeneruj nową.
-        </p>
+        <p className="mt-3 text-sm text-ink-muted">{t("notes.notFoundHint")}</p>
         <Button
           variant="outline"
           icon={NotePencilIcon}
           onClick={() => router.navigate({ to: "/note/new" })}
           className="mt-6 rounded-sm"
         >
-          Wygeneruj nową
+          {t("notes.generateNew")}
         </Button>
       </div>
     );
@@ -47,17 +47,17 @@ export function GeneratedNotePage() {
     <>
       <div className="mb-9 pb-4 border-b border-rule">
         <Breadcrumbs size="sm" className="mb-3">
-          <Breadcrumbs.Link href="/browse">Nauka</Breadcrumbs.Link>
+          <Breadcrumbs.Link href="/browse">{t("notes.study")}</Breadcrumbs.Link>
           <Breadcrumbs.Separator />
           <Breadcrumbs.Link href="/note/new">
-            Generator notatek
+            {t("notes.noteGenerator")}
           </Breadcrumbs.Link>
           <Breadcrumbs.Separator />
           <Breadcrumbs.Current>{note.title}</Breadcrumbs.Current>
         </Breadcrumbs>
         <div className="flex flex-col gap-2">
           <span className="mono text-xs text-ink-muted uppercase">
-            {note.subject ?? "Notatka"}
+            {note.subject ?? t("notes.note")}
             {" · "}
             {longDate(note.createdAt.split("T")[0])}
           </span>
@@ -85,7 +85,7 @@ export function GeneratedNotePage() {
           onClick={() => router.navigate({ to: "/note/new" })}
           className="rounded-sm"
         >
-          Wygeneruj kolejną
+          {t("notes.generateAnother")}
         </Button>
       </div>
     </>

@@ -3,6 +3,7 @@ import { Button } from "@cloudflare/kumo/components/button";
 import { CheckIcon, CopySimpleIcon } from "@phosphor-icons/react";
 import { useParams } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useAllCards } from "../hooks/api/useCards";
 import { useAllExams } from "../hooks/api/useExams";
@@ -12,6 +13,7 @@ import { longDate } from "../utils/date";
 import { generateExamNote, noteToMarkdown } from "../utils/examNote";
 
 export function NotePage() {
+  const { t } = useTranslation();
   const params = useParams({ strict: false });
   const examId = params.examId as string;
   const [copied, setCopied] = useState(false);
@@ -50,7 +52,7 @@ export function NotePage() {
   if (!exam || !note) {
     return (
       <div className="py-24 text-center text-ink-faint display italic text-[25px]">
-        Nie znaleziono notatki.
+        {t("notes.notFound")}
       </div>
     );
   }
@@ -60,19 +62,21 @@ export function NotePage() {
       <div className="enter flex items-end justify-between gap-4 mb-9 pb-4 border-b border-rule">
         <div className="flex flex-col gap-3">
           <Breadcrumbs size="sm">
-            <Breadcrumbs.Link href="/browse">Nauka</Breadcrumbs.Link>
+            <Breadcrumbs.Link href="/browse">
+              {t("notes.study")}
+            </Breadcrumbs.Link>
             <Breadcrumbs.Separator />
             <Breadcrumbs.Current>{note.examName}</Breadcrumbs.Current>
           </Breadcrumbs>
           <div className="flex flex-col gap-1.5">
             <span className="mono text-[11px] uppercase text-amber">
-              Notatka · {note.subject}
+              {t("notes.note")} · {note.subject}
             </span>
             <h1 className="display italic text-[clamp(32px,5vw,52px)] font-normal leading-[0.95] m-0 text-ink">
               {note.examName}
             </h1>
             <p className="mono text-[13px] text-ink-faint mt-1">
-              {longDate(note.dateISO)} · {note.cardCount} kart
+              {longDate(note.dateISO)} · {note.cardCount} {t("common.cards")}
             </p>
           </div>
         </div>
@@ -88,15 +92,13 @@ export function NotePage() {
               : "!bg-kumo-base !text-ink-muted",
           )}
         >
-          {!copied ? "Kopiuj" : "Skopiowano"}
+          {!copied ? t("notes.copy") : t("notes.copied")}
         </Button>
       </div>
 
       <div className="flex flex-col gap-10 pb-16">
         {note.sections.length === 0 ? (
-          <p className="mono text-sm text-ink-faint">
-            Brak fiszek dla tego przedmiotu.
-          </p>
+          <p className="mono text-sm text-ink-faint">{t("notes.noCards")}</p>
         ) : (
           note.sections.map((section) => (
             <div key={section.topic}>

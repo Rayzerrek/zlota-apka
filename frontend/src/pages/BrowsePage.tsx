@@ -3,6 +3,7 @@ import { Pagination } from "@cloudflare/kumo/components/pagination";
 import { PlusIcon, StackIcon } from "@phosphor-icons/react";
 import { useSearch } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { AddCardModal } from "../components/browse/AddCardModal";
 import { BrowseCard } from "../components/browse/BrowseCard";
@@ -15,6 +16,7 @@ import { adaptApiCardToCard } from "../lib/adapters";
 import { SUBJECTS } from "../utils/subjects";
 
 export function BrowsePage() {
+  const { t } = useTranslation();
   const search = useSearch({ strict: false }) as { subject?: string };
   const { data: apiCards, isLoading } = useAllCards();
   const { mutate: deleteCard } = useDeleteCard();
@@ -71,10 +73,11 @@ export function BrowsePage() {
     return (
       <>
         <PageHead
-          eyebrow="Materiały"
+          eyebrow={t("browse.eyebrow")}
           title={
             <>
-              Twoje <em>fiszki</em>
+              {t("browse.title").split("<em>")[0]}
+              <em>{t("browse.title").match(/<em>(.*?)<\/em>/)?.[1]}</em>
             </>
           }
         />
@@ -87,10 +90,11 @@ export function BrowsePage() {
     return (
       <>
         <PageHead
-          eyebrow="Materiały"
+          eyebrow={t("browse.eyebrow")}
           title={
             <>
-              Twoje <em>fiszki</em>
+              {t("browse.title").split("<em>")[0]}
+              <em>{t("browse.title").match(/<em>(.*?)<\/em>/)?.[1]}</em>
             </>
           }
         />
@@ -99,10 +103,11 @@ export function BrowsePage() {
             <StackIcon size={36} weight="duotone" className="text-amber" />
           </div>
           <div className="text-center max-w-sm">
-            <h2 className="display text-[24px] text-ink mb-2">Brak fiszek</h2>
+            <h2 className="display text-[24px] text-ink mb-2">
+              {t("browse.noCards")}
+            </h2>
             <p className="text-[15px] text-ink-muted leading-relaxed">
-              Dodaj pierwszy sprawdzian z tematami, a potem utwórz fiszki do
-              nauki. Możesz też dodać fiszkę ręcznie.
+              {t("browse.noCardsDescription")}
             </p>
           </div>
           <Button
@@ -111,7 +116,7 @@ export function BrowsePage() {
             onClick={() => setAddCardOpen(true)}
             className="rounded-sm bg-amber border-amber text-paper hover:bg-[#ffcc4a] hover:border-[#ffcc4a] font-semibold"
           >
-            Dodaj pierwszą fiszkę
+            {t("browse.addFirstCard")}
           </Button>
         </div>
         <AddCardModal
@@ -125,10 +130,11 @@ export function BrowsePage() {
   return (
     <>
       <PageHead
-        eyebrow="Materiały"
+        eyebrow={t("browse.eyebrow")}
         title={
           <>
-            Twoje <em>fiszki</em>
+            {t("browse.title").split("<em>")[0]}
+            <em>{t("browse.title").match(/<em>(.*?)<\/em>/)?.[1]}</em>
           </>
         }
       />
@@ -148,7 +154,7 @@ export function BrowsePage() {
           onClick={() => setAddCardOpen(true)}
           className="rounded-sm"
         >
-          Dodaj fiszkę
+          {t("browse.addCard")}
         </Button>
       </div>
 
@@ -165,7 +171,7 @@ export function BrowsePage() {
 
       {visible.length === 0 && (
         <div className="py-16 text-center text-ink-faint display italic text-[25px]">
-          nic nie znaleziono.
+          {t("browse.nothingFound")}
         </div>
       )}
 
@@ -181,7 +187,7 @@ export function BrowsePage() {
               value={perPage}
               onChange={setPerPage}
               options={[12, 24, 48]}
-              label="Na stronie:"
+              label={t("browse.perPage")}
             />
             <Pagination.Controls />
           </Pagination>
