@@ -7,8 +7,8 @@ Aplikacja do planowania nauki i powtórek z wykorzystaniem algorytmu spaced repe
 | | URL |
 |--|-----|
 | **Aplikacja** | https://recurs.app |
-| **API** | https://api.recurs.app |
-| **Dokumentacja API (Scalar)** | https://api.recurs.app/api/reference |
+| **API** | https://zlota-apka.rayserrek.workers.dev|
+| **Dokumentacja API (Scalar)** | https://zlota-apka.rayserrek.workers.dev/api/reference |
 
 > Konto demo dostępne z poziomu landing page – nie wymaga rejestracji.
 
