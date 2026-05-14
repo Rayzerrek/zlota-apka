@@ -214,7 +214,6 @@ To wykonuje `tsc -b` + `vite build` + `wrangler pages deploy ./dist --project-na
 ### Konfiguracja DNS / Custom domain
 
 - Frontend: `recurs.app` → Cloudflare Pages custom domain
-- Backend: `api.recurs.app` → Cloudflare Workers custom domain (route)
 
 ### Konfiguracja Cloudflare Email (Send Email)
 
@@ -266,7 +265,7 @@ Dokumentacja API dostępna pod:
 - OpenAPI JSON: `GET /api/doc`
 - Scalar UI: `GET /api/reference`
 
-Produkcja: https://[api.recurs.app](https://zlota-apka.rayserrek.workers.dev)/api/reference
+Produkcja: https://zlota-apka.rayserrek.workers.dev/api/reference
 
 ## Licencja
 
