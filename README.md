@@ -86,7 +86,7 @@ cd frontend
 pnpm install
 
 # Backend
-cd ../backend
+cd backend
 pnpm install
 ```
 
